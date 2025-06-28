@@ -1,5 +1,5 @@
 import type { Repository } from "@/src/modules/shared/ports/outbound/repository";
-import type { User } from "../../domain/entities/user";
+import type { User } from "../domain/entities";
 
 export type UserRepository = Pick<
 	Repository<User.Model>,

@@ -1,7 +1,7 @@
 import { AppError } from "@/src/modules/shared/errors";
 import type { EmailService } from "@/src/modules/shared/ports/outbound/email-service";
 import { User } from "../../../domain/entities/user";
-import type { UserRepository } from "../../../ports/outbound/user-repository";
+import type { UserRepository } from "../../../repositories/user-repository";
 import type { TemplateService } from "../../services/template-service";
 
 export namespace ResendVerification {

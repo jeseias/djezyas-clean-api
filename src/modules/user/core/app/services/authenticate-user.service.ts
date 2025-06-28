@@ -2,6 +2,7 @@ import { AppError } from "@/src/modules/shared/errors";
 import type { CryptoRepository } from "@/src/modules/shared/ports/outbound/crypto-repository";
 import { Session } from "../../domain/entities/session";
 import type { User } from "../../domain/entities/user";
+import type { SessionRepository } from "../../repositories/session-repository";
 
 export namespace AuthenticateUser {
 	export type Params = {
@@ -28,7 +29,10 @@ export namespace AuthenticateUser {
 }
 
 export class AuthenticateUser {
-	constructor(private readonly cryptoRepo: CryptoRepository) {}
+	constructor(
+		private readonly cryptoRepo: CryptoRepository,
+		private readonly sessionRepo: SessionRepository,
+	) {}
 
 	async execute(
 		params: AuthenticateUser.Params,
@@ -57,6 +61,8 @@ export class AuthenticateUser {
 			refreshTokenExpiresAt,
 			deviceInfo,
 		});
+
+		await this.sessionRepo.create(session.toJSON());
 
 		return {
 			user,
