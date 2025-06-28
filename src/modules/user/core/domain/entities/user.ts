@@ -31,6 +31,8 @@ export namespace User {
 		verificationCode?: string;
 		verificationCodeExpiresAt?: Date;
 		emailVerifiedAt?: Date;
+		passwordResetToken?: string;
+		passwordResetTokenExpiresAt?: Date;
 		createdAt: Date;
 		updatedAt: Date;
 	};
@@ -64,6 +66,8 @@ export namespace User {
 				verificationCode: undefined,
 				verificationCodeExpiresAt: undefined,
 				emailVerifiedAt: undefined,
+				passwordResetToken: undefined,
+				passwordResetTokenExpiresAt: undefined,
 				createdAt: now,
 				updatedAt: now,
 			};
@@ -79,6 +83,16 @@ export namespace User {
 			const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 			let result = "";
 			for (let i = 0; i < 8; i++) {
+				result += chars.charAt(Math.floor(Math.random() * chars.length));
+			}
+			return result;
+		}
+
+		static generatePasswordResetToken(): string {
+			const chars =
+				"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+			let result = "";
+			for (let i = 0; i < 32; i++) {
 				result += chars.charAt(Math.floor(Math.random() * chars.length));
 			}
 			return result;
@@ -136,6 +150,14 @@ export namespace User {
 			return this.props.emailVerifiedAt;
 		}
 
+		get passwordResetToken(): string | undefined {
+			return this.props.passwordResetToken;
+		}
+
+		get passwordResetTokenExpiresAt(): Date | undefined {
+			return this.props.passwordResetTokenExpiresAt;
+		}
+
 		get createdAt(): Date {
 			return this.props.createdAt;
 		}
@@ -191,6 +213,43 @@ export namespace User {
 			this.props.verificationCode = undefined;
 			this.props.verificationCodeExpiresAt = undefined;
 			this.props.updatedAt = new Date();
+		}
+
+		setPasswordResetToken(token: string, expiresInMinutes: number = 60): void {
+			this.props.passwordResetToken = token;
+			const expiresAt = new Date();
+			expiresAt.setMinutes(expiresAt.getMinutes() + expiresInMinutes);
+			this.props.passwordResetTokenExpiresAt = expiresAt;
+			this.props.updatedAt = new Date();
+		}
+
+		clearPasswordResetToken(): void {
+			this.props.passwordResetToken = undefined;
+			this.props.passwordResetTokenExpiresAt = undefined;
+			this.props.updatedAt = new Date();
+		}
+
+		isPasswordResetTokenValid(token: string): boolean {
+			if (
+				!this.props.passwordResetToken ||
+				!this.props.passwordResetTokenExpiresAt
+			) {
+				return false;
+			}
+
+			const now = new Date();
+			return (
+				this.props.passwordResetToken === token &&
+				now < this.props.passwordResetTokenExpiresAt
+			);
+		}
+
+		isPasswordResetTokenExpired(): boolean {
+			if (!this.props.passwordResetTokenExpiresAt) {
+				return true;
+			}
+
+			return new Date() > this.props.passwordResetTokenExpiresAt;
 		}
 
 		verifyEmail(): void {

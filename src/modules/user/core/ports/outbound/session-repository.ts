@@ -1,5 +1,5 @@
 import type { Repository } from "@/src/modules/shared/ports/outbound/repository";
-import type { Session } from "../domain/entities";
+import type { Session } from "../../domain/entities";
 
 export type SessionRepository = Pick<
 	Repository<Session.Model>,

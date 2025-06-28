@@ -2,7 +2,7 @@ import { AppError } from "@/src/modules/shared/errors";
 import type { CryptoRepository } from "@/src/modules/shared/ports/outbound/crypto-repository";
 import { Session } from "../../domain/entities/session";
 import type { User } from "../../domain/entities/user";
-import type { SessionRepository } from "../../repositories/session-repository";
+import type { SessionRepository } from "../../ports/outbound/session-repository";
 
 export namespace AuthenticateUser {
 	export type Params = {

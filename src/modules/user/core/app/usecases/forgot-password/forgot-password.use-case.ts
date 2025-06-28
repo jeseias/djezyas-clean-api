@@ -1,10 +1,9 @@
-import { AppError } from "@/src/modules/shared/errors";
 import type { EmailService } from "@/src/modules/shared/ports/outbound/email-service";
 import { User } from "../../../domain/entities/user";
-import type { UserRepository } from "../../../ports/outbound";
+import type { UserRepository } from "../../../ports/outbound/user-repository";
 import type { TemplateService } from "../../services/template-service";
 
-export namespace ResendVerification {
+export namespace ForgotPassword {
 	export type Params = {
 		email: string;
 	};
@@ -15,7 +14,7 @@ export namespace ResendVerification {
 	};
 }
 
-export class ResendVerificationUseCase {
+export class ForgotPasswordUseCase {
 	constructor(
 		private readonly userRepository: Pick<
 			UserRepository,
@@ -25,53 +24,61 @@ export class ResendVerificationUseCase {
 		private readonly templateService: TemplateService,
 	) {}
 
-	async execute(
-		params: ResendVerification.Params,
-	): Promise<ResendVerification.Result> {
+	async execute(params: ForgotPassword.Params): Promise<ForgotPassword.Result> {
 		const { email } = params;
 
 		const userModel = await this.userRepository.findByEmail(email);
 		if (!userModel) {
-			throw new AppError("User not found", 404);
+			return {
+				message:
+					"If an account with this email exists, a password reset link has been sent.",
+				expiresIn: "1 hour",
+			};
 		}
 
 		const user = User.Entity.fromModel(userModel);
 
-		if (user.isEmailVerified()) {
-			throw new AppError("Email is already verified", 400);
+		if (!user.isActive()) {
+			return {
+				message:
+					"If an account with this email exists, a password reset link has been sent.",
+				expiresIn: "1 hour",
+			};
 		}
+		const resetToken = User.Entity.generatePasswordResetToken();
 
-		const verificationCode = User.Entity.generateVerificationCode();
-
-		user.setVerificationCode(verificationCode, 10);
+		user.setPasswordResetToken(resetToken, 60);
 
 		await this.userRepository.update(user.toJSON());
 
-		await this.sendVerificationEmail({
+		await this.sendPasswordResetEmail({
 			email: user.email,
 			name: user.name,
 			username: user.username,
-			verificationCode,
+			resetToken,
 		});
 
 		return {
-			message: "Verification code has been resent to your email",
-			expiresIn: "10 minutes",
+			message:
+				"If an account with this email exists, a password reset link has been sent.",
+			expiresIn: "1 hour",
 		};
 	}
 
-	private async sendVerificationEmail(params: {
+	private async sendPasswordResetEmail(params: {
 		email: string;
 		name: string;
 		username: string;
-		verificationCode: string;
+		resetToken: string;
 	}): Promise<void> {
-		const { email, name, verificationCode } = params;
+		const { email, name, resetToken } = params;
 
-		const emailTemplate = await this.templateService.compileEmailVerification({
+		const resetUrl = `${process.env.FRONTEND_URL || "http://localhost:3000"}/reset-password?token=${resetToken}`;
+
+		const emailTemplate = await this.templateService.compilePasswordReset({
 			name,
 			email,
-			verificationCode,
+			resetUrl,
 		});
 
 		await this.emailService.sendEmail({

@@ -3,7 +3,7 @@ import type { CryptoRepository } from "@/src/modules/shared/ports/outbound/crypt
 import type { EmailService } from "@/src/modules/shared/ports/outbound/email-service";
 import { password } from "@/src/modules/shared/value-objects/password";
 import { User } from "../../../domain/entities/user";
-import type { UserRepository } from "../../../repositories/user-repository";
+import type { UserRepository } from "../../../ports/outbound";
 import type { TemplateService } from "../../services/template-service";
 
 export namespace IRegisterUser {

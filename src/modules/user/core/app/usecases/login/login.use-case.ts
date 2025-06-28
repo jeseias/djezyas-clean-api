@@ -3,7 +3,7 @@ import type { CryptoRepository } from "@/src/modules/shared/ports/outbound/crypt
 import type { EmailService } from "@/src/modules/shared/ports/outbound/email-service";
 import type { Session } from "../../../domain/entities/session";
 import { User } from "../../../domain/entities/user";
-import type { UserRepository } from "../../../repositories/user-repository";
+import type { UserRepository } from "../../../ports/outbound";
 import type { AuthenticateUser } from "../../services/authenticate-user.service";
 import type { TemplateService } from "../../services/template-service";
 

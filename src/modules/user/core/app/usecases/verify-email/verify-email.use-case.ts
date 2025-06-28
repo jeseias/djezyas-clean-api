@@ -1,6 +1,6 @@
 import { AppError } from "@/src/modules/shared/errors";
 import { User } from "../../../domain/entities/user";
-import type { UserRepository } from "../../../repositories/user-repository";
+import type { UserRepository } from "../../../ports/outbound";
 
 export namespace VerifyEmail {
 	export type Params = {
