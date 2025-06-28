@@ -1,0 +1,149 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title New Login Detected
+    style.
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        color: #333;
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f4f4f4;
+      }
+      .container {
+        background: white;
+        border-radius: 8px;
+        padding: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      }
+      .header {
+        text-align: center;
+        padding: 20px 0;
+        border-bottom: 2px solid #ff6b35;
+        margin-bottom: 30px;
+      }
+      .header h1 {
+        color: #ff6b35;
+        margin: 0;
+        font-size: 28px;
+      }
+      .content {
+        padding: 20px 0;
+      }
+      .content p {
+        margin: 15px 0;
+        font-size: 16px;
+      }
+      .login-details {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 20px;
+        margin: 25px 0;
+      }
+      .login-details h3 {
+        margin: 0 0 15px 0;
+        color: #495057;
+        font-size: 18px;
+      }
+      .detail-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 10px 0;
+        padding: 8px 0;
+        border-bottom: 1px solid #e9ecef;
+      }
+      .detail-row:last-child {
+        border-bottom: none;
+      }
+      .detail-label {
+        font-weight: bold;
+        color: #495057;
+      }
+      .detail-value {
+        color: #6c757d;
+      }
+      .warning {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 6px;
+        padding: 20px;
+        margin: 25px 0;
+      }
+      .warning p {
+        margin: 0;
+        color: #856404;
+      }
+      .footer {
+        text-align: center;
+        padding: 30px 0 20px;
+        border-top: 1px solid #eee;
+        font-size: 12px;
+        color: #666;
+        margin-top: 30px;
+      }
+      .footer p {
+        margin: 5px 0;
+      }
+      .action-button {
+        display: inline-block;
+        background: #ff6b35;
+        color: white;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: bold;
+        margin: 20px 0;
+        text-align: center;
+      }
+      .action-button:hover {
+        background: #e55a2b;
+      }
+
+  body
+    .container
+      .header
+        h1 New Login Detected
+      
+      .content
+        p Hello #{name},
+        
+        p We detected a new login to your #{appName} account. If this was you, you can safely ignore this email.
+        
+        .login-details
+          h3 Login Details
+          .detail-row
+            span.detail-label Time:
+            span.detail-value #{loginAt.toLocaleString()}
+          .detail-row
+            span.detail-label IP Address:
+            span.detail-value #{deviceInfo.ipAddress}
+          .detail-row
+            span.detail-label Device Type:
+            span.detail-value #{deviceInfo.deviceType || 'Unknown'}
+          if deviceInfo.browser
+            .detail-row
+              span.detail-label Browser:
+              span.detail-value #{deviceInfo.browser}
+          if deviceInfo.os
+            .detail-row
+              span.detail-label Operating System:
+              span.detail-value #{deviceInfo.os}
+        
+        .warning
+          p
+            strong Security Notice: 
+            | If you didn't log in to your account, please change your password immediately and contact our support team.
+        
+        a.action-button(href="#{appName.toLowerCase().replace(/\s+/g, '')}.com/security") Secure My Account
+      
+      .footer
+        p &copy; #{currentYear} #{appName}. All rights reserved.
+        p This email was sent to #{email} for security purposes.
+        p 
+          | Need help? Contact us at 
+          a(href="mailto:support@#{appName.toLowerCase().replace(/\s+/g, '')}.com") support@#{appName.toLowerCase().replace(/\s+/g, '')}.com 

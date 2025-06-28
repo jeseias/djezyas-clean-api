@@ -1,0 +1,19 @@
+| Hello #{name},
+| 
+| We detected a new login to your #{appName} account. If this was you, you can safely ignore this email.
+| 
+| Login Details:
+| - Time: #{loginAt.toLocaleString()}
+| - IP Address: #{deviceInfo.ipAddress}
+| - Device Type: #{deviceInfo.deviceType || 'Unknown'}
+| - Browser: #{deviceInfo.browser || 'Unknown'}
+| - Operating System: #{deviceInfo.os || 'Unknown'}
+| 
+| Security Notice: If you didn't log in to your account, please change your password immediately and contact our support team.
+| 
+| Secure your account: #{appName.toLowerCase().replace(/\s+/g, '')}.com/security
+| 
+| ---
+| © #{currentYear} #{appName}. All rights reserved.
+| This email was sent to #{email} for security purposes.
+| Need help? Contact us at support@#{appName.toLowerCase().replace(/\s+/g, '')}.com 
