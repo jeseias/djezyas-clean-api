@@ -1,11 +1,11 @@
 import { AppError } from "@/src/modules/shared/errors";
 import type { CryptoRepository } from "@/src/modules/shared/ports/outbound/crypto-repository";
 import type { EmailService } from "@/src/modules/shared/ports/outbound/email-service";
-import { User } from "../../../domain/entities/user";
 import type { Session } from "../../../domain/entities/session";
+import { User } from "../../../domain/entities/user";
+import type { UserRepository } from "../../../repositories/user-repository";
 import type { AuthenticateUser } from "../../services/authenticate-user.service";
 import type { TemplateService } from "../../services/template-service";
-import type { UserRepository } from "../../../repositories/user-repository";
 
 export namespace Login {
 	export type Params = {
