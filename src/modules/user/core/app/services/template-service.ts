@@ -4,6 +4,10 @@ import {
 } from "@/src/modules/shared/services/base-email-template-service";
 
 export class UserTemplateService extends BaseEmailTemplateService {
+	constructor() {
+		super();
+	}
+
 	async compileEmailVerification(variables: {
 		name: string;
 		email: string;

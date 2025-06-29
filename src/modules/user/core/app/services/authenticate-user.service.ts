@@ -1,5 +1,5 @@
 import { AppError } from "@/src/modules/shared/errors";
-import type { CryptoRepository } from "@/src/modules/shared/ports/outbound/crypto-repository";
+import type { TokenManager } from "@/src/modules/shared/ports/outbound/token-manager";
 import { Session } from "../../domain/entities/session";
 import type { User } from "../../domain/entities/user";
 import type { SessionRepository } from "../../ports/outbound/session-repository";
@@ -30,7 +30,7 @@ export namespace AuthenticateUser {
 
 export class AuthenticateUser {
 	constructor(
-		private readonly cryptoRepo: CryptoRepository,
+		private readonly tokenManager: TokenManager,
 		private readonly sessionRepo: SessionRepository,
 	) {}
 
@@ -85,7 +85,7 @@ export class AuthenticateUser {
 			type: "access",
 		};
 
-		return this.cryptoRepo.generateToken(payload, "15m");
+		return this.tokenManager.generateToken(payload, "15m");
 	}
 
 	private async generateRefreshToken(user: User.Entity): Promise<string> {
@@ -94,7 +94,7 @@ export class AuthenticateUser {
 			type: "refresh",
 		};
 
-		return this.cryptoRepo.generateToken(payload, "7d");
+		return this.tokenManager.generateToken(payload, "7d");
 	}
 
 	private calculateAccessTokenExpiration(): Date {

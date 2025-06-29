@@ -1,5 +1,5 @@
 import { AppError } from "@/src/modules/shared/errors";
-import type { CryptoRepository } from "@/src/modules/shared/ports/outbound/crypto-repository";
+import type { PasswordHasher } from "@/src/modules/shared/ports/outbound/password-hasher";
 import { password } from "@/src/modules/shared/value-objects/password";
 import { User } from "../../../domain/entities/user";
 import type { UserRepository } from "../../../ports/outbound";
@@ -21,7 +21,7 @@ export class ResetPasswordUseCase {
 			UserRepository,
 			"findByPasswordResetToken" | "update"
 		>,
-		private readonly cryptoRepository: CryptoRepository,
+		private readonly passwordHasher: PasswordHasher,
 	) {}
 
 	async execute(params: ResetPassword.Params): Promise<ResetPassword.Result> {
@@ -37,23 +37,18 @@ export class ResetPasswordUseCase {
 		const user = User.Entity.fromModel(userModel);
 
 		if (!user.isPasswordResetTokenValid(token)) {
-			if (user.isPasswordResetTokenExpired()) {
-				throw new AppError("Reset token has expired", 400);
-			}
-			throw new AppError("Invalid reset token", 400);
+			throw new AppError("Invalid or expired reset token", 400);
 		}
 
-		const hashedPassword = await this.cryptoRepository.hash(newPassword);
+		const hashedPassword = await this.passwordHasher.hash(newPassword);
 
 		user.updatePassword(hashedPassword);
-
 		user.clearPasswordResetToken();
 
 		await this.userRepository.update(user.toJSON());
 
 		return {
-			message:
-				"Password has been reset successfully. You can now log in with your new password.",
+			message: "Password has been reset successfully",
 		};
 	}
 }

@@ -1,6 +1,6 @@
 import { AppError } from "@/src/modules/shared/errors";
-import type { CryptoRepository } from "@/src/modules/shared/ports/outbound/crypto-repository";
 import type { EmailService } from "@/src/modules/shared/ports/outbound/email-service";
+import type { PasswordHasher } from "@/src/modules/shared/ports/outbound/password-hasher";
 import type { Session } from "../../../domain/entities/session";
 import { User } from "../../../domain/entities/user";
 import type { UserRepository } from "../../../ports/outbound";
@@ -36,7 +36,7 @@ export namespace Login {
 export class LoginUseCase {
 	constructor(
 		private readonly userRepository: Pick<UserRepository, "findByEmail">,
-		private readonly cryptoRepository: CryptoRepository,
+		private readonly passwordHasher: PasswordHasher,
 		private readonly authenticateUser: AuthenticateUser,
 		private readonly emailService: EmailService,
 		private readonly templateService: UserTemplateService,
@@ -45,64 +45,48 @@ export class LoginUseCase {
 	async execute(params: Login.Params): Promise<Login.Result> {
 		const { email, password, deviceInfo } = params;
 
-		const userModel = await this.userRepository.findByEmail(email);
-		if (!userModel) {
+		const user = await this.userRepository.findByEmail(email);
+		if (!user) {
 			throw new AppError("Invalid email or password", 401);
 		}
 
-		const user = User.Entity.fromModel(userModel);
+		const userEntity = User.Entity.fromModel(user);
 
-		if (user.isBlocked()) {
-			throw new AppError(
-				"Your account has been blocked. Please contact support.",
-				403,
-			);
+		if (!userEntity.isEmailVerified()) {
+			throw new AppError("Please verify your email before logging in", 403);
 		}
 
-		if (!user.isActive()) {
-			throw new AppError(
-				"Your account is inactive. Please contact support.",
-				403,
-			);
-		}
-
-		if (!user.isEmailVerified()) {
-			throw new AppError(
-				"Please verify your email address before logging in",
-				403,
-			);
-		}
-
-		const isPasswordValid = await this.cryptoRepository.compare(
+		const isPasswordValid = await this.passwordHasher.compare(
 			password,
-			user.password,
+			userEntity.password,
 		);
+
 		if (!isPasswordValid) {
 			throw new AppError("Invalid email or password", 401);
 		}
 
-		const authResult = await this.authenticateUser.execute({
-			user,
+		const authenticationResult = await this.authenticateUser.execute({
+			user: userEntity,
 			deviceInfo,
 		});
 
-		await this.sendLoginNotification({
-			email: user.email,
-			name: user.name,
-			username: user.username,
+		await this.sendLoginNotificationEmail({
+			email: userEntity.email,
+			name: userEntity.name,
+			username: userEntity.username,
 			loginAt: new Date(),
 			deviceInfo,
 		});
 
 		return {
-			user: user.toJSON(),
-			session: authResult.session.toJSON(),
-			tokens: authResult.tokens,
+			user: authenticationResult.user.toJSON(),
+			session: authenticationResult.session.toJSON(),
+			tokens: authenticationResult.tokens,
 			message: "Login successful",
 		};
 	}
 
-	private async sendLoginNotification(params: {
+	private async sendLoginNotificationEmail(params: {
 		email: string;
 		name: string;
 		username: string;
@@ -129,8 +113,8 @@ export class LoginUseCase {
 			to: { email, name },
 			template: emailTemplate,
 			options: {
-				from: "noreply@yourapp.com",
-				priority: "normal",
+				from: "security@yourapp.com",
+				priority: "high",
 			},
 		});
 	}

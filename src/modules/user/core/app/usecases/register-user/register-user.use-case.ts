@@ -1,6 +1,6 @@
 import { AppError } from "@/src/modules/shared/errors";
-import type { CryptoRepository } from "@/src/modules/shared/ports/outbound/crypto-repository";
 import type { EmailService } from "@/src/modules/shared/ports/outbound/email-service";
+import type { PasswordHasher } from "@/src/modules/shared/ports/outbound/password-hasher";
 import { password } from "@/src/modules/shared/value-objects/password";
 import { User } from "../../../domain/entities/user";
 import type { UserRepository } from "../../../ports/outbound";
@@ -24,7 +24,7 @@ export class RegisterUserUseCase {
 			UserRepository,
 			"create" | "findByEmail" | "findByUsername" | "findByPhone" | "update"
 		>,
-		private readonly cryptoRepository: CryptoRepository,
+		private readonly passwordHasher: PasswordHasher,
 		private readonly emailService: EmailService,
 		private readonly templateService: UserTemplateService,
 	) {}
@@ -50,7 +50,7 @@ export class RegisterUserUseCase {
 			throw new AppError("User with this phone number already exists", 409);
 		}
 
-		const hashedPassword = await this.cryptoRepository.hash(passwordValue);
+		const hashedPassword = await this.passwordHasher.hash(passwordValue);
 
 		const user = User.Entity.create({
 			email,
