@@ -23,6 +23,7 @@
 		"typescript": "^5"
 	},
 	"dependencies": {
+		"mongoose": "^8.16.1",
 		"pug": "^3.0.3",
 		"uuid": "^11.1.0",
 		"zod": "^3.25.67"
