@@ -2,7 +2,7 @@ import { AppError } from "@/src/modules/shared/errors";
 import type { EmailService } from "@/src/modules/shared/ports/outbound/email-service";
 import { User } from "../../../domain/entities/user";
 import type { UserRepository } from "../../../ports/outbound";
-import type { TemplateService } from "../../services/template-service";
+import type { UserTemplateService } from "../../services/template-service";
 
 export namespace ResendVerification {
 	export type Params = {
@@ -22,7 +22,7 @@ export class ResendVerificationUseCase {
 			"findByEmail" | "update"
 		>,
 		private readonly emailService: EmailService,
-		private readonly templateService: TemplateService,
+		private readonly templateService: UserTemplateService,
 	) {}
 
 	async execute(

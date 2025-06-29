@@ -4,7 +4,7 @@ import type { EmailService } from "@/src/modules/shared/ports/outbound/email-ser
 import { password } from "@/src/modules/shared/value-objects/password";
 import { User } from "../../../domain/entities/user";
 import type { UserRepository } from "../../../ports/outbound";
-import type { TemplateService } from "../../services/template-service";
+import type { UserTemplateService } from "../../services/template-service";
 
 export namespace IRegisterUser {
 	export type Params = {
@@ -26,7 +26,7 @@ export class RegisterUserUseCase {
 		>,
 		private readonly cryptoRepository: CryptoRepository,
 		private readonly emailService: EmailService,
-		private readonly templateService: TemplateService,
+		private readonly templateService: UserTemplateService,
 	) {}
 
 	async execute(props: IRegisterUser.Params): Promise<IRegisterUser.Result> {

@@ -1,7 +1,7 @@
 import type { EmailService } from "@/src/modules/shared/ports/outbound/email-service";
 import { User } from "../../../domain/entities/user";
 import type { UserRepository } from "../../../ports/outbound/user-repository";
-import type { TemplateService } from "../../services/template-service";
+import type { UserTemplateService } from "../../services/template-service";
 
 export namespace ForgotPassword {
 	export type Params = {
@@ -21,7 +21,7 @@ export class ForgotPasswordUseCase {
 			"findByEmail" | "update"
 		>,
 		private readonly emailService: EmailService,
-		private readonly templateService: TemplateService,
+		private readonly templateService: UserTemplateService,
 	) {}
 
 	async execute(params: ForgotPassword.Params): Promise<ForgotPassword.Result> {

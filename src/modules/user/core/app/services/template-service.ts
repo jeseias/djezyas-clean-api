@@ -1,25 +1,9 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-import pug from "pug";
+import {
+	BaseEmailTemplateService,
+	type EmailTemplateData,
+} from "@/src/modules/shared/services/base-email-template-service";
 
-export type TemplateVariables = Record<string, unknown>;
-
-export type EmailTemplateData = {
-	subject: string;
-	html: string;
-	text: string;
-};
-
-export class TemplateService {
-	private readonly templatesPath: string;
-
-	constructor() {
-		this.templatesPath = join(
-			process.cwd(),
-			"src/modules/user/core/app/templates/emails",
-		);
-	}
-
+export class UserTemplateService extends BaseEmailTemplateService {
 	async compileEmailVerification(variables: {
 		name: string;
 		email: string;
@@ -27,27 +11,18 @@ export class TemplateService {
 		appName?: string;
 		expiresIn?: string;
 	}): Promise<EmailTemplateData> {
-		const defaultVariables = {
+		const defaultVariables = this.getDefaultVariables({
 			appName: "Our Platform",
 			expiresIn: "10 minutes",
-			currentYear: new Date().getFullYear(),
 			...variables,
-		};
+		});
 
-		const html = await this.compilePugTemplate(
+		return this.compileEmailTemplate(
+			"user",
 			"email-verification.pug",
 			defaultVariables,
+			`Verify your email address - ${defaultVariables.appName}`,
 		);
-		const text = await this.compilePugTemplate(
-			"email-verification-text.pug",
-			defaultVariables,
-		);
-
-		return {
-			subject: `Verify your email address - ${defaultVariables.appName}`,
-			html,
-			text,
-		};
 	}
 
 	async compilePasswordReset(variables: {
@@ -57,27 +32,18 @@ export class TemplateService {
 		appName?: string;
 		expiresIn?: string;
 	}): Promise<EmailTemplateData> {
-		const defaultVariables = {
+		const defaultVariables = this.getDefaultVariables({
 			appName: "Our Platform",
 			expiresIn: "1 hour",
-			currentYear: new Date().getFullYear(),
 			...variables,
-		};
+		});
 
-		const html = await this.compilePugTemplate(
+		return this.compileEmailTemplate(
+			"user",
 			"password-reset.pug",
 			defaultVariables,
+			`Reset your password - ${defaultVariables.appName}`,
 		);
-		const text = await this.compilePugTemplate(
-			"password-reset-text.pug",
-			defaultVariables,
-		);
-
-		return {
-			subject: `Reset your password - ${defaultVariables.appName}`,
-			html,
-			text,
-		};
 	}
 
 	async compileLoginNotification(variables: {
@@ -94,55 +60,16 @@ export class TemplateService {
 		};
 		appName?: string;
 	}): Promise<EmailTemplateData> {
-		const defaultVariables = {
+		const defaultVariables = this.getDefaultVariables({
 			appName: "Our Platform",
-			currentYear: new Date().getFullYear(),
 			...variables,
-		};
+		});
 
-		const html = await this.compilePugTemplate(
+		return this.compileEmailTemplate(
+			"user",
 			"login-notification.pug",
 			defaultVariables,
+			`New login detected - ${defaultVariables.appName}`,
 		);
-		const text = await this.compilePugTemplate(
-			"login-notification-text.pug",
-			defaultVariables,
-		);
-
-		return {
-			subject: `New login detected - ${defaultVariables.appName}`,
-			html,
-			text,
-		};
-	}
-
-	private async compilePugTemplate(
-		templateName: string,
-		variables: TemplateVariables,
-	): Promise<string> {
-		try {
-			const templatePath = join(this.templatesPath, templateName);
-			const templateContent = readFileSync(templatePath, "utf-8");
-
-			// Compile Pug template
-			const compiledTemplate = pug.compile(templateContent, {
-				filename: templatePath,
-				pretty: true,
-			});
-
-			return compiledTemplate(variables);
-		} catch (error) {
-			throw new Error(
-				`Failed to compile Pug template ${templateName}: ${error}`,
-			);
-		}
-	}
-
-	// Generic method for compiling any Pug template
-	async compileTemplate(
-		templateName: string,
-		variables: TemplateVariables,
-	): Promise<string> {
-		return this.compilePugTemplate(templateName, variables);
 	}
 }

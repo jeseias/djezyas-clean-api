@@ -5,7 +5,7 @@ import type { Session } from "../../../domain/entities/session";
 import { User } from "../../../domain/entities/user";
 import type { UserRepository } from "../../../ports/outbound";
 import type { AuthenticateUser } from "../../services/authenticate-user.service";
-import type { TemplateService } from "../../services/template-service";
+import type { UserTemplateService } from "../../services/template-service";
 
 export namespace Login {
 	export type Params = {
@@ -39,7 +39,7 @@ export class LoginUseCase {
 		private readonly cryptoRepository: CryptoRepository,
 		private readonly authenticateUser: AuthenticateUser,
 		private readonly emailService: EmailService,
-		private readonly templateService: TemplateService,
+		private readonly templateService: UserTemplateService,
 	) {}
 
 	async execute(params: Login.Params): Promise<Login.Result> {
