@@ -75,7 +75,7 @@ const userSchema = new Schema<UserDocument>(
 		},
 		verificationCode: {
 			type: String,
-			select: false, 
+			select: false,
 		},
 		verificationCodeExpiresAt: {
 			type: Date,
