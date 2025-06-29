@@ -4,6 +4,8 @@
 	"type": "module",
 	"private": true,
 	"scripts": {
+		"start": "bun run src/server.ts",
+		"dev": "bun --watch src/server.ts",
 		"format": "bunx biome format --write",
 		"lint": "bunx biome lint --write",
 		"check": "bunx biome check --write",

@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const envSchema = z.object({
 	PORT: z.coerce.number().default(3333),
+	MONGODB_URI: z.string().default("mongodb://localhost:27017/kianda"),
 	POSTMARK_API_KEY: z.string(),
 	POSTMARK_FROM_EMAIL: z.string().email(),
 	POSTMARK_REPLY_TO_EMAIL: z.string().email(),
