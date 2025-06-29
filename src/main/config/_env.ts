@@ -8,6 +8,8 @@ export const envSchema = z.object({
 	BCRYPT_SALT_ROUNDS: z.number(),
 	JWT_SECRET: z.string(),
 	JWT_DEFAULT_EXPIRES_IN: z.string(),
+	SWAGGER_DOCS_USERNAME: z.string(),
+	SWAGGER_DOCS_PASSWORD: z.string(),
 });
 
 const _envSchema = envSchema.safeParse(process.env);
