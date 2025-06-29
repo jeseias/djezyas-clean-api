@@ -6,7 +6,7 @@ export const envSchema = z.object({
 	POSTMARK_API_KEY: z.string(),
 	POSTMARK_FROM_EMAIL: z.string().email(),
 	POSTMARK_REPLY_TO_EMAIL: z.string().email(),
-	BCRYPT_SALT_ROUNDS: z.number(),
+	BCRYPT_SALT_ROUNDS: z.coerce.number(),
 	JWT_SECRET: z.string(),
 	JWT_DEFAULT_EXPIRES_IN: z.string(),
 	SWAGGER_DOCS_USERNAME: z.string(),

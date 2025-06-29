@@ -99,8 +99,6 @@ const sessionSchema = new Schema<SessionDocument>(
 );
 
 sessionSchema.index({ userId: 1, isActive: 1 });
-sessionSchema.index({ accessToken: 1 });
-sessionSchema.index({ refreshToken: 1 });
 sessionSchema.index({ createdAt: -1 });
 sessionSchema.index({ lastUsedAt: -1 });
 

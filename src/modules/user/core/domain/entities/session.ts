@@ -59,6 +59,10 @@ export namespace Session {
 			return new Entity(session);
 		}
 
+		static fromModel(model: Model): Entity {
+			return new Entity(model);
+		}
+
 		get id(): string {
 			return this.props.id;
 		}
