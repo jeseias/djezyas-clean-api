@@ -1,7 +1,10 @@
+import type { Repository } from "@/src/modules/shared/ports/outbound/repository";
 import type { OrganizationInvitation } from "../../domain/entities/organization-invitation";
 
-export type OrganizationInvitationRepository = {
-	create(invitation: OrganizationInvitation.Model): Promise<void>;
+export type OrganizationInvitationRepository = Pick<
+	Repository<OrganizationInvitation.Model>,
+	"create" | "findById" | "update" | "delete"
+> & {
 	findByToken(token: string): Promise<OrganizationInvitation.Model | null>;
 	findByEmailAndOrgId(
 		email: string,

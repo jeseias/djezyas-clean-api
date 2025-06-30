@@ -1,10 +1,12 @@
 import { v4 as uuidv4 } from "uuid";
+import { type Id, id } from "@/src/modules/shared/value-objects";
 
 export namespace OrganizationInvitation {
 	export type Status = "pending" | "accepted" | "expired";
 
 	export type Model = {
-		organizationId: string;
+		id: Id;
+		organizationId: Id;
 		email: string;
 		role: "admin" | "member";
 		token: string;
@@ -14,7 +16,7 @@ export namespace OrganizationInvitation {
 	};
 
 	export type CreateParams = {
-		organizationId: string;
+		organizationId: Id;
 		email: string;
 		role: "admin" | "member";
 	};
@@ -24,6 +26,7 @@ export namespace OrganizationInvitation {
 
 		static create(params: CreateParams): Entity {
 			return new Entity({
+				id: id(),
 				organizationId: params.organizationId,
 				email: params.email,
 				role: params.role,
@@ -37,7 +40,10 @@ export namespace OrganizationInvitation {
 			return new Entity(model);
 		}
 
-		get organizationId(): string {
+		get id(): Id {
+			return this.props.id;
+		}
+		get organizationId(): Id {
 			return this.props.organizationId;
 		}
 		get email(): string {

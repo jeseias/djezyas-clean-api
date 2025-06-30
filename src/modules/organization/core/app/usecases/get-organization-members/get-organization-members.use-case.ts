@@ -1,3 +1,5 @@
+import type { Id } from "@/src/modules/shared/value-objects";
+import type { UserRepository } from "@/src/modules/user/core/ports/outbound/user-repository";
 import type { OrganizationInvitation } from "../../../domain/entities/organization-invitation";
 import type { OrganizationMember } from "../../../domain/entities/organization-member";
 import type { OrganizationInvitationRepository } from "../../../ports/outbound/organization-invitation-repository";
@@ -5,11 +7,19 @@ import type { OrganizationMemberRepository } from "../../../ports/outbound/organ
 
 export namespace GetOrganizationMembers {
 	export type Params = {
-		organizationId: string;
+		organizationId: Id;
+	};
+
+	export type MemberWithUser = OrganizationMember.Model & {
+		user: {
+			name: string;
+			avatar: string | undefined;
+			email: string;
+		};
 	};
 
 	export type Result = {
-		members: OrganizationMember.Model[];
+		members: MemberWithUser[];
 		pendingInvitations: OrganizationInvitation.Model[];
 	};
 }
@@ -18,6 +28,7 @@ export class GetOrganizationMembersUseCase {
 	constructor(
 		private readonly organizationMemberRepository: OrganizationMemberRepository,
 		private readonly organizationInvitationRepository: OrganizationInvitationRepository,
+		private readonly userRepository: UserRepository,
 	) {}
 
 	async execute(
@@ -32,13 +43,37 @@ export class GetOrganizationMembersUseCase {
 			),
 		]);
 
-		// Filter for pending invitations (where acceptedAt is null)
+		const memberUserIds = members.map((member) => member.userId);
+		const users = await Promise.all(
+			memberUserIds.map((userId) => this.userRepository.findById(userId)),
+		);
+
+		const membersWithUser: GetOrganizationMembers.MemberWithUser[] = members
+			.map((member, index) => {
+				const user = users[index];
+				if (!user) {
+					return null;
+				}
+
+				return {
+					...member,
+					user: {
+						name: user.name,
+						avatar: user.avatar,
+						email: user.email,
+					},
+				};
+			})
+			.filter(
+				(member): member is NonNullable<typeof member> => member !== null,
+			);
+
 		const pendingInvitations = allInvitations.filter(
 			(invitation) => invitation.acceptedAt === null,
 		);
 
 		return {
-			members,
+			members: membersWithUser,
 			pendingInvitations,
 		};
 	}

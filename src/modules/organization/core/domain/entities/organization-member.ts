@@ -1,9 +1,10 @@
-import type { Id } from "@/src/modules/shared/value-objects";
+import { type Id, id } from "@/src/modules/shared/value-objects";
 
 export namespace OrganizationMember {
 	export type Role = "owner" | "admin" | "member";
 
 	export type Model = {
+		id: Id;
 		organizationId: Id;
 		userId: Id;
 		role: Role;
@@ -24,6 +25,7 @@ export namespace OrganizationMember {
 
 		static create(params: CreateParams): Entity {
 			return new Entity({
+				id: id(),
 				organizationId: params.organizationId,
 				userId: params.userId,
 				role: params.role,

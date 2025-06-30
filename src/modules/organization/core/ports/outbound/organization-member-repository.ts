@@ -1,7 +1,10 @@
+import type { Repository } from "@/src/modules/shared/ports/outbound/repository";
 import type { OrganizationMember } from "../../domain/entities/organization-member";
 
-export type OrganizationMemberRepository = {
-	create(member: OrganizationMember.Model): Promise<void>;
+export type OrganizationMemberRepository = Pick<
+	Repository<OrganizationMember.Model>,
+	"create" | "findById" | "update" | "delete"
+> & {
 	findByUserId(userId: string): Promise<OrganizationMember.Model[]>;
 	findByOrganizationId(
 		organizationId: string,
