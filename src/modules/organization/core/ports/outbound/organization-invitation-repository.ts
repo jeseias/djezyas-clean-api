@@ -7,5 +7,8 @@ export type OrganizationInvitationRepository = {
 		email: string,
 		organizationId: string,
 	): Promise<OrganizationInvitation.Model | null>;
+	findByOrganizationId(
+		organizationId: string,
+	): Promise<OrganizationInvitation.Model[]>;
 	// Add more methods as needed
 };

@@ -4,6 +4,7 @@ export namespace OrganizationMember {
 	export type Role = "owner" | "admin" | "member";
 
 	export type Model = {
+		organizationId: Id;
 		userId: Id;
 		role: Role;
 		invitedAt: Date;
@@ -11,6 +12,7 @@ export namespace OrganizationMember {
 	};
 
 	export type CreateParams = {
+		organizationId: Id;
 		userId: Id;
 		role: Role;
 		invitedAt?: Date;
@@ -22,6 +24,7 @@ export namespace OrganizationMember {
 
 		static create(params: CreateParams): Entity {
 			return new Entity({
+				organizationId: params.organizationId,
 				userId: params.userId,
 				role: params.role,
 				invitedAt: params.invitedAt ?? new Date(),
@@ -33,6 +36,9 @@ export namespace OrganizationMember {
 			return new Entity(model);
 		}
 
+		get organizationId(): Id {
+			return this.props.organizationId;
+		}
 		get userId(): Id {
 			return this.props.userId;
 		}

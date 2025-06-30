@@ -59,6 +59,7 @@ export class CreateOrganizationUseCase {
 		await this.organizationRepository.create(org.toJSON());
 
 		const ownerMember = OrganizationMember.Entity.create({
+			organizationId: org.id,
 			userId: params.ownerId,
 			role: "owner",
 			invitedAt: new Date(),
