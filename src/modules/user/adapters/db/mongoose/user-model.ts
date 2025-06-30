@@ -23,6 +23,11 @@ export interface UserDocument extends Document {
 
 const userSchema = new Schema<UserDocument>(
 	{
+		id: {
+			type: String,
+			required: true,
+			unique: true,
+		},
 		name: {
 			type: String,
 			required: [true, "Name is required"],
@@ -112,6 +117,7 @@ const userSchema = new Schema<UserDocument>(
 	},
 );
 
+userSchema.index({ id: 1 }, { unique: true });
 userSchema.index({ status: 1 });
 userSchema.index({ role: 1 });
 userSchema.index({ createdAt: -1 });

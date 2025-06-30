@@ -43,6 +43,11 @@ const deviceInfoSchema = new Schema({
 
 const sessionSchema = new Schema<SessionDocument>(
 	{
+		id: {
+			type: String,
+			required: true,
+			unique: true,
+		},
 		userId: {
 			type: String,
 			required: true,
@@ -98,6 +103,7 @@ const sessionSchema = new Schema<SessionDocument>(
 	},
 );
 
+sessionSchema.index({ id: 1 }, { unique: true });
 sessionSchema.index({ userId: 1, isActive: 1 });
 sessionSchema.index({ createdAt: -1 });
 sessionSchema.index({ lastUsedAt: -1 });
