@@ -1,5 +1,9 @@
 export class Slug {
-	private constructor(private readonly _value: string) {}
+	private constructor(private readonly _value: string) {
+		if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(_value)) {
+			throw new Error("Invalid slug format");
+		}
+	}
 
 	static create(input: string): Slug {
 		const normalized = input
@@ -13,6 +17,10 @@ export class Slug {
 		}
 
 		return new Slug(normalized);
+	}
+
+	static fromValue(value: string): Slug {
+		return new Slug(value);
 	}
 
 	get value(): string {
