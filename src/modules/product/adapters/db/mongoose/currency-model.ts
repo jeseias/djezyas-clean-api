@@ -25,15 +25,15 @@ const currencySchema = new Schema<CurrencyDocument>(
 			unique: true,
 			trim: true,
 			uppercase: true,
-			minlength: [3, "Currency code must be at least 3 characters long"],
-			maxlength: [3, "Currency code cannot exceed 3 characters"],
+			minlength: [3, "Currency code must be 3 characters"],
+			maxlength: [3, "Currency code must be 3 characters"],
 		},
 		name: {
 			type: String,
 			required: [true, "Currency name is required"],
 			trim: true,
 			minlength: [2, "Currency name must be at least 2 characters long"],
-			maxlength: [50, "Currency name cannot exceed 50 characters"],
+			maxlength: [100, "Currency name cannot exceed 100 characters"],
 		},
 		symbol: {
 			type: String,
@@ -74,6 +74,9 @@ currencySchema.index({ id: 1 }, { unique: true });
 currencySchema.index({ code: 1 }, { unique: true });
 currencySchema.index({ status: 1 });
 currencySchema.index({ createdAt: -1 });
+
+// Compound indexes for common queries
+currencySchema.index({ status: 1, code: 1 });
 
 export const CurrencyModel = mongoose.model<CurrencyDocument>(
 	"Currency",

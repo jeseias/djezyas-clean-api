@@ -2,20 +2,24 @@ import { mergeTypeDefs } from "@graphql-tools/merge";
 import { print } from "graphql";
 import { organizationResolvers } from "@/src/modules/organization/adapters/http/graphql/organization.resolvers";
 import { organizationTypeDefs } from "@/src/modules/organization/adapters/http/graphql/organization.type-defs";
+import { productResolvers } from "@/src/modules/product/adapters/http/graphql/product.resolvers";
+import { productTypeDefs } from "@/src/modules/product/adapters/http/graphql/product.type-defs";
 import { userResolvers } from "@/src/modules/user/adapters/http/graphql/user.resolver";
 import { userTypeDefs } from "@/src/modules/user/adapters/http/graphql/user.type-defs";
 
 export const appTypeDefs = print(
-	mergeTypeDefs([userTypeDefs, organizationTypeDefs]),
+	mergeTypeDefs([userTypeDefs, organizationTypeDefs, productTypeDefs]),
 );
 
 export const appResolvers = {
 	Query: {
 		...userResolvers.Query,
 		...organizationResolvers.Query,
+		...productResolvers.Query,
 	},
 	Mutation: {
 		...userResolvers.Mutation,
 		...organizationResolvers.Mutation,
+		...productResolvers.Mutation,
 	},
 };
