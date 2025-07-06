@@ -1,6 +1,6 @@
+import { withUser } from "@/src/main/elysia/plugins/auth-middleware";
 import type { ForgotPassword } from "../../../core/app/usecases/forgot-password/forgot-password.use-case";
 import type { Login } from "../../../core/app/usecases/login/login.use-case";
-import type { Logout } from "../../../core/app/usecases/logout/logout.use-case";
 import type { IRegisterUser } from "../../../core/app/usecases/register-user/register-user.use-case";
 import type { ResendVerification } from "../../../core/app/usecases/resend-verification/resend-verification.use-case";
 import type { ResetPassword } from "../../../core/app/usecases/reset-password/reset-password.use-case";
@@ -16,23 +16,12 @@ import {
 	makeVerifyEmailUseCase,
 } from "../../factories/use-cases.factory";
 
-interface GraphQLContext {
-	userId?: string;
-	userEmail?: string;
-	userUsername?: string;
-	userRole?: string;
-}
-
 export const userResolvers = {
 	Query: {
-		me: async (_: unknown, __: unknown, { userId }: GraphQLContext) => {
-			if (!userId) {
-				throw new Error("Authentication required");
-			}
-
+		me: withUser(async (_args, { userId }) => {
 			const loadMeUseCase = makeLoadMeUseCase();
 			return await loadMeUseCase.execute({ userId });
-		},
+		}),
 	},
 
 	Mutation: {
@@ -82,17 +71,9 @@ export const userResolvers = {
 			return await resendVerificationUseCase.execute(input);
 		},
 
-		logout: async (
-			_: unknown,
-			{ input }: { input: Logout.Params },
-			{ userId }: GraphQLContext,
-		) => {
-			if (!userId) {
-				throw new Error("Authentication required");
-			}
-
+		logout: withUser(async ({ input }) => {
 			const logoutUseCase = makeLogoutUseCase();
 			return await logoutUseCase.execute(input);
-		},
+		}),
 	},
 };

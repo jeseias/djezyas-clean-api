@@ -1,51 +1,69 @@
-import type { Context } from "elysia";
-import { AppError } from "@/src/modules/shared/errors";
 import { makeVerifyTokenUseCase } from "@/src/modules/user/adapters/factories/use-cases.factory";
 
-const PUBLIC_OPERATIONS = [
-	"registerUser",
-	"login",
-	"verifyEmail",
-	"forgotPassword",
-	"resetPassword",
-	"resendVerification",
-	"verifyToken",
-];
+export function requireAuth(context: any) {
+	if (!context.user) throw new Error("Unauthorized");
+	return context.user;
+}
 
-export const authMiddleware = async (context: Context) => {
-	const isGraphQL = context.request.url.includes("/graphql");
-
-	if (!isGraphQL) {
-		return {};
-	}
-
-	const body = await context.request.json().catch(() => ({}));
-	const operationName = body.operationName;
-
-	if (PUBLIC_OPERATIONS.includes(operationName)) {
-		return {};
-	}
-
-	const token = context.headers["x-access-token"];
-
+export async function getUserFromRequest(request: Request) {
+	const token = request.headers.get("x-access-token");
 	if (!token) {
-		context.set.status = 401;
-		throw new AppError("Unauthorized: Token missing", 401);
+		return { user: null };
 	}
-
 	try {
 		const verifyTokenUseCase = makeVerifyTokenUseCase();
 		const result = await verifyTokenUseCase.execute({ token });
-
 		return {
-			userId: result.userId,
-			userEmail: result.email,
-			userUsername: result.username,
-			userRole: result.role,
+			user: {
+				id: result.userId,
+				email: result.email,
+				username: result.username,
+				role: result.role,
+			},
 		};
-	} catch (error) {
-		console.error(error);
-		context.set.status = 401;
-		throw new AppError("Unauthorized: Invalid token", 401);
+	} catch {
+		return { user: null };
 	}
-};
+}
+
+export function wrapResolvers(
+	resolvers: Record<string, any>,
+	publicMutations: string[] = [],
+) {
+	const wrapped: Record<string, unknown> = {};
+	for (const [key, fn] of Object.entries(resolvers)) {
+		if (publicMutations.includes(key)) {
+			wrapped[key] = fn;
+		} else {
+			wrapped[key] = (parent: any, args: any, context: any, info: any) => {
+				requireAuth(context);
+				return fn(parent, args, context, info);
+			};
+		}
+	}
+	return wrapped;
+}
+
+export function withUser<TArgs = any, TResult = any>(
+	resolver: (
+		args: TArgs,
+		useCaseContext: {
+			userId: string;
+			userEmail: string;
+			userUsername: string;
+			userRole: string;
+		},
+		info?: any,
+	) => Promise<TResult>,
+) {
+	return async (_: any, args: TArgs, context: any, info: any) => {
+		if (!context.user) throw new Error("Unauthorized");
+		const useCaseContext = {
+			userId: context.user.id,
+			userEmail: context.user.email,
+			userUsername: context.user.username,
+			userRole: context.user.role,
+		};
+		return resolver(args, useCaseContext, info);
+	};
+}

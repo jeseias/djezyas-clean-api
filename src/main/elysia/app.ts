@@ -1,9 +1,9 @@
 import { cors } from "@elysiajs/cors";
 import { yoga } from "@elysiajs/graphql-yoga";
 import { Elysia } from "elysia";
-import { renderGraphiQL } from "graphql-yoga";
 import { appResolvers, appTypeDefs } from "../graphql/graphql-setup";
-import { authMiddleware } from "./plugins";
+import { getUserFromRequest } from "./plugins/auth-middleware";
+import { graphiqlAuthHandler } from "./plugins/graphiql-auth";
 import { routes } from "./routes";
 import { protectedDocs } from "./swagger/swagger-config";
 
@@ -16,12 +16,9 @@ export const app = new Elysia()
 			resolvers: appResolvers,
 			graphiql: false,
 			path: "graphql",
+			context: async ({ request }) => getUserFromRequest(request),
+			maskedErrors: false
 		}),
 	)
-	.derive(authMiddleware)
 	.use(routes)
-	.get("/graphiql", () => {
-		return new Response(renderGraphiQL({ endpoint: "/graphql" }), {
-			headers: { "Content-Type": "text/html" },
-		});
-	});
+	.get("/graphiql", ({ request }) => graphiqlAuthHandler(request));
