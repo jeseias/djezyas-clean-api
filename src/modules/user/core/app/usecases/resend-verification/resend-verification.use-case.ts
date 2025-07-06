@@ -37,7 +37,11 @@ export class ResendVerificationUseCase {
 		const user = User.Entity.fromModel(userModel);
 
 		if (user.isEmailVerified()) {
-			throw new AppError("Email is already verified", 400, ErrorCode.EMAIL_ALREADY_VERIFIED);
+			throw new AppError(
+				"Email is already verified",
+				400,
+				ErrorCode.EMAIL_ALREADY_VERIFIED,
+			);
 		}
 
 		const verificationCode = User.Entity.generateVerificationCode();

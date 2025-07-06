@@ -1,6 +1,7 @@
 import { withUser } from "@/src/main/elysia/plugins/auth-middleware";
 import type { ForgotPassword } from "../../../core/app/usecases/forgot-password/forgot-password.use-case";
 import type { Login } from "../../../core/app/usecases/login/login.use-case";
+import type { RefreshToken } from "../../../core/app/usecases/refresh-token/refresh-token.use-case";
 import type { IRegisterUser } from "../../../core/app/usecases/register-user/register-user.use-case";
 import type { ResendVerification } from "../../../core/app/usecases/resend-verification/resend-verification.use-case";
 import type { ResetPassword } from "../../../core/app/usecases/reset-password/reset-password.use-case";
@@ -10,6 +11,7 @@ import {
 	makeLoadMeUseCase,
 	makeLoginUseCase,
 	makeLogoutUseCase,
+	makeRefreshTokenUseCase,
 	makeRegisterUseCase,
 	makeResendVerificationEmailUseCase,
 	makeResetPasswordUseCase,
@@ -34,15 +36,23 @@ export const userResolvers = {
 			return result;
 		},
 
-		login: async (_: unknown, { input }: { input: Login.Params }, context: any) => {
+		login: async (
+			_: unknown,
+			{ input }: { input: Login.Params },
+			context: any,
+		) => {
 			const loginUseCase = makeLoginUseCase();
-			
-      let ipAddress = "unknown";
+
+			let ipAddress = "unknown";
 			if (context.request) {
-				ipAddress = context.request.headers.get("x-forwarded-for") || context.request.ip || context.request.socket?.remoteAddress || "unknown";
+				ipAddress =
+					context.request.headers.get("x-forwarded-for") ||
+					context.request.ip ||
+					context.request.socket?.remoteAddress ||
+					"unknown";
 			}
 
-      const deviceInfo = {
+			const deviceInfo = {
 				...input.deviceInfo,
 				ipAddress,
 			};
@@ -81,9 +91,42 @@ export const userResolvers = {
 			return await resendVerificationUseCase.execute(input);
 		},
 
-		logout: withUser(async ({ input }) => {
+		logout: async (_: unknown, _args: unknown, context: any) => {
+			if (!context.user) {
+				throw new Error("Unauthorized");
+			}
+			
 			const logoutUseCase = makeLogoutUseCase();
-			return await logoutUseCase.execute(input);
-		}),
+			
+			const accessToken = context.request?.headers?.get("x-access-token");
+			if (!accessToken) {
+				throw new Error("Access token is required");
+			}
+			
+			return await logoutUseCase.execute({ accessToken });
+		},
+
+		refreshToken: async (
+			_: unknown,
+			{ input }: { input: RefreshToken.Params },
+			context: any,
+		) => {
+			const refreshTokenUseCase = makeRefreshTokenUseCase();
+
+			let ipAddress = "unknown";
+			if (context.request) {
+				ipAddress =
+					context.request.headers.get("x-forwarded-for") ||
+					context.request.ip ||
+					context.request.socket?.remoteAddress ||
+					"unknown";
+			}
+
+			const deviceInfo = {
+				...input.deviceInfo,
+				ipAddress,
+			};
+			return await refreshTokenUseCase.execute({ ...input, deviceInfo });
+		},
 	},
 };

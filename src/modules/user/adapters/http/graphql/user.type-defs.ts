@@ -101,6 +101,13 @@ export const userTypeDefs = `#graphql
     message: String!
   }
 
+  type RefreshTokenResult {
+    user: User!
+    session: Session!
+    tokens: Tokens!
+    message: String!
+  }
+
   # Inputs
   input RegisterUserInput {
     email: String!
@@ -146,8 +153,9 @@ export const userTypeDefs = `#graphql
     token: String!
   }
 
-  input LogoutInput {
-    sessionId: String!
+  input RefreshTokenInput {
+    refreshToken: String!
+    deviceInfo: DeviceInfoInput!
   }
 
   type Query {
@@ -161,6 +169,7 @@ export const userTypeDefs = `#graphql
     forgotPassword(input: ForgotPasswordInput!): ForgotPasswordResult!
     resetPassword(input: ResetPasswordInput!): ResetPasswordResult!
     resendVerification(input: ResendVerificationInput!): ResendVerificationResult!
-    logout(input: LogoutInput!): LogoutResult!
+    logout: LogoutResult!
+    refreshToken(input: RefreshTokenInput!): RefreshTokenResult!
   }
 `;

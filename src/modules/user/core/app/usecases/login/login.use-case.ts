@@ -47,13 +47,21 @@ export class LoginUseCase {
 
 		const user = await this.userRepository.findByEmail(email);
 		if (!user) {
-			throw new AppError("Invalid email or password", 401, ErrorCode.INVALID_CREDENTIALS);
+			throw new AppError(
+				"Invalid email or password",
+				401,
+				ErrorCode.INVALID_CREDENTIALS,
+			);
 		}
 
 		const userEntity = User.Entity.fromModel(user);
 
 		if (!userEntity.isEmailVerified()) {
-			throw new AppError("Please verify your email before logging in", 403, ErrorCode.EMAIL_NOT_VERIFIED);
+			throw new AppError(
+				"Please verify your email before logging in",
+				403,
+				ErrorCode.EMAIL_NOT_VERIFIED,
+			);
 		}
 
 		const isPasswordValid = await this.passwordHasher.compare(
@@ -62,7 +70,11 @@ export class LoginUseCase {
 		);
 
 		if (!isPasswordValid) {
-			throw new AppError("Invalid email or password", 401, ErrorCode.INVALID_CREDENTIALS);
+			throw new AppError(
+				"Invalid email or password",
+				401,
+				ErrorCode.INVALID_CREDENTIALS,
+			);
 		}
 
 		const authenticationResult = await this.authenticateUser.execute({

@@ -32,7 +32,11 @@ export class LogoutUseCase {
 		const session = Session.Entity.fromModel(sessionModel);
 
 		if (!session.isActive) {
-			throw new AppError("Session is already inactive", 400, ErrorCode.SESSION_NOT_ACTIVE);
+			throw new AppError(
+				"Session is already inactive",
+				400,
+				ErrorCode.SESSION_NOT_ACTIVE,
+			);
 		}
 
 		session.deactivate();

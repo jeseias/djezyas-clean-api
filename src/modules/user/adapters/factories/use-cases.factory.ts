@@ -7,6 +7,7 @@ import { ForgotPasswordUseCase } from "../../core/app/usecases/forgot-password/f
 import { LoadMeUseCase } from "../../core/app/usecases/load-me/load-me.use-case";
 import { LoginUseCase } from "../../core/app/usecases/login/login.use-case";
 import { LogoutUseCase } from "../../core/app/usecases/logout/logout.use-case";
+import { RefreshTokenUseCase } from "../../core/app/usecases/refresh-token/refresh-token.use-case";
 import { RegisterUserUseCase } from "../../core/app/usecases/register-user/register-user.use-case";
 import { ResendVerificationUseCase } from "../../core/app/usecases/resend-verification/resend-verification.use-case";
 import { ResetPasswordUseCase } from "../../core/app/usecases/reset-password/reset-password.use-case";
@@ -61,4 +62,11 @@ export const makeResendVerificationEmailUseCase = () =>
 		userMongooseRepository,
 		postmarkEmailService,
 		userEmailTemplateService,
+	);
+
+export const makeRefreshTokenUseCase = () =>
+	new RefreshTokenUseCase(
+		jwtManager,
+		sessionMongooseRepository,
+		userMongooseRepository,
 	);

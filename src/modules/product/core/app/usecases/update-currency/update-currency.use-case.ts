@@ -42,7 +42,11 @@ export class UpdateCurrencyUseCase {
 
 		if (params.exchangeRate !== undefined) {
 			if (params.exchangeRate < 0) {
-				throw new AppError("Exchange rate must be positive", 400, ErrorCode.INVALID_EXCHANGE_RATE);
+				throw new AppError(
+					"Exchange rate must be positive",
+					400,
+					ErrorCode.INVALID_EXCHANGE_RATE,
+				);
 			}
 			currency.updateExchangeRate(params.exchangeRate);
 		}

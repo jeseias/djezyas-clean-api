@@ -41,6 +41,7 @@ export enum ErrorCode {
 	PASSWORD_INVALID = 1404,
 	PHONE_INVALID = 1405,
 	TOKEN_INVALID = 1406,
+	TOKEN_EXPIRED = 1407,
 
 	// ===== Validation/Use Case Specific (1500-1599) =====
 	REGISTER_VALIDATION_ERROR = 1501,

@@ -28,19 +28,31 @@ export class VerifyEmailUseCase {
 		const userModel = await this.userRepository.findByEmail(email);
 		if (!userModel) {
 			throw new AppError("User not found", 404, ErrorCode.USER_NOT_FOUND);
-		} 
+		}
 
 		const user = User.Entity.fromModel(userModel);
 
 		if (user.isEmailVerified()) {
-			throw new AppError("Email is already verified", 400, ErrorCode.EMAIL_ALREADY_VERIFIED);
+			throw new AppError(
+				"Email is already verified",
+				400,
+				ErrorCode.EMAIL_ALREADY_VERIFIED,
+			);
 		}
 
 		if (!user.isVerificationCodeValid(verificationCode)) {
 			if (user.isVerificationCodeExpired()) {
-				throw new AppError("Verification code has expired", 400, ErrorCode.VERIFICATION_CODE_EXPIRED);
+				throw new AppError(
+					"Verification code has expired",
+					400,
+					ErrorCode.VERIFICATION_CODE_EXPIRED,
+				);
 			}
-			throw new AppError("Invalid verification code", 400, ErrorCode.INVALID_VERIFICATION_CODE);
+			throw new AppError(
+				"Invalid verification code",
+				400,
+				ErrorCode.INVALID_VERIFICATION_CODE,
+			);
 		}
 
 		user.verifyEmail();

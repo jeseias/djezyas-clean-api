@@ -31,13 +31,21 @@ export class ResetPasswordUseCase {
 
 		const userModel = await this.userRepository.findByPasswordResetToken(token);
 		if (!userModel) {
-			throw new AppError("Invalid or expired reset token", 400, ErrorCode.INVALID_RESET_TOKEN);
+			throw new AppError(
+				"Invalid or expired reset token",
+				400,
+				ErrorCode.INVALID_RESET_TOKEN,
+			);
 		}
 
 		const user = User.Entity.fromModel(userModel);
 
 		if (!user.isPasswordResetTokenValid(token)) {
-			throw new AppError("Invalid or expired reset token", 400, ErrorCode.INVALID_RESET_TOKEN);
+			throw new AppError(
+				"Invalid or expired reset token",
+				400,
+				ErrorCode.INVALID_RESET_TOKEN,
+			);
 		}
 
 		const hashedPassword = await this.passwordHasher.hash(newPassword);

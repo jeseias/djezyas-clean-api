@@ -26,7 +26,11 @@ export class LoadMeUseCase {
 		const user = User.Entity.fromModel(userModel);
 
 		if (!user.isActive()) {
-			throw new AppError("User account is not active", 403, ErrorCode.USER_NOT_ACTIVE);
+			throw new AppError(
+				"User account is not active",
+				403,
+				ErrorCode.USER_NOT_ACTIVE,
+			);
 		}
 
 		return user.toJSON();

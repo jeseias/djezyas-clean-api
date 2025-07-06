@@ -40,11 +40,19 @@ export class AuthenticateUser {
 		const { user, deviceInfo } = params;
 
 		if (!user.isActive()) {
-			throw new AppError("User account is not active", 403, ErrorCode.USER_NOT_ACTIVE);
+			throw new AppError(
+				"User account is not active",
+				403,
+				ErrorCode.USER_NOT_ACTIVE,
+			);
 		}
 
 		if (user.isBlocked()) {
-			throw new AppError("User account is blocked", 403, ErrorCode.USER_BLOCKED);
+			throw new AppError(
+				"User account is blocked",
+				403,
+				ErrorCode.USER_BLOCKED,
+			);
 		}
 
 		const accessToken = await this.generateAccessToken(user);
