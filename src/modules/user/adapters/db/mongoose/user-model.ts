@@ -77,22 +77,18 @@ const userSchema = new Schema<UserDocument>(
 		},
 		verificationCode: {
 			type: String,
-			select: false,
 		},
 		verificationCodeExpiresAt: {
 			type: Date,
-			select: false,
 		},
 		emailVerifiedAt: {
 			type: Date,
 		},
 		passwordResetToken: {
 			type: String,
-			select: false,
 		},
 		passwordResetTokenExpiresAt: {
 			type: Date,
-			select: false,
 		},
 	},
 	{

@@ -34,7 +34,6 @@ export class ResendVerificationUseCase {
 		if (!userModel) {
 			throw new AppError("User not found", 404, ErrorCode.USER_NOT_FOUND);
 		}
-
 		const user = User.Entity.fromModel(userModel);
 
 		if (user.isEmailVerified()) {

@@ -119,7 +119,6 @@ export const userTypeDefs = `#graphql
 
   input DeviceInfoInput {
     userAgent: String!
-    ipAddress: String!
     deviceType: DeviceType
     browser: String
     os: String

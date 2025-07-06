@@ -34,9 +34,19 @@ export const userResolvers = {
 			return result;
 		},
 
-		login: async (_: unknown, { input }: { input: Login.Params }) => {
+		login: async (_: unknown, { input }: { input: Login.Params }, context: any) => {
 			const loginUseCase = makeLoginUseCase();
-			return await loginUseCase.execute(input);
+			
+      let ipAddress = "unknown";
+			if (context.request) {
+				ipAddress = context.request.headers.get("x-forwarded-for") || context.request.ip || context.request.socket?.remoteAddress || "unknown";
+			}
+
+      const deviceInfo = {
+				...input.deviceInfo,
+				ipAddress,
+			};
+			return await loginUseCase.execute({ ...input, deviceInfo });
 		},
 
 		verifyEmail: async (

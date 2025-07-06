@@ -294,6 +294,7 @@ export namespace User {
 			}
 
 			const now = new Date();
+
 			return (
 				this.props.verificationCode === code &&
 				now < this.props.verificationCodeExpiresAt

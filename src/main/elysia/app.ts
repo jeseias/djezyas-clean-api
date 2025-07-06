@@ -6,6 +6,8 @@ import { getUserFromRequest } from "./plugins/auth-middleware";
 import { graphiqlAuthHandler } from "./plugins/graphiql-auth";
 import { routes } from "./routes";
 import { protectedDocs } from "./swagger/swagger-config";
+import { AppError } from "@/src/modules/shared/errors/app-error";
+import { GraphQLError } from "graphql";
 
 export const app = new Elysia()
 	.use(cors())
@@ -17,7 +19,25 @@ export const app = new Elysia()
 			graphiql: false,
 			path: "graphql",
 			context: async ({ request }) => getUserFromRequest(request),
-			maskedErrors: false,
+			maskedErrors: {
+				maskError: (error) => {
+					if (error instanceof GraphQLError && error.originalError instanceof AppError) {
+						return new GraphQLError(error.message, {
+							nodes: error.nodes,
+							source: error.source,
+							positions: error.positions,
+							path: error.path,
+							originalError: error.originalError,
+							extensions: {
+								...error.extensions,
+								code: error.originalError.code,
+							},
+						});
+					}
+					return error;
+				},
+				errorMessage: "Unexpected error.",
+			},
 		}),
 	)
 	.use(routes)
