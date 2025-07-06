@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AppError } from "../errors";
+import { AppError, ErrorCode } from "../errors/app-error";
 
 export const passwordSchema = z
 	.string()
@@ -19,6 +19,7 @@ export const password = (value: string): Password => {
 			throw new AppError(
 				`Invalid password: ${error.errors.map((e) => e.message).join(", ")}`,
 				400,
+				ErrorCode.PASSWORD_INVALID,
 			);
 		}
 		throw error;

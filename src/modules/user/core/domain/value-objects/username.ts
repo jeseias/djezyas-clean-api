@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { AppError } from "@/src/modules/shared/errors";
+import { AppError, ErrorCode } from "@/src/modules/shared/errors/app-error";
 
 export type Username = string;
 
@@ -21,7 +21,11 @@ const usernameSchema = z
 export const username = (username?: string): Username => {
 	const result = usernameSchema.safeParse(username);
 	if (!result.success) {
-		throw new AppError(result.error.errors[0].message, 400);
+		throw new AppError(
+			result.error.errors[0].message,
+			400,
+			ErrorCode.USERNAME_INVALID,
+		);
 	}
 	return result.data as Username;
 };

@@ -1,4 +1,4 @@
-import { AppError } from "@/src/modules/shared/errors";
+import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import type { PasswordHasher } from "@/src/modules/shared/ports/outbound/password-hasher";
 import { password } from "@/src/modules/shared/value-objects/password";
 import { User } from "../../../domain/entities/user";
@@ -31,13 +31,13 @@ export class ResetPasswordUseCase {
 
 		const userModel = await this.userRepository.findByPasswordResetToken(token);
 		if (!userModel) {
-			throw new AppError("Invalid or expired reset token", 400);
+			throw new AppError("Invalid or expired reset token", 400, ErrorCode.INVALID_RESET_TOKEN);
 		}
 
 		const user = User.Entity.fromModel(userModel);
 
 		if (!user.isPasswordResetTokenValid(token)) {
-			throw new AppError("Invalid or expired reset token", 400);
+			throw new AppError("Invalid or expired reset token", 400, ErrorCode.INVALID_RESET_TOKEN);
 		}
 
 		const hashedPassword = await this.passwordHasher.hash(newPassword);

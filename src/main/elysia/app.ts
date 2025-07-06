@@ -17,7 +17,7 @@ export const app = new Elysia()
 			graphiql: false,
 			path: "graphql",
 			context: async ({ request }) => getUserFromRequest(request),
-			maskedErrors: false
+			maskedErrors: false,
 		}),
 	)
 	.use(routes)

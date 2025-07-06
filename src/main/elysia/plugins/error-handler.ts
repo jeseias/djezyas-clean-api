@@ -1,5 +1,5 @@
 import type { ErrorHandler } from "elysia";
-import { AppError } from "@/src/modules/shared/errors";
+import { AppError, ErrorCode } from "@/src/modules/shared/errors/app-error";
 
 export const errorHandler: ErrorHandler = ({ error, set }) => {
 	console.error("==>==>==> Application error:", {
@@ -13,28 +13,28 @@ export const errorHandler: ErrorHandler = ({ error, set }) => {
 				: error,
 	});
 
-	// Handle our custom AppError
 	if (error instanceof AppError) {
 		set.status = error.statusCode;
 		return {
 			message: error.message,
 			name: error.name,
+			code: error.code,
 		};
 	}
 
-	// Handle Elysia's NotFoundError
 	if (error instanceof Error && error.name === "NotFoundError") {
 		set.status = 404;
 		return {
 			message: error.message,
 			name: error.name,
+			code: 404,
 		};
 	}
 
-	// Handle any other errors
 	set.status = 500;
 	return {
 		message: "Internal server error, please try again later.",
 		name: "InternalServerError",
+		code: ErrorCode.INTERNAL_SERVER_ERROR,
 	};
 };

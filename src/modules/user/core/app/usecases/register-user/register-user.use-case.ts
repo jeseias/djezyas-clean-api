@@ -1,4 +1,4 @@
-import { AppError } from "@/src/modules/shared/errors";
+import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import type { EmailService } from "@/src/modules/shared/ports/outbound/email-service";
 import type { PasswordHasher } from "@/src/modules/shared/ports/outbound/password-hasher";
 import { password } from "@/src/modules/shared/value-objects/password";
@@ -36,18 +36,18 @@ export class RegisterUserUseCase {
 
 		const existingUserByEmail = await this.userRepository.findByEmail(email);
 		if (existingUserByEmail) {
-			throw new AppError("User with this email already exists", 409);
-		}
+			throw new AppError("User with this email already exists", 409, ErrorCode.USER_ALREADY_EXISTS);
+		} 
 
 		const existingUserByUsername =
 			await this.userRepository.findByUsername(username);
 		if (existingUserByUsername) {
-			throw new AppError("User with this username already exists", 409);
+			throw new AppError("User with this username already exists", 409, ErrorCode.USER_ALREADY_EXISTS);
 		}
 
 		const existingUserByPhone = await this.userRepository.findByPhone(phone);
 		if (existingUserByPhone) {
-			throw new AppError("User with this phone number already exists", 409);
+			throw new AppError("User with this phone number already exists", 409, ErrorCode.USER_ALREADY_EXISTS);
 		}
 
 		const hashedPassword = await this.passwordHasher.hash(passwordValue);

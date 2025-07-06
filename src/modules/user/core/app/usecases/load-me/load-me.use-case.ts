@@ -1,4 +1,4 @@
-import { AppError } from "@/src/modules/shared/errors";
+import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import { User } from "../../../domain/entities/user";
 import type { UserRepository } from "../../../ports/outbound";
 
@@ -20,13 +20,13 @@ export class LoadMeUseCase {
 
 		const userModel = await this.userRepository.findById(userId);
 		if (!userModel) {
-			throw new AppError("User not found", 404);
+			throw new AppError("User not found", 404, ErrorCode.USER_NOT_FOUND);
 		}
 
 		const user = User.Entity.fromModel(userModel);
 
 		if (!user.isActive()) {
-			throw new AppError("User account is not active", 403);
+			throw new AppError("User account is not active", 403, ErrorCode.USER_NOT_ACTIVE);
 		}
 
 		return user.toJSON();

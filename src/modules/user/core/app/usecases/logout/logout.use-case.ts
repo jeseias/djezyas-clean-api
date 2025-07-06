@@ -1,4 +1,4 @@
-import { AppError } from "@/src/modules/shared/errors";
+import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import { Session } from "../../../domain/entities";
 import type { SessionRepository } from "../../../ports/outbound/session-repository";
 
@@ -26,13 +26,13 @@ export class LogoutUseCase {
 		const sessionModel =
 			await this.sessionRepository.findByAccessToken(accessToken);
 		if (!sessionModel) {
-			throw new AppError("Session not found", 404);
+			throw new AppError("Session not found", 404, ErrorCode.ENTITY_NOT_FOUND);
 		}
 
 		const session = Session.Entity.fromModel(sessionModel);
 
 		if (!session.isActive) {
-			throw new AppError("Session is already inactive", 400);
+			throw new AppError("Session is already inactive", 400, ErrorCode.SESSION_NOT_ACTIVE);
 		}
 
 		session.deactivate();

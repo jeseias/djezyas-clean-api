@@ -1,4 +1,4 @@
-import { AppError } from "@/src/modules/shared/errors";
+import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import { Currency, Price, Product } from "../../../domain/entities";
 import type { CurrencyRepository } from "../../../ports/outbound/currency-repository";
 import type { PriceRepository } from "../../../ports/outbound/price-repository";
@@ -30,28 +30,44 @@ export class AddPriceUseCase {
 			params.productId,
 		);
 		if (!productModel) {
-			throw new AppError("Product must exist", 400);
+			throw new AppError("Product must exist", 400, ErrorCode.ENTITY_NOT_FOUND);
 		}
 		const product = Product.Entity.fromModel(productModel);
 
 		if (product.status !== Product.Status.ACTIVE) {
-			throw new AppError("Product must be active to add prices", 400);
+			throw new AppError(
+				"Product must be active to add prices",
+				400,
+				ErrorCode.PRODUCT_NOT_ACTIVE,
+			);
 		}
 
 		const currencyModel = await this.currencyRepository.findById(
 			params.currencyId,
 		);
 		if (!currencyModel) {
-			throw new AppError("Currency must exist", 400);
+			throw new AppError(
+				"Currency must exist",
+				400,
+				ErrorCode.ENTITY_NOT_FOUND,
+			);
 		}
 		const currency = Currency.Entity.fromModel(currencyModel);
 
 		if (currency.status !== Currency.Status.ACTIVE) {
-			throw new AppError("Currency must be active", 400);
+			throw new AppError(
+				"Currency must be active",
+				400,
+				ErrorCode.CURRENCY_NOT_ACTIVE,
+			);
 		}
 
 		if (params.amount <= 0) {
-			throw new AppError("Price amount must be positive", 400);
+			throw new AppError(
+				"Price amount must be positive",
+				400,
+				ErrorCode.INVALID_PRICE,
+			);
 		}
 
 		const existingPrices =
@@ -72,6 +88,7 @@ export class AddPriceUseCase {
 			throw new AppError(
 				`Active ${params.type ?? Price.Type.REGULAR} price already exists for this product and currency`,
 				400,
+				ErrorCode.PRICE_ALREADY_EXISTS,
 			);
 		}
 

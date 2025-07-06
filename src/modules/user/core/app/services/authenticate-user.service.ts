@@ -1,4 +1,4 @@
-import { AppError } from "@/src/modules/shared/errors";
+import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import type { TokenManager } from "@/src/modules/shared/ports/outbound/token-manager";
 import { Session } from "../../domain/entities/session";
 import type { User } from "../../domain/entities/user";
@@ -40,11 +40,11 @@ export class AuthenticateUser {
 		const { user, deviceInfo } = params;
 
 		if (!user.isActive()) {
-			throw new AppError("User account is not active", 403);
+			throw new AppError("User account is not active", 403, ErrorCode.USER_NOT_ACTIVE);
 		}
 
 		if (user.isBlocked()) {
-			throw new AppError("User account is blocked", 403);
+			throw new AppError("User account is blocked", 403, ErrorCode.USER_BLOCKED);
 		}
 
 		const accessToken = await this.generateAccessToken(user);

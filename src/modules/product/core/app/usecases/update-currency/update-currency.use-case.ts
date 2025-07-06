@@ -1,4 +1,4 @@
-import { AppError } from "@/src/modules/shared/errors";
+import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import { Currency } from "../../../domain/entities";
 import type { CurrencyRepository } from "../../../ports/outbound/currency-repository";
 
@@ -23,7 +23,7 @@ export class UpdateCurrencyUseCase {
 			params.currencyId,
 		);
 		if (!currencyModel) {
-			throw new AppError("Currency not found", 404);
+			throw new AppError("Currency not found", 404, ErrorCode.ENTITY_NOT_FOUND);
 		}
 		const currency = Currency.Entity.fromModel(currencyModel);
 
@@ -42,7 +42,7 @@ export class UpdateCurrencyUseCase {
 
 		if (params.exchangeRate !== undefined) {
 			if (params.exchangeRate < 0) {
-				throw new AppError("Exchange rate must be positive", 400);
+				throw new AppError("Exchange rate must be positive", 400, ErrorCode.INVALID_EXCHANGE_RATE);
 			}
 			currency.updateExchangeRate(params.exchangeRate);
 		}

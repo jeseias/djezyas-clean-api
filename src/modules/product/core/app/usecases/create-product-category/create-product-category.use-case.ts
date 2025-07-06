@@ -1,4 +1,4 @@
-import { AppError } from "@/src/modules/shared/errors";
+import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import { ProductCategory } from "../../../domain/entities";
 import type { ProductCategoryRepository } from "../../../ports/outbound/product-category-repository";
 
@@ -27,7 +27,11 @@ export class CreateProductCategoryUseCase {
 		const existingProductCategory =
 			await this.productCategoryRepository.findBySlug(slug.toString());
 		if (existingProductCategory) {
-			throw new AppError("Product category with this name already exists", 400);
+			throw new AppError(
+				"Product category with this name already exists",
+				400,
+				ErrorCode.PRODUCT_CATEGORY_ALREADY_EXISTS,
+			);
 		}
 
 		const productCategory = ProductCategory.Entity.create({

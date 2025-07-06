@@ -1,4 +1,4 @@
-import { AppError } from "@/src/modules/shared/errors";
+import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import { User } from "@/src/modules/user/core/domain/entities";
 import type { UserRepository } from "@/src/modules/user/core/ports/outbound/user-repository";
 import { Organization } from "../../../domain/entities";
@@ -32,18 +32,30 @@ export class CreateOrganizationUseCase {
 	): Promise<CreateOrganization.Result> {
 		const ownerModel = await this.userRepository.findById(params.ownerId);
 		if (!ownerModel) {
-			throw new AppError("Owner must exist", 400);
+			throw new AppError("Owner must exist", 400, ErrorCode.USER_NOT_FOUND);
 		}
 		const owner = User.Entity.fromModel(ownerModel);
 
 		if (!owner.isEmailVerified()) {
-			throw new AppError("Owner must have a verified account", 400);
+			throw new AppError(
+				"Owner must have a verified account",
+				400,
+				ErrorCode.EMAIL_NOT_VERIFIED,
+			);
 		}
 		if (!owner.isActive()) {
-			throw new AppError("Owner account must be active", 400);
+			throw new AppError(
+				"Owner account must be active",
+				400,
+				ErrorCode.USER_NOT_ACTIVE,
+			);
 		}
 		if (owner.isBlocked()) {
-			throw new AppError("Owner account is blocked", 400);
+			throw new AppError(
+				"Owner account is blocked",
+				400,
+				ErrorCode.USER_BLOCKED,
+			);
 		}
 
 		const org = Organization.Entity.create({

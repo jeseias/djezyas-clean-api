@@ -1,4 +1,4 @@
-import { AppError } from "@/src/modules/shared/errors";
+import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import type { EmailService } from "@/src/modules/shared/ports/outbound/email-service";
 import { User } from "../../../domain/entities/user";
 import type { UserRepository } from "../../../ports/outbound";
@@ -32,13 +32,13 @@ export class ResendVerificationUseCase {
 
 		const userModel = await this.userRepository.findByEmail(email);
 		if (!userModel) {
-			throw new AppError("User not found", 404);
+			throw new AppError("User not found", 404, ErrorCode.USER_NOT_FOUND);
 		}
 
 		const user = User.Entity.fromModel(userModel);
 
 		if (user.isEmailVerified()) {
-			throw new AppError("Email is already verified", 400);
+			throw new AppError("Email is already verified", 400, ErrorCode.EMAIL_ALREADY_VERIFIED);
 		}
 
 		const verificationCode = User.Entity.generateVerificationCode();

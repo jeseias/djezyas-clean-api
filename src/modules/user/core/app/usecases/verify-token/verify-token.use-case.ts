@@ -1,4 +1,4 @@
-import { AppError } from "@/src/modules/shared/errors";
+import { AppError, ErrorCode } from "@/src/modules/shared/errors/app-error";
 import type { TokenManager } from "@/src/modules/shared/ports/outbound/token-manager";
 import { User } from "../../../domain/entities/user";
 
@@ -30,11 +30,19 @@ export class VerifyTokenUseCase {
 			const role = payload.role as User.UserRole;
 
 			if (!userId || !email || !username || !role) {
-				throw new AppError("Invalid token: missing required user data", 401);
+				throw new AppError(
+					"Invalid token: missing required user data",
+					401,
+					ErrorCode.TOKEN_INVALID,
+				);
 			}
 
 			if (!Object.values(User.UserRole).includes(role)) {
-				throw new AppError("Invalid token: invalid user role", 401);
+				throw new AppError(
+					"Invalid token: invalid user role",
+					401,
+					ErrorCode.TOKEN_INVALID,
+				);
 			}
 
 			return {
@@ -47,7 +55,11 @@ export class VerifyTokenUseCase {
 			if (error instanceof AppError) {
 				throw error;
 			}
-			throw new AppError("Invalid or expired token", 401);
+			throw new AppError(
+				"Invalid or expired token",
+				401,
+				ErrorCode.TOKEN_INVALID,
+			);
 		}
 	}
 }
