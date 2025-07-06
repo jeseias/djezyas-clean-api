@@ -46,22 +46,18 @@ const sessionSchema = new Schema<SessionDocument>(
 		id: {
 			type: String,
 			required: true,
-			unique: true,
 		},
 		userId: {
 			type: String,
 			required: true,
-			index: true,
 		},
 		accessToken: {
 			type: String,
 			required: true,
-			unique: true,
 		},
 		refreshToken: {
 			type: String,
 			required: true,
-			unique: true,
 		},
 		accessTokenExpiresAt: {
 			type: Date,
@@ -104,6 +100,8 @@ const sessionSchema = new Schema<SessionDocument>(
 );
 
 sessionSchema.index({ id: 1 }, { unique: true });
+sessionSchema.index({ accessToken: 1 }, { unique: true });
+sessionSchema.index({ refreshToken: 1 }, { unique: true });
 sessionSchema.index({ userId: 1, isActive: 1 });
 sessionSchema.index({ createdAt: -1 });
 sessionSchema.index({ lastUsedAt: -1 });

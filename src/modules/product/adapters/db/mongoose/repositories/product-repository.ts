@@ -10,9 +10,11 @@ export class MongooseProductRepository implements ProductRepository {
 			slug: product.slug.toString(),
 		});
 
+		const json = doc.toJSON();
 		return {
-			...doc.toJSON(),
+			...json,
 			slug: Slug.fromValue(doc.slug),
+			status: json.status as Product.Status,
 		};
 	}
 
@@ -34,9 +36,11 @@ export class MongooseProductRepository implements ProductRepository {
 			throw new Error("Product not found");
 		}
 
+		const json = doc.toJSON();
 		return {
-			...doc.toJSON(),
+			...json,
 			slug: Slug.fromValue(doc.slug),
+			status: json.status as Product.Status,
 		};
 	}
 
@@ -48,27 +52,35 @@ export class MongooseProductRepository implements ProductRepository {
 		const doc = await ProductModel.findOne({ id });
 		if (!doc) return null;
 
+		const json = doc.toJSON();
 		return {
-			...doc.toJSON(),
+			...json,
 			slug: Slug.fromValue(doc.slug),
+			status: json.status as Product.Status,
 		};
 	}
 
 	async findByOrganizationId(organizationId: string): Promise<Product.Model[]> {
 		const docs = await ProductModel.find({ organizationId });
-		return docs.map((doc) => ({
-			...doc.toJSON(),
-			slug: Slug.fromValue(doc.slug),
-		}));
+		return docs.map((doc) => {
+			const json = doc.toJSON();
+			return {
+				...json,
+				slug: Slug.fromValue(doc.slug),
+				status: json.status as Product.Status,
+			};
+		});
 	}
 
 	async findBySlug(slug: string): Promise<Product.Model | null> {
 		const doc = await ProductModel.findOne({ slug });
 		if (!doc) return null;
 
+		const json = doc.toJSON();
 		return {
-			...doc.toJSON(),
+			...json,
 			slug: Slug.fromValue(doc.slug),
+			status: json.status as Product.Status,
 		};
 	}
 
@@ -79,9 +91,11 @@ export class MongooseProductRepository implements ProductRepository {
 		const doc = await ProductModel.findOne({ sku, organizationId });
 		if (!doc) return null;
 
+		const json = doc.toJSON();
 		return {
-			...doc.toJSON(),
+			...json,
 			slug: Slug.fromValue(doc.slug),
+			status: json.status as Product.Status,
 		};
 	}
 
@@ -92,26 +106,36 @@ export class MongooseProductRepository implements ProductRepository {
 		const doc = await ProductModel.findOne({ barcode, organizationId });
 		if (!doc) return null;
 
+		const json = doc.toJSON();
 		return {
-			...doc.toJSON(),
+			...json,
 			slug: Slug.fromValue(doc.slug),
+			status: json.status as Product.Status,
 		};
 	}
 
 	async findByCategoryId(categoryId: string): Promise<Product.Model[]> {
 		const docs = await ProductModel.find({ categoryId });
-		return docs.map((doc) => ({
-			...doc.toJSON(),
-			slug: Slug.fromValue(doc.slug),
-		}));
+		return docs.map((doc) => {
+			const json = doc.toJSON();
+			return {
+				...json,
+				slug: Slug.fromValue(doc.slug),
+				status: json.status as Product.Status,
+			};
+		});
 	}
 
 	async findByProductTypeId(productTypeId: string): Promise<Product.Model[]> {
 		const docs = await ProductModel.find({ productTypeId });
-		return docs.map((doc) => ({
-			...doc.toJSON(),
-			slug: Slug.fromValue(doc.slug),
-		}));
+		return docs.map((doc) => {
+			const json = doc.toJSON();
+			return {
+				...json,
+				slug: Slug.fromValue(doc.slug),
+				status: json.status as Product.Status,
+			};
+		});
 	}
 
 	async findByOrganizationIdAndCategoryId(
@@ -119,10 +143,14 @@ export class MongooseProductRepository implements ProductRepository {
 		categoryId: string,
 	): Promise<Product.Model[]> {
 		const docs = await ProductModel.find({ organizationId, categoryId });
-		return docs.map((doc) => ({
-			...doc.toJSON(),
-			slug: Slug.fromValue(doc.slug),
-		}));
+		return docs.map((doc) => {
+			const json = doc.toJSON();
+			return {
+				...json,
+				slug: Slug.fromValue(doc.slug),
+				status: json.status as Product.Status,
+			};
+		});
 	}
 
 	async findByOrganizationIdAndProductTypeId(
@@ -130,9 +158,13 @@ export class MongooseProductRepository implements ProductRepository {
 		productTypeId: string,
 	): Promise<Product.Model[]> {
 		const docs = await ProductModel.find({ organizationId, productTypeId });
-		return docs.map((doc) => ({
-			...doc.toJSON(),
-			slug: Slug.fromValue(doc.slug),
-		}));
+		return docs.map((doc) => {
+			const json = doc.toJSON();
+			return {
+				...json,
+				slug: Slug.fromValue(doc.slug),
+				status: json.status as Product.Status,
+			};
+		});
 	}
 }

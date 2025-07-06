@@ -19,19 +19,16 @@ const organizationInvitationSchema = new Schema<OrganizationInvitationDocument>(
 		id: {
 			type: String,
 			required: true,
-			unique: true,
 		},
 		organizationId: {
 			type: String,
 			required: [true, "Organization ID is required"],
-			index: true,
 		},
 		email: {
 			type: String,
 			required: [true, "Email is required"],
 			trim: true,
 			lowercase: true,
-			index: true,
 		},
 		role: {
 			type: String,
@@ -41,8 +38,6 @@ const organizationInvitationSchema = new Schema<OrganizationInvitationDocument>(
 		token: {
 			type: String,
 			required: [true, "Token is required"],
-			unique: true,
-			index: true,
 		},
 		invitedAt: {
 			type: Date,

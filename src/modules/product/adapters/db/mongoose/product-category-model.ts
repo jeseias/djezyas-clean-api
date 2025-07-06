@@ -1,5 +1,4 @@
 import mongoose, { type Document, Schema } from "mongoose";
-import { ProductCategory } from "@/src/modules/product/core/domain/entities";
 
 export interface ProductCategoryDocument extends Document {
 	id: string;
@@ -15,32 +14,21 @@ const productCategorySchema = new Schema<ProductCategoryDocument>(
 		id: {
 			type: String,
 			required: true,
-			unique: true,
 		},
 		name: {
 			type: String,
-			required: [true, "Product category name is required"],
+			required: true,
 			trim: true,
-			minlength: [
-				2,
-				"Product category name must be at least 2 characters long",
-			],
-			maxlength: [100, "Product category name cannot exceed 100 characters"],
 		},
 		slug: {
 			type: String,
-			required: [true, "Product category slug is required"],
-			unique: true,
+			required: true,
 			trim: true,
 			lowercase: true,
 		},
 		description: {
 			type: String,
 			trim: true,
-			maxlength: [
-				500,
-				"Product category description cannot exceed 500 characters",
-			],
 		},
 	},
 	{
@@ -64,6 +52,7 @@ const productCategorySchema = new Schema<ProductCategoryDocument>(
 
 productCategorySchema.index({ id: 1 }, { unique: true });
 productCategorySchema.index({ slug: 1 }, { unique: true });
+productCategorySchema.index({ name: 1 });
 productCategorySchema.index({ createdAt: -1 });
 
 export const ProductCategoryModel = mongoose.model<ProductCategoryDocument>(

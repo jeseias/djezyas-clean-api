@@ -5,7 +5,11 @@ import { CurrencyModel } from "../currency-model";
 export class MongooseCurrencyRepository implements CurrencyRepository {
 	async create(currency: Currency.Model): Promise<Currency.Model> {
 		const doc = await CurrencyModel.create(currency);
-		return doc.toJSON();
+		const json = doc.toJSON();
+		return {
+			...json,
+			status: json.status as Currency.Status,
+		};
 	}
 
 	async update(data: Partial<Currency.Model>): Promise<Currency.Model> {
@@ -21,7 +25,11 @@ export class MongooseCurrencyRepository implements CurrencyRepository {
 			throw new Error("Currency not found");
 		}
 
-		return doc.toJSON();
+		const json = doc.toJSON();
+		return {
+			...json,
+			status: json.status as Currency.Status,
+		};
 	}
 
 	async delete(id: string): Promise<void> {
@@ -32,23 +40,43 @@ export class MongooseCurrencyRepository implements CurrencyRepository {
 		const doc = await CurrencyModel.findOne({ id });
 		if (!doc) return null;
 
-		return doc.toJSON();
+		const json = doc.toJSON();
+		return {
+			...json,
+			status: json.status as Currency.Status,
+		};
 	}
 
 	async findByCode(code: string): Promise<Currency.Model | null> {
 		const doc = await CurrencyModel.findOne({ code: code.toUpperCase() });
 		if (!doc) return null;
 
-		return doc.toJSON();
+		const json = doc.toJSON();
+		return {
+			...json,
+			status: json.status as Currency.Status,
+		};
 	}
 
 	async findActive(): Promise<Currency.Model[]> {
 		const docs = await CurrencyModel.find({ status: Currency.Status.ACTIVE });
-		return docs.map((doc) => doc.toJSON());
+		return docs.map((doc) => {
+			const json = doc.toJSON();
+			return {
+				...json,
+				status: json.status as Currency.Status,
+			};
+		});
 	}
 
 	async findByStatus(status: Currency.Status): Promise<Currency.Model[]> {
 		const docs = await CurrencyModel.find({ status });
-		return docs.map((doc) => doc.toJSON());
+		return docs.map((doc) => {
+			const json = doc.toJSON();
+			return {
+				...json,
+				status: json.status as Currency.Status,
+			};
+		});
 	}
 }

@@ -20,7 +20,6 @@ const organizationSchema = new Schema<OrganizationDocument>(
 		id: {
 			type: String,
 			required: true,
-			unique: true,
 		},
 		name: {
 			type: String,
@@ -32,7 +31,6 @@ const organizationSchema = new Schema<OrganizationDocument>(
 		slug: {
 			type: String,
 			required: [true, "Organization slug is required"],
-			unique: true,
 			trim: true,
 			lowercase: true,
 		},

@@ -3,14 +3,14 @@ import type { CreateProduct } from "../../../core/app/usecases/create-product/cr
 import type { CreateProductCategory } from "../../../core/app/usecases/create-product-category/create-product-category.use-case";
 import type { CreateProductType } from "../../../core/app/usecases/create-product-type/create-product-type.use-case";
 import type { UpdateCurrency } from "../../../core/app/usecases/update-currency/update-currency.use-case";
-import { productUseCasesFactory } from "../../factories/use-cases.factory";
 import {
-	productMongooseRepository,
-	productCategoryMongooseRepository,
-	productTypeMongooseRepository,
-	priceMongooseRepository,
 	currencyMongooseRepository,
+	priceMongooseRepository,
+	productCategoryMongooseRepository,
+	productMongooseRepository,
+	productTypeMongooseRepository,
 } from "../../factories/repository.factory";
+import { productUseCasesFactory } from "../../factories/use-cases.factory";
 
 export const productResolvers = {
 	Query: {
@@ -19,7 +19,8 @@ export const productResolvers = {
 			{ organizationId }: { organizationId: string },
 		) => {
 			try {
-				const products = await productMongooseRepository.findByOrganizationId(organizationId);
+				const products =
+					await productMongooseRepository.findByOrganizationId(organizationId);
 				return products;
 			} catch (error) {
 				console.error("Error fetching products:", error);
@@ -44,18 +45,26 @@ export const productResolvers = {
 				return null;
 			}
 		},
-		productsByCategory: async (_: unknown, { categoryId }: { categoryId: string }) => {
+		productsByCategory: async (
+			_: unknown,
+			{ categoryId }: { categoryId: string },
+		) => {
 			try {
-				const products = await productMongooseRepository.findByCategoryId(categoryId);
+				const products =
+					await productMongooseRepository.findByCategoryId(categoryId);
 				return products;
 			} catch (error) {
 				console.error("Error fetching products by category:", error);
 				return [];
 			}
 		},
-		productsByType: async (_: unknown, { productTypeId }: { productTypeId: string }) => {
+		productsByType: async (
+			_: unknown,
+			{ productTypeId }: { productTypeId: string },
+		) => {
 			try {
-				const products = await productMongooseRepository.findByProductTypeId(productTypeId);
+				const products =
+					await productMongooseRepository.findByProductTypeId(productTypeId);
 				return products;
 			} catch (error) {
 				console.error("Error fetching products by type:", error);
@@ -82,7 +91,8 @@ export const productResolvers = {
 		},
 		productCategoryBySlug: async (_: unknown, { slug }: { slug: string }) => {
 			try {
-				const category = await productCategoryMongooseRepository.findBySlug(slug);
+				const category =
+					await productCategoryMongooseRepository.findBySlug(slug);
 				return category;
 			} catch (error) {
 				console.error("Error fetching product category by slug:", error);
@@ -94,7 +104,10 @@ export const productResolvers = {
 			{ organizationId }: { organizationId: string },
 		) => {
 			try {
-				const productTypes = await productTypeMongooseRepository.findByOrganizationId(organizationId);
+				const productTypes =
+					await productTypeMongooseRepository.findByOrganizationId(
+						organizationId,
+					);
 				return productTypes;
 			} catch (error) {
 				console.error("Error fetching product types:", error);
@@ -110,9 +123,15 @@ export const productResolvers = {
 				return null;
 			}
 		},
-		productTypeBySlug: async (_: unknown, { slug, organizationId }: { slug: string; organizationId: string }) => {
+		productTypeBySlug: async (
+			_: unknown,
+			{ slug, organizationId }: { slug: string; organizationId: string },
+		) => {
 			try {
-				const productType = await productTypeMongooseRepository.findBySlug(slug, organizationId);
+				const productType = await productTypeMongooseRepository.findBySlug(
+					slug,
+					organizationId,
+				);
 				return productType;
 			} catch (error) {
 				console.error("Error fetching product type by slug:", error);

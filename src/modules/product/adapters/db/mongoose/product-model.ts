@@ -1,5 +1,4 @@
 import mongoose, { type Document, Schema } from "mongoose";
-import { Product } from "@/src/modules/product/core/domain/entities";
 
 export interface ProductDocument extends Document {
 	id: string;
@@ -8,7 +7,7 @@ export interface ProductDocument extends Document {
 	description?: string;
 	categoryId: string;
 	productTypeId: string;
-	status: Product.Status;
+	status: string;
 	organizationId: string;
 	createdById: string;
 	imageUrl?: string;
@@ -30,49 +29,43 @@ const productSchema = new Schema<ProductDocument>(
 		id: {
 			type: String,
 			required: true,
-			unique: true,
 		},
 		name: {
 			type: String,
-			required: [true, "Product name is required"],
+			required: true,
 			trim: true,
-			minlength: [2, "Product name must be at least 2 characters long"],
-			maxlength: [200, "Product name cannot exceed 200 characters"],
 		},
 		slug: {
 			type: String,
-			required: [true, "Product slug is required"],
-			unique: true,
+			required: true,
 			trim: true,
 			lowercase: true,
 		},
 		description: {
 			type: String,
 			trim: true,
-			maxlength: [2000, "Product description cannot exceed 2000 characters"],
 		},
 		categoryId: {
 			type: String,
-			required: [true, "Product category ID is required"],
+			required: true,
 			ref: "ProductCategory",
 		},
 		productTypeId: {
 			type: String,
-			required: [true, "Product type ID is required"],
+			required: true,
 			ref: "ProductType",
 		},
 		status: {
 			type: String,
-			enum: Object.values(Product.Status),
-			default: Product.Status.DRAFT,
+			required: true,
 		},
 		organizationId: {
 			type: String,
-			required: [true, "Organization ID is required"],
+			required: true,
 		},
 		createdById: {
 			type: String,
-			required: [true, "Created by ID is required"],
+			required: true,
 		},
 		imageUrl: {
 			type: String,
@@ -89,20 +82,16 @@ const productSchema = new Schema<ProductDocument>(
 		},
 		weight: {
 			type: Number,
-			min: [0, "Weight must be positive"],
 		},
 		dimensions: {
 			length: {
 				type: Number,
-				min: [0, "Length must be positive"],
 			},
 			width: {
 				type: Number,
-				min: [0, "Width must be positive"],
 			},
 			height: {
 				type: Number,
-				min: [0, "Height must be positive"],
 			},
 		},
 		meta: {

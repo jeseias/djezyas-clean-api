@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { registerAllModels } from "../../modules/shared/adapters/db/mongoose/models";
 import { _env } from "../config/_env";
 
 export interface ServerConfig {
@@ -92,6 +93,9 @@ export class Server {
 			console.log("🔄 Connecting to MongoDB...");
 			await mongoose.connect(this.config.mongodbUri);
 			console.log("✅ Connected to MongoDB successfully");
+
+			// Register all models to prevent duplicate schema issues
+			registerAllModels();
 		} catch (error) {
 			console.error("❌ Failed to connect to MongoDB:", error);
 			throw error;

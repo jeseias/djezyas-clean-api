@@ -5,7 +5,12 @@ import { PriceModel } from "../price-model";
 export class MongoosePriceRepository implements PriceRepository {
 	async create(price: Price.Model): Promise<Price.Model> {
 		const doc = await PriceModel.create(price);
-		return doc.toJSON();
+		const json = doc.toJSON();
+		return {
+			...json,
+			type: json.type as Price.Type,
+			status: json.status as Price.Status,
+		};
 	}
 
 	async update(data: Partial<Price.Model>): Promise<Price.Model> {
@@ -21,7 +26,12 @@ export class MongoosePriceRepository implements PriceRepository {
 			throw new Error("Price not found");
 		}
 
-		return doc.toJSON();
+		const json = doc.toJSON();
+		return {
+			...json,
+			type: json.type as Price.Type,
+			status: json.status as Price.Status,
+		};
 	}
 
 	async delete(id: string): Promise<void> {
@@ -32,12 +42,24 @@ export class MongoosePriceRepository implements PriceRepository {
 		const doc = await PriceModel.findOne({ id });
 		if (!doc) return null;
 
-		return doc.toJSON();
+		const json = doc.toJSON();
+		return {
+			...json,
+			type: json.type as Price.Type,
+			status: json.status as Price.Status,
+		};
 	}
 
 	async findByProductId(productId: string): Promise<Price.Model[]> {
 		const docs = await PriceModel.find({ productId });
-		return docs.map((doc) => doc.toJSON());
+		return docs.map((doc) => {
+			const json = doc.toJSON();
+			return {
+				...json,
+				type: json.type as Price.Type,
+				status: json.status as Price.Status,
+			};
+		});
 	}
 
 	async findByProductIdAndCurrencyId(
@@ -45,6 +67,13 @@ export class MongoosePriceRepository implements PriceRepository {
 		currencyId: string,
 	): Promise<Price.Model[]> {
 		const docs = await PriceModel.find({ productId, currencyId });
-		return docs.map((doc) => doc.toJSON());
+		return docs.map((doc) => {
+			const json = doc.toJSON();
+			return {
+				...json,
+				type: json.type as Price.Type,
+				status: json.status as Price.Status,
+			};
+		});
 	}
 }

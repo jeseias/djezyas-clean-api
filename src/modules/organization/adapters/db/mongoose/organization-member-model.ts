@@ -17,17 +17,14 @@ const organizationMemberSchema = new Schema<OrganizationMemberDocument>(
 		id: {
 			type: String,
 			required: true,
-			unique: true,
 		},
 		organizationId: {
 			type: String,
 			required: [true, "Organization ID is required"],
-			index: true,
 		},
 		userId: {
 			type: String,
 			required: [true, "User ID is required"],
-			index: true,
 		},
 		role: {
 			type: String,
