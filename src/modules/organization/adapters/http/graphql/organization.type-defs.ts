@@ -86,6 +86,17 @@ export const organizationTypeDefs = `#graphql
     inviteLink: String!
   }
 
+  type OrganizationSummary {
+    id: String!
+    name: String!
+    slug: String!
+    logoUrl: String
+  }
+
+  type LoadMyOrganizationsResult {
+    organizations: [OrganizationSummary!]!
+  }
+
   # Inputs
   input CreateOrganizationInput {
     name: String!
@@ -109,6 +120,7 @@ export const organizationTypeDefs = `#graphql
 
   type Query {
     getOrganizationMembers(input: GetOrganizationMembersInput!): GetOrganizationMembersResult!
+    loadMyOrganizations: LoadMyOrganizationsResult!
   }
 
   type Mutation {

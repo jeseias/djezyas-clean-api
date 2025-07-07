@@ -6,6 +6,7 @@ import type { OrganizationTemplateService } from "../../core/app/services/templa
 import { CreateOrganizationUseCase } from "../../core/app/usecases/create-organization/create-organization.use-case";
 import { GetOrganizationMembersUseCase } from "../../core/app/usecases/get-organization-members/get-organization-members.use-case";
 import { InviteMemberUseCase } from "../../core/app/usecases/invite-member/invite-member.use-case";
+import { LoadMyOrganizationsUseCase } from "../../core/app/usecases/load-my-organizations/load-my-organizations.use-case";
 import type { OrganizationInvitationRepository } from "../../core/ports/outbound/organization-invitation-repository";
 import type { OrganizationMemberRepository } from "../../core/ports/outbound/organization-member-repository";
 import type { OrganizationRepository } from "../../core/ports/outbound/organization-repository";
@@ -48,6 +49,13 @@ export class OrganizationUseCasesFactory {
 			this.organizationInvitationRepository,
 			this.emailService,
 			this.templateService,
+		);
+	}
+
+	loadMyOrganizations() {
+		return new LoadMyOrganizationsUseCase(
+			this.organizationMemberRepository,
+			this.organizationRepository,
 		);
 	}
 }

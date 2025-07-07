@@ -27,6 +27,24 @@ export const organizationResolvers = {
 
 			return result;
 		},
+
+		loadMyOrganizations: async (
+			_: unknown,
+			__: unknown,
+			{ userId }: GraphQLContext,
+		) => {
+			if (!userId) {
+				throw new Error("Authentication required");
+			}
+
+			const loadMyOrganizationsUseCase =
+				organizationUseCasesFactory.loadMyOrganizations();
+			const result = await loadMyOrganizationsUseCase.execute({
+				userId,
+			});
+
+			return result;
+		},
 	},
 
 	Mutation: {
