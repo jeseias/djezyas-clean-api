@@ -1,3 +1,4 @@
+import type { AcceptInvitation } from "../../../core/app/usecases/accept-invitation/accept-invitation.use-case";
 import type { Organization } from "../../../core/domain/entities/organization";
 import { organizationUseCasesFactory } from "../../factories/use-cases.factory";
 
@@ -92,6 +93,21 @@ export const organizationResolvers = {
 
 			return result;
 		},
+
+    acceptInvitation: async (
+      _: unknown,
+      { input }: { input: AcceptInvitation.Params },
+      { userId }: GraphQLContext,
+    ) => {
+      if (!userId) {
+        throw new Error("Authentication required");
+      }
+
+      const acceptInvitationUseCase = organizationUseCasesFactory.acceptInvitation();
+      const result = await acceptInvitationUseCase.execute(input);
+
+      return result;
+    }
 	},
 };
 

@@ -97,6 +97,10 @@ export const organizationTypeDefs = `#graphql
     organizations: [OrganizationSummary!]!
   }
 
+  type AcceptInvitationResult {
+    message: String!
+  }
+
   # Inputs
   input CreateOrganizationInput {
     name: String!
@@ -106,6 +110,10 @@ export const organizationTypeDefs = `#graphql
     logoUrl: String
     settings: JSON
     meta: JSON
+  }
+
+  input AcceptInvitationInput {
+    token: String!
   }
 
   input GetOrganizationMembersInput {
@@ -126,5 +134,6 @@ export const organizationTypeDefs = `#graphql
   type Mutation {
     createOrganization(input: CreateOrganizationInput!): CreateOrganizationResult!
     inviteMember(input: InviteMemberInput!): InviteMemberResult!
+    acceptInvitation(input: AcceptInvitationInput!): AcceptInvitationResult!
   }
 `;

@@ -16,6 +16,7 @@ import {
 	organizationMongooseRepository,
 } from "./repository.factory";
 import { organizationTemplateService } from "./service.factory";
+import { AcceptInvitationUseCase } from "../../core/app/usecases/accept-invitation/accept-invitation.use-case";
 
 export class OrganizationUseCasesFactory {
 	constructor(
@@ -49,6 +50,12 @@ export class OrganizationUseCasesFactory {
 			this.organizationInvitationRepository,
 			this.emailService,
 			this.templateService,
+		);
+	}
+
+	acceptInvitation() {
+		return new AcceptInvitationUseCase(
+			this.organizationInvitationRepository,
 		);
 	}
 
