@@ -59,4 +59,4 @@ export class LoadMyOrganizationsUseCase {
 			organizations: validOrganizations,
 		};
 	}
-} 
+}

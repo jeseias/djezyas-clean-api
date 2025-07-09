@@ -95,14 +95,14 @@ export const userResolvers = {
 			if (!context.user) {
 				throw new Error("Unauthorized");
 			}
-			
+
 			const logoutUseCase = makeLogoutUseCase();
-			
+
 			const accessToken = context.request?.headers?.get("x-access-token");
 			if (!accessToken) {
 				throw new Error("Access token is required");
 			}
-			
+
 			return await logoutUseCase.execute({ accessToken });
 		},
 
