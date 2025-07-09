@@ -64,6 +64,6 @@ export function withUser<TArgs = any, TResult = any>(
 			userUsername: context.user.username,
 			userRole: context.user.role,
 		};
-		return resolver(args, useCaseContext, info);
+		return await resolver(args, useCaseContext, info);
 	};
 }

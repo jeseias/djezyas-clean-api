@@ -1,3 +1,4 @@
+import { withUser } from "@/src/main/elysia/plugins";
 import type { AcceptInvitation } from "../../../core/app/usecases/accept-invitation/accept-invitation.use-case";
 import type { Organization } from "../../../core/domain/entities/organization";
 import { organizationUseCasesFactory } from "../../factories/use-cases.factory";
@@ -29,23 +30,16 @@ export const organizationResolvers = {
 			return result;
 		},
 
-		loadMyOrganizations: async (
-			_: unknown,
-			__: unknown,
-			{ userId }: GraphQLContext,
-		) => {
-			if (!userId) {
-				throw new Error("Authentication required");
-			}
-
+		loadMyOrganizations: withUser(async (_args,{ userId }) => {
 			const loadMyOrganizationsUseCase =
 				organizationUseCasesFactory.loadMyOrganizations();
+        
 			const result = await loadMyOrganizationsUseCase.execute({
 				userId,
 			});
 
 			return result;
-		},
+		}),
 	},
 
 	Mutation: {

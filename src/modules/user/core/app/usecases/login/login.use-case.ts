@@ -82,13 +82,13 @@ export class LoginUseCase {
 			deviceInfo,
 		});
 
-		await this.sendLoginNotificationEmail({
-			email: userEntity.email,
-			name: userEntity.name,
-			username: userEntity.username,
-			loginAt: new Date(),
-			deviceInfo,
-		});
+		// await this.sendLoginNotificationEmail({
+		// 	email: userEntity.email,
+		// 	name: userEntity.name,
+		// 	username: userEntity.username,
+		// 	loginAt: new Date(),
+		// 	deviceInfo,
+		// });
 
 		return {
 			user: authenticationResult.user.toJSON(),
