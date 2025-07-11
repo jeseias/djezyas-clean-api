@@ -10,5 +10,9 @@ export type ProductTypeRepository = Pick<
 		slug: string,
 		organizationId: string,
 	): Promise<ProductType.Model | null>;
+	findByName(
+		name: string,
+		organizationId: string,
+	): Promise<ProductType.Model | null>;
 	findByCreatedById(createdById: string): Promise<ProductType.Model[]>;
 };

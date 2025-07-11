@@ -6,9 +6,9 @@ export namespace AcceptInvitation {
 	export type Params = {
 		token: string;
 	};
-  export type Response = {
-    message: string
-  }
+	export type Response = {
+		message: string;
+	};
 }
 
 export class AcceptInvitationUseCase {
@@ -16,7 +16,9 @@ export class AcceptInvitationUseCase {
 		private readonly organizationInvitationRepository: OrganizationInvitationRepository,
 	) {}
 
-	async execute(params: AcceptInvitation.Params): Promise<AcceptInvitation.Response> {
+	async execute(
+		params: AcceptInvitation.Params,
+	): Promise<AcceptInvitation.Response> {
 		const invitation = await this.organizationInvitationRepository.findByToken(
 			params.token,
 		);

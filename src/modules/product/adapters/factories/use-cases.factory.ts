@@ -3,7 +3,7 @@ import type { OrganizationRepository } from "@/src/modules/organization/core/por
 import { AddPriceUseCase } from "@/src/modules/product/core/app/usecases/add-price/add-price.use-case";
 import { CreateProductUseCase } from "@/src/modules/product/core/app/usecases/create-product/create-product.use-case";
 import { CreateProductCategoryUseCase } from "@/src/modules/product/core/app/usecases/create-product-category/create-product-category.use-case";
-import { CreateProductTypeUseCase } from "@/src/modules/product/core/app/usecases/create-product-type/create-product-type.use-case";
+import { SaveProductTypeUseCase } from "@/src/modules/product/core/app/usecases/save-product-type/save-product-type.use-case";
 import { UpdateCurrencyUseCase } from "@/src/modules/product/core/app/usecases/update-currency/update-currency.use-case";
 import type { CurrencyRepository } from "@/src/modules/product/core/ports/outbound/currency-repository";
 import type { PriceRepository } from "@/src/modules/product/core/ports/outbound/price-repository";
@@ -45,8 +45,8 @@ export class ProductUseCasesFactory {
 		return new CreateProductCategoryUseCase(this.productCategoryRepository);
 	}
 
-	createProductType() {
-		return new CreateProductTypeUseCase(
+	saveProductType() {
+		return new SaveProductTypeUseCase(
 			this.productTypeRepository,
 			this.userRepository,
 			this.organizationRepository,

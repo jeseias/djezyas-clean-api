@@ -4,22 +4,22 @@ import { organizationUseCasesFactory } from "../../factories/use-cases.factory";
 
 export const organizationResolvers = {
 	Query: {
-		getOrganizationMembers: withUser(async (
-			{ input }: { input: GetOrganizationMembersInput },
-		) => {			
-			const getOrganizationMembersUseCase =
-				organizationUseCasesFactory.getOrganizationMembers();
-			const result = await getOrganizationMembersUseCase.execute({
-				organizationId: input.organizationId,
-			});
+		getOrganizationMembers: withUser(
+			async ({ input }: { input: GetOrganizationMembersInput }) => {
+				const getOrganizationMembersUseCase =
+					organizationUseCasesFactory.getOrganizationMembers();
+				const result = await getOrganizationMembersUseCase.execute({
+					organizationId: input.organizationId,
+				});
 
-			return result;
-		}),
+				return result;
+			},
+		),
 
-		loadMyOrganizations: withUser(async (_args,{ userId }) => {
+		loadMyOrganizations: withUser(async (_args, { userId }) => {
 			const loadMyOrganizationsUseCase =
 				organizationUseCasesFactory.loadMyOrganizations();
-        
+
 			const result = await loadMyOrganizationsUseCase.execute({
 				userId,
 			});
@@ -29,26 +29,22 @@ export const organizationResolvers = {
 	},
 
 	Mutation: {
-		createOrganization: withUser(async (
-			{ input }: { input: CreateOrganizationInput },
-			{ userId },
-		) => {
+		createOrganization: withUser(
+			async ({ input }: { input: CreateOrganizationInput }, { userId }) => {
+				const createOrganizationUseCase =
+					organizationUseCasesFactory.createOrganization();
+				const organization = await createOrganizationUseCase.execute({
+					name: input.name,
+					ownerId: userId,
+				});
 
-			const createOrganizationUseCase =
-				organizationUseCasesFactory.createOrganization();
-			const organization = await createOrganizationUseCase.execute({
-				name: input.name,
-				ownerId: userId,
-			});
+				return {
+					organization,
+				};
+			},
+		),
 
-			return {
-				organization,
-			};
-		}),
-
-		inviteMember: withUser(async (
-			{ input }: { input: InviteMemberInput },
-		) => {			
+		inviteMember: withUser(async ({ input }: { input: InviteMemberInput }) => {
 			const inviteMemberUseCase = organizationUseCasesFactory.inviteMember();
 			const result = await inviteMemberUseCase.execute({
 				organizationId: input.organizationId,
@@ -59,14 +55,15 @@ export const organizationResolvers = {
 			return result;
 		}),
 
-    acceptInvitation: withUser(async (
-      { input }: { input: AcceptInvitation.Params },
-    ) => {      
-      const acceptInvitationUseCase = organizationUseCasesFactory.acceptInvitation();
-      const result = await acceptInvitationUseCase.execute(input);
+		acceptInvitation: withUser(
+			async ({ input }: { input: AcceptInvitation.Params }) => {
+				const acceptInvitationUseCase =
+					organizationUseCasesFactory.acceptInvitation();
+				const result = await acceptInvitationUseCase.execute(input);
 
-      return result;
-    })
+				return result;
+			},
+		),
 	},
 };
 

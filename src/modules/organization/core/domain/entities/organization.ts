@@ -28,8 +28,8 @@ export namespace Organization {
 
 	export type Settings = Partial<Record<SettingKey, unknown>>;
 
-  export type Props = {
-    id: Id;
+	export type Props = {
+		id: Id;
 		name: string;
 		slug: string;
 		ownerId: Id;
@@ -41,7 +41,7 @@ export namespace Organization {
 		logoUrl?: Url | string;
 		settings?: Settings;
 		meta?: Record<string, unknown>;
-  }
+	};
 
 	export type Model = Omit<Props, "slug"> & {
 		slug: Slug;
@@ -80,8 +80,12 @@ export namespace Organization {
 			return new Entity(org);
 		}
 
-		static fromModel(model: Model): Entity {
-			return new Entity(model);
+		static fromModel(model: Props): Entity {
+			const normalizedModel: Model = {
+				...model,
+				slug: Slug.create(model.slug),
+			};
+			return new Entity(normalizedModel);
 		}
 
 		get id(): Id {

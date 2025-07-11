@@ -76,18 +76,17 @@ export class GetOrganizationMembersUseCase {
 				(member): member is NonNullable<typeof member> => member !== null,
 			);
 
-		const pendingInvitations: GetOrganizationMembers.PendingInvitationWithUser[] = allInvitations
-			.filter(
-				(invitation) => invitation.status === "pending",
-			)
-			.map((invitation) => ({
-				...invitation,
-				user: {
-					name: invitation.email.split('@')[0], 
-					avatar: undefined,
-					email: invitation.email,
-				},
-			}));
+		const pendingInvitations: GetOrganizationMembers.PendingInvitationWithUser[] =
+			allInvitations
+				.filter((invitation) => invitation.status === "pending")
+				.map((invitation) => ({
+					...invitation,
+					user: {
+						name: invitation.email.split("@")[0],
+						avatar: undefined,
+						email: invitation.email,
+					},
+				}));
 
 		return {
 			members: membersWithUser,

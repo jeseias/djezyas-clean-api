@@ -5,5 +5,5 @@ export type OrganizationRepository = Pick<
 	Repository<Organization.Props>,
 	"create" | "update" | "delete" | "findById"
 > & {
-	findByOwnerId(ownerId: string): Promise<Organization.Model[]>;
+	findByOwnerId(ownerId: string): Promise<Organization.Props[]>;
 };

@@ -3,6 +3,7 @@ import type { EmailService } from "@/src/modules/shared/ports/outbound/email-ser
 import { userMongooseRepository } from "@/src/modules/user/adapters/factories/repository.factory";
 import type { UserRepository } from "@/src/modules/user/core/ports/outbound/user-repository";
 import type { OrganizationTemplateService } from "../../core/app/services/template-service";
+import { AcceptInvitationUseCase } from "../../core/app/usecases/accept-invitation/accept-invitation.use-case";
 import { CreateOrganizationUseCase } from "../../core/app/usecases/create-organization/create-organization.use-case";
 import { GetOrganizationMembersUseCase } from "../../core/app/usecases/get-organization-members/get-organization-members.use-case";
 import { InviteMemberUseCase } from "../../core/app/usecases/invite-member/invite-member.use-case";
@@ -16,7 +17,6 @@ import {
 	organizationMongooseRepository,
 } from "./repository.factory";
 import { organizationTemplateService } from "./service.factory";
-import { AcceptInvitationUseCase } from "../../core/app/usecases/accept-invitation/accept-invitation.use-case";
 
 export class OrganizationUseCasesFactory {
 	constructor(
@@ -54,9 +54,7 @@ export class OrganizationUseCasesFactory {
 	}
 
 	acceptInvitation() {
-		return new AcceptInvitationUseCase(
-			this.organizationInvitationRepository,
-		);
+		return new AcceptInvitationUseCase(this.organizationInvitationRepository);
 	}
 
 	loadMyOrganizations() {

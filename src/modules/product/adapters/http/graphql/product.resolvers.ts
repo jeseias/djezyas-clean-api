@@ -1,7 +1,7 @@
 import type { AddPrice } from "../../../core/app/usecases/add-price/add-price.use-case";
 import type { CreateProduct } from "../../../core/app/usecases/create-product/create-product.use-case";
 import type { CreateProductCategory } from "../../../core/app/usecases/create-product-category/create-product-category.use-case";
-import type { CreateProductType } from "../../../core/app/usecases/create-product-type/create-product-type.use-case";
+import type { SaveProductType } from "../../../core/app/usecases/save-product-type/save-product-type.use-case";
 import type { UpdateCurrency } from "../../../core/app/usecases/update-currency/update-currency.use-case";
 import {
 	currencyMongooseRepository,
@@ -234,9 +234,9 @@ export const productResolvers = {
 			}
 		},
 
-		createProductType: async (
+		saveProductType: async (
 			_: unknown,
-			{ input }: { input: CreateProductType.Params },
+			{ input }: { input: SaveProductType.Params },
 			context: { user?: { id: string } },
 		) => {
 			try {
@@ -248,11 +248,10 @@ export const productResolvers = {
 					};
 				}
 
-				const createProductTypeUseCase =
-					productUseCasesFactory.createProductType();
-				const productType = await createProductTypeUseCase.execute({
+				const saveProductTypeUseCase = productUseCasesFactory.saveProductType();
+				const productType = await saveProductTypeUseCase.execute({
 					...input,
-					createdById: context.user.id,
+					userId: context.user.id,
 				});
 
 				return {

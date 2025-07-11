@@ -77,6 +77,19 @@ export class MongooseProductTypeRepository implements ProductTypeRepository {
 		};
 	}
 
+	async findByName(
+		name: string,
+		organizationId: string,
+	): Promise<ProductType.Model | null> {
+		const doc = await ProductTypeModel.findOne({ name, organizationId });
+		if (!doc) return null;
+
+		return {
+			...doc.toJSON(),
+			slug: Slug.fromValue(doc.slug),
+		};
+	}
+
 	async findByCreatedById(createdById: string): Promise<ProductType.Model[]> {
 		const docs = await ProductTypeModel.find({ createdById });
 		return docs.map((doc) => ({

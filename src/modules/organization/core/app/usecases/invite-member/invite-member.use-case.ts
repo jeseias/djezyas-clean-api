@@ -30,10 +30,11 @@ export class InviteMemberUseCase {
 		const user = await this.userRepository.findByEmail(params.email);
 		const isRegistered = !!user;
 
-		const existingInvitation = await this.organizationInvitationRepository.findByEmailAndOrgId(
-			params.email,
-			params.organizationId,
-		);
+		const existingInvitation =
+			await this.organizationInvitationRepository.findByEmailAndOrgId(
+				params.email,
+				params.organizationId,
+			);
 
 		let invitation: OrganizationInvitation.Entity;
 		let isResent = false;

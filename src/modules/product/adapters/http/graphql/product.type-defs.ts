@@ -120,7 +120,8 @@ export const productTypeDefs = `#graphql
 		description: String
 	}
 
-	input CreateProductTypeInput {
+	input SaveProductTypeInput {
+		id: ID
 		name: String!
 		description: String
 		organizationId: ID!
@@ -156,7 +157,7 @@ export const productTypeDefs = `#graphql
 		error: String
 	}
 
-	type CreateProductTypeResult {
+	type SaveProductTypeResult {
 		success: Boolean!
 		productType: ProductType
 		error: String
@@ -195,7 +196,7 @@ export const productTypeDefs = `#graphql
 	type Mutation {
 		createProduct(input: CreateProductInput!): CreateProductResult!
 		createProductCategory(input: CreateProductCategoryInput!): CreateProductCategoryResult!
-		createProductType(input: CreateProductTypeInput!): CreateProductTypeResult!
+		saveProductType(input: SaveProductTypeInput!): SaveProductTypeResult!
 		addPrice(input: AddPriceInput!): AddPriceResult!
 		updateCurrency(input: UpdateCurrencyInput!): UpdateCurrencyResult!
 	}
