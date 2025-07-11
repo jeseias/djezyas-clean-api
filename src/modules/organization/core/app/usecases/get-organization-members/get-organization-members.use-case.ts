@@ -18,9 +18,17 @@ export namespace GetOrganizationMembers {
 		};
 	};
 
+	export type PendingInvitationWithUser = OrganizationInvitation.Model & {
+		user: {
+			name: string;
+			avatar: string | undefined;
+			email: string;
+		};
+	};
+
 	export type Result = {
 		members: MemberWithUser[];
-		pendingInvitations: OrganizationInvitation.Model[];
+		pendingInvitations: PendingInvitationWithUser[];
 	};
 }
 
@@ -68,9 +76,18 @@ export class GetOrganizationMembersUseCase {
 				(member): member is NonNullable<typeof member> => member !== null,
 			);
 
-		const pendingInvitations = allInvitations.filter(
-			(invitation) => invitation.acceptedAt === null,
-		);
+		const pendingInvitations: GetOrganizationMembers.PendingInvitationWithUser[] = allInvitations
+			.filter(
+				(invitation) => invitation.status === "pending",
+			)
+			.map((invitation) => ({
+				...invitation,
+				user: {
+					name: invitation.email.split('@')[0], 
+					avatar: undefined,
+					email: invitation.email,
+				},
+			}));
 
 		return {
 			members: membersWithUser,

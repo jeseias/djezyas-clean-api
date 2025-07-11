@@ -51,7 +51,7 @@ export const organizationTypeDefs = `#graphql
     role: OrganizationMemberRole!
     invitedAt: String!
     joinedAt: String
-    user: OrganizationMemberUser
+    user: OrganizationMemberUser!
   }
 
   type OrganizationMemberUser {
@@ -71,19 +71,32 @@ export const organizationTypeDefs = `#graphql
     status: OrganizationInvitationStatus!
   }
 
+  type PendingInvitationWithUser {
+    id: String!
+    organizationId: String!
+    email: String!
+    role: OrganizationInvitationRole!
+    token: String!
+    invitedAt: String!
+    acceptedAt: String
+    status: OrganizationInvitationStatus!
+    user: OrganizationMemberUser
+  }
+
   type CreateOrganizationResult {
     organization: Organization!
   }
 
   type GetOrganizationMembersResult {
     members: [OrganizationMember!]!
-    pendingInvitations: [OrganizationInvitation!]!
+    pendingInvitations: [PendingInvitationWithUser]!
   }
 
   type InviteMemberResult {
     invitation: OrganizationInvitation!
     isRegistered: Boolean!
     inviteLink: String!
+    isResent: Boolean!
   }
 
   type OrganizationSummary {
@@ -91,6 +104,7 @@ export const organizationTypeDefs = `#graphql
     name: String!
     slug: String!
     logoUrl: String
+    plan: OrganizationPlanType
   }
 
   type LoadMyOrganizationsResult {
@@ -101,12 +115,8 @@ export const organizationTypeDefs = `#graphql
     message: String!
   }
 
-  # Inputs
   input CreateOrganizationInput {
     name: String!
-    slug: String!
-    ownerId: String!
-    plan: OrganizationPlanType
     logoUrl: String
     settings: JSON
     meta: JSON

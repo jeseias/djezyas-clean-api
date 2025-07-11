@@ -14,6 +14,7 @@ export namespace InviteMember {
 		invitation: OrganizationInvitation.Model;
 		isRegistered: boolean;
 		inviteLink: string;
+		isResent: boolean;
 	};
 }
 
@@ -29,25 +30,40 @@ export class InviteMemberUseCase {
 		const user = await this.userRepository.findByEmail(params.email);
 		const isRegistered = !!user;
 
-		const invitation = OrganizationInvitation.Entity.create({
-			organizationId: params.organizationId,
-			email: params.email,
-			role: params.role,
-		});
+		const existingInvitation = await this.organizationInvitationRepository.findByEmailAndOrgId(
+			params.email,
+			params.organizationId,
+		);
 
-		await this.organizationInvitationRepository.create(invitation.toJSON());
+		let invitation: OrganizationInvitation.Entity;
+		let isResent = false;
+
+		if (existingInvitation) {
+			invitation = OrganizationInvitation.Entity.fromModel(existingInvitation);
+			invitation.refresh();
+			await this.organizationInvitationRepository.update(invitation.toJSON());
+			isResent = true;
+		} else {
+			invitation = OrganizationInvitation.Entity.create({
+				organizationId: params.organizationId,
+				email: params.email,
+				role: params.role,
+			});
+			await this.organizationInvitationRepository.create(invitation.toJSON());
+		}
 
 		const inviteLink = `https://myapp.com/join-org?token=${invitation.token}`;
-		await this.sendInviteEmail({
-			email: params.email,
-			role: params.role,
-			inviteLink,
-		});
+		// await this.sendInviteEmail({
+		// 	email: params.email,
+		// 	role: params.role,
+		// 	inviteLink,
+		// });
 
 		return {
 			invitation: invitation.toJSON(),
 			isRegistered,
 			inviteLink,
+			isResent,
 		};
 	}
 

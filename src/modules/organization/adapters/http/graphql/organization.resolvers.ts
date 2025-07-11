@@ -1,26 +1,12 @@
 import { withUser } from "@/src/main/elysia/plugins";
 import type { AcceptInvitation } from "../../../core/app/usecases/accept-invitation/accept-invitation.use-case";
-import type { Organization } from "../../../core/domain/entities/organization";
 import { organizationUseCasesFactory } from "../../factories/use-cases.factory";
-
-interface GraphQLContext {
-	userId?: string;
-	userEmail?: string;
-	userUsername?: string;
-	userRole?: string;
-}
 
 export const organizationResolvers = {
 	Query: {
-		getOrganizationMembers: async (
-			_: unknown,
+		getOrganizationMembers: withUser(async (
 			{ input }: { input: GetOrganizationMembersInput },
-			{ userId }: GraphQLContext,
-		) => {
-			if (!userId) {
-				throw new Error("Authentication required");
-			}
-
+		) => {			
 			const getOrganizationMembersUseCase =
 				organizationUseCasesFactory.getOrganizationMembers();
 			const result = await getOrganizationMembersUseCase.execute({
@@ -28,7 +14,7 @@ export const organizationResolvers = {
 			});
 
 			return result;
-		},
+		}),
 
 		loadMyOrganizations: withUser(async (_args,{ userId }) => {
 			const loadMyOrganizationsUseCase =
@@ -43,41 +29,26 @@ export const organizationResolvers = {
 	},
 
 	Mutation: {
-		createOrganization: async (
-			_: unknown,
+		createOrganization: withUser(async (
 			{ input }: { input: CreateOrganizationInput },
-			{ userId }: GraphQLContext,
+			{ userId },
 		) => {
-			if (!userId) {
-				throw new Error("Authentication required");
-			}
 
 			const createOrganizationUseCase =
 				organizationUseCasesFactory.createOrganization();
 			const organization = await createOrganizationUseCase.execute({
 				name: input.name,
-				slug: input.slug,
-				ownerId: input.ownerId,
-				plan: input.plan as Organization.PlanType | undefined,
-				logoUrl: input.logoUrl,
-				settings: input.settings,
-				meta: input.meta,
+				ownerId: userId,
 			});
 
 			return {
 				organization,
 			};
-		},
+		}),
 
-		inviteMember: async (
-			_: unknown,
+		inviteMember: withUser(async (
 			{ input }: { input: InviteMemberInput },
-			{ userId }: GraphQLContext,
-		) => {
-			if (!userId) {
-				throw new Error("Authentication required");
-			}
-
+		) => {			
 			const inviteMemberUseCase = organizationUseCasesFactory.inviteMember();
 			const result = await inviteMemberUseCase.execute({
 				organizationId: input.organizationId,
@@ -86,22 +57,16 @@ export const organizationResolvers = {
 			});
 
 			return result;
-		},
+		}),
 
-    acceptInvitation: async (
-      _: unknown,
+    acceptInvitation: withUser(async (
       { input }: { input: AcceptInvitation.Params },
-      { userId }: GraphQLContext,
-    ) => {
-      if (!userId) {
-        throw new Error("Authentication required");
-      }
-
+    ) => {      
       const acceptInvitationUseCase = organizationUseCasesFactory.acceptInvitation();
       const result = await acceptInvitationUseCase.execute(input);
 
       return result;
-    }
+    })
 	},
 };
 

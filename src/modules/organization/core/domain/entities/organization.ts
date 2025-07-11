@@ -28,19 +28,23 @@ export namespace Organization {
 
 	export type Settings = Partial<Record<SettingKey, unknown>>;
 
-	export type Model = {
-		id: Id;
+  export type Props = {
+    id: Id;
 		name: string;
-		slug: Slug;
+		slug: string;
 		ownerId: Id;
 		members?: OrganizationMember.Model[];
 		createdAt: Date;
 		updatedAt: Date;
 		status?: Status;
-		plan?: PlanType;
+		plan: PlanType;
 		logoUrl?: Url | string;
 		settings?: Settings;
 		meta?: Record<string, unknown>;
+  }
+
+	export type Model = Omit<Props, "slug"> & {
+		slug: Slug;
 	};
 
 	export type CreateParams = {
@@ -152,8 +156,8 @@ export namespace Organization {
 			this.props.updatedAt = new Date();
 		}
 
-		toJSON(): Model {
-			return { ...this.props };
+		getSnapshot(): Props {
+			return { ...this.props, slug: this.slug.toString() };
 		}
 	}
 }

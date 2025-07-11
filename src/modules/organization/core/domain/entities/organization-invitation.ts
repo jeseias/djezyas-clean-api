@@ -74,6 +74,13 @@ export namespace OrganizationInvitation {
 			this.props.status = "expired";
 		}
 
+		refresh(): void {
+			this.props.token = uuidv4();
+			this.props.invitedAt = new Date();
+			this.props.status = "pending";
+			this.props.acceptedAt = undefined;
+		}
+
 		toJSON(): Model {
 			return { ...this.props };
 		}

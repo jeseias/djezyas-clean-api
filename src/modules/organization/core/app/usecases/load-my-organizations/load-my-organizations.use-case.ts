@@ -1,6 +1,7 @@
 import type { Id } from "@/src/modules/shared/value-objects";
 import type { OrganizationMemberRepository } from "../../../ports/outbound/organization-member-repository";
 import type { OrganizationRepository } from "../../../ports/outbound/organization-repository";
+import type { Organization } from "../../../domain/entities";
 
 export namespace LoadMyOrganizations {
 	export type Params = {
@@ -12,6 +13,7 @@ export namespace LoadMyOrganizations {
 		name: string;
 		slug: string;
 		logoUrl?: string;
+    plan: Organization.PlanType;
 	};
 
 	export type Result = {
@@ -47,6 +49,7 @@ export class LoadMyOrganizationsUseCase {
 					name: organization.name,
 					slug: organization.slug.toString(),
 					logoUrl: organization.logoUrl,
+					plan: organization.plan,
 				};
 			}),
 		);
