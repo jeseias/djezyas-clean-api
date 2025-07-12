@@ -10,7 +10,7 @@ import type { ProductTypeRepository } from "../../../ports/outbound/product-type
 
 export namespace SaveProduct {
 	export type Params = {
-		id?: string; 
+		id?: string;
 		name: string;
 		description?: string;
 		categoryId: string;
@@ -146,7 +146,10 @@ export class SaveProductUseCase {
 				params.sku,
 				params.organizationId,
 			);
-			if (existingProductWithSku && (!isUpdate || existingProductWithSku.id !== params.id)) {
+			if (
+				existingProductWithSku &&
+				(!isUpdate || existingProductWithSku.id !== params.id)
+			) {
 				throw new AppError(
 					"SKU must be unique within organization",
 					400,
@@ -161,7 +164,10 @@ export class SaveProductUseCase {
 					params.barcode,
 					params.organizationId,
 				);
-			if (existingProductWithBarcode && (!isUpdate || existingProductWithBarcode.id !== params.id)) {
+			if (
+				existingProductWithBarcode &&
+				(!isUpdate || existingProductWithBarcode.id !== params.id)
+			) {
 				throw new AppError(
 					"Barcode must be unique within organization",
 					400,
@@ -172,7 +178,7 @@ export class SaveProductUseCase {
 
 		if (isUpdate) {
 			const productEntity = Product.Entity.fromModel(existingProduct!);
-			
+
 			productEntity.updateFromDTO(params);
 
 			await this.productRepository.update(productEntity.toJSON());

@@ -1,6 +1,28 @@
 import type { Repository } from "@/src/modules/shared/ports/outbound/repository";
 import type { Product } from "../../domain/entities/product";
 
+export namespace ProductFilters {
+	export type Status = Product.Status;
+
+	export type Filters = {
+		status?: Status;
+		categoryId?: string;
+		productTypeId?: string;
+		search?: string;
+		hasSku?: boolean;
+		hasBarcode?: boolean;
+		hasImage?: boolean;
+		createdAfter?: Date;
+		createdBefore?: Date;
+		updatedAfter?: Date;
+		updatedBefore?: Date;
+		limit?: number;
+		offset?: number;
+		sortBy?: "name" | "createdAt" | "updatedAt" | "status";
+		sortOrder?: "asc" | "desc";
+	};
+}
+
 export type ProductRepository = Pick<
 	Repository<Product.Model>,
 	"create" | "update" | "delete" | "findById"
@@ -21,5 +43,9 @@ export type ProductRepository = Pick<
 	findByOrganizationIdAndProductTypeId(
 		organizationId: string,
 		productTypeId: string,
+	): Promise<Product.Model[]>;
+	findByOrganizationIdWithFilters(
+		organizationId: string,
+		filters: ProductFilters.Filters,
 	): Promise<Product.Model[]>;
 };

@@ -1,6 +1,6 @@
 import type { AddPrice } from "../../../core/app/usecases/add-price/add-price.use-case";
-import type { CreateProduct } from "../../../core/app/usecases/save-product/save-product.use-case";
 import type { CreateProductCategory } from "../../../core/app/usecases/create-product-category/create-product-category.use-case";
+import type { CreateProduct } from "../../../core/app/usecases/save-product/save-product.use-case";
 import type { SaveProductType } from "../../../core/app/usecases/save-product-type/save-product-type.use-case";
 import type { UpdateCurrency } from "../../../core/app/usecases/update-currency/update-currency.use-case";
 import {

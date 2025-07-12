@@ -5,7 +5,10 @@ export type OrganizationMemberRepository = Pick<
 	Repository<OrganizationMember.Model>,
 	"create" | "findById" | "update" | "delete"
 > & {
-	findByUserId(userId: string): Promise<OrganizationMember.Model[]>;
+	findByUserId(params: {
+		userId: string;
+		organizationId: string;
+	}): Promise<OrganizationMember.Model | null>;
 	findByOrganizationId(
 		organizationId: string,
 	): Promise<OrganizationMember.Model[]>;
