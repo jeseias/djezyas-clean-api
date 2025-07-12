@@ -1,7 +1,7 @@
 import { organizationMongooseRepository } from "@/src/modules/organization/adapters/factories/repository.factory";
 import type { OrganizationRepository } from "@/src/modules/organization/core/ports/outbound/organization-repository";
 import { AddPriceUseCase } from "@/src/modules/product/core/app/usecases/add-price/add-price.use-case";
-import { CreateProductUseCase } from "@/src/modules/product/core/app/usecases/create-product/create-product.use-case";
+import { CreateProductUseCase } from "@/src/modules/product/core/app/usecases/save-product/save-product.use-case";
 import { CreateProductCategoryUseCase } from "@/src/modules/product/core/app/usecases/create-product-category/create-product-category.use-case";
 import { SaveProductTypeUseCase } from "@/src/modules/product/core/app/usecases/save-product-type/save-product-type.use-case";
 import { UpdateCurrencyUseCase } from "@/src/modules/product/core/app/usecases/update-currency/update-currency.use-case";

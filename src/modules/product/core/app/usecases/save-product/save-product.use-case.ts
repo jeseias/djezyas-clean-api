@@ -8,8 +8,9 @@ import type { ProductCategoryRepository } from "../../../ports/outbound/product-
 import type { ProductRepository } from "../../../ports/outbound/product-repository";
 import type { ProductTypeRepository } from "../../../ports/outbound/product-type-repository";
 
-export namespace CreateProduct {
+export namespace SaveProduct {
 	export type Params = {
+		id?: string; 
 		name: string;
 		description?: string;
 		categoryId: string;
@@ -32,7 +33,7 @@ export namespace CreateProduct {
 	export type Result = Product.Model;
 }
 
-export class CreateProductUseCase {
+export class SaveProductUseCase {
 	constructor(
 		private readonly productRepository: ProductRepository,
 		private readonly userRepository: UserRepository,
@@ -41,7 +42,7 @@ export class CreateProductUseCase {
 		private readonly productTypeRepository: ProductTypeRepository,
 	) {}
 
-	async execute(params: CreateProduct.Params): Promise<CreateProduct.Result> {
+	async execute(params: SaveProduct.Params): Promise<SaveProduct.Result> {
 		const userModel = await this.userRepository.findById(params.createdById);
 		if (!userModel) {
 			throw new AppError("User must exist", 400, ErrorCode.USER_NOT_FOUND);
@@ -119,12 +120,33 @@ export class CreateProductUseCase {
 			);
 		}
 
+		const isUpdate = !!params.id;
+		let existingProduct: Product.Model | null = null;
+
+		if (isUpdate) {
+			existingProduct = await this.productRepository.findById(params.id!);
+			if (!existingProduct) {
+				throw new AppError(
+					"Product not found",
+					404,
+					ErrorCode.ENTITY_NOT_FOUND,
+				);
+			}
+			if (existingProduct.organizationId !== params.organizationId) {
+				throw new AppError(
+					"Product does not belong to the organization",
+					403,
+					ErrorCode.UNAUTHORIZED,
+				);
+			}
+		}
+
 		if (params.sku) {
 			const existingProductWithSku = await this.productRepository.findBySku(
 				params.sku,
 				params.organizationId,
 			);
-			if (existingProductWithSku) {
+			if (existingProductWithSku && (!isUpdate || existingProductWithSku.id !== params.id)) {
 				throw new AppError(
 					"SKU must be unique within organization",
 					400,
@@ -139,7 +161,7 @@ export class CreateProductUseCase {
 					params.barcode,
 					params.organizationId,
 				);
-			if (existingProductWithBarcode) {
+			if (existingProductWithBarcode && (!isUpdate || existingProductWithBarcode.id !== params.id)) {
 				throw new AppError(
 					"Barcode must be unique within organization",
 					400,
@@ -148,24 +170,32 @@ export class CreateProductUseCase {
 			}
 		}
 
-		const product = Product.Entity.create({
-			name: params.name,
-			description: params.description,
-			categoryId: params.categoryId,
-			productTypeId: params.productTypeId,
-			status: params.status,
-			organizationId: params.organizationId,
-			createdById: params.createdById,
-			imageUrl: params.imageUrl,
-			sku: params.sku,
-			barcode: params.barcode,
-			weight: params.weight,
-			dimensions: params.dimensions,
-			meta: params.meta,
-		});
+		if (isUpdate) {
+			const productEntity = Product.Entity.fromModel(existingProduct!);
+			
+			productEntity.updateFromDTO(params);
 
-		await this.productRepository.create(product.toJSON());
+			await this.productRepository.update(productEntity.toJSON());
+			return productEntity.toJSON();
+		} else {
+			const product = Product.Entity.create({
+				name: params.name,
+				description: params.description,
+				categoryId: params.categoryId,
+				productTypeId: params.productTypeId,
+				status: params.status,
+				organizationId: params.organizationId,
+				createdById: params.createdById,
+				imageUrl: params.imageUrl,
+				sku: params.sku,
+				barcode: params.barcode,
+				weight: params.weight,
+				dimensions: params.dimensions,
+				meta: params.meta,
+			});
 
-		return product.toJSON();
+			await this.productRepository.create(product.toJSON());
+			return product.toJSON();
+		}
 	}
 }

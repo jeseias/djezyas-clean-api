@@ -203,6 +203,22 @@ export namespace Product {
 			this.props.updatedAt = new Date();
 		}
 
+		updateFromDTO(params: Partial<Omit<CreateParams, 'organizationId' | 'createdById'>>): void {
+			if (params.name !== undefined) this.updateName(params.name);
+			if (params.description !== undefined) this.updateDescription(params.description);
+			if (params.categoryId !== undefined) this.updateCategoryId(params.categoryId);
+			if (params.productTypeId !== undefined) this.updateProductTypeId(params.productTypeId);
+			if (params.status !== undefined) this.updateStatus(params.status);
+			if (params.imageUrl !== undefined) this.updateImageUrl(params.imageUrl);
+			if (params.sku !== undefined) this.updateSku(params.sku);
+			if (params.barcode !== undefined) this.updateBarcode(params.barcode);
+			if (params.weight !== undefined) this.updateWeight(params.weight);
+			if (params.dimensions !== undefined) this.updateDimensions(params.dimensions);
+			if (params.meta !== undefined) this.updateMeta(params.meta);
+
+			this.props.updatedAt = new Date();
+		}
+
 		toJSON(): Model {
 			return { ...this.props };
 		}
