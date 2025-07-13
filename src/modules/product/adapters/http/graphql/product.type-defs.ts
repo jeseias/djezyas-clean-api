@@ -1,206 +1,190 @@
 export const productTypeDefs = `#graphql
 	enum ProductStatus {
-		ACTIVE
-		INACTIVE
-		DRAFT
-		ARCHIVED
-	}
+    active
+    inactive
+    draft
+    archived
+  }
 
-	enum PriceType {
-		REGULAR
-		SALE
-		WHOLESALE
-		BULK
-	}
+  type Product {
+    id: String! 
+    name: String! 
+    slug: String! 
+    description: String
+    categoryId: String!
+    productTypeId: String!
+    status: ProductStatus!
+    organizationId: String!
+    createdById: String!
+    imageUrl: String
+    sku: String
+    barcode: String
+    weight: Float
+    dimensions: ProductDimensions
+    meta: JSON
+    createdAt: DateTime!
+    updatedAt: DateTime!
+  }
 
-	enum PriceStatus {
-		ACTIVE
-		INACTIVE
-		EXPIRED
-	}
+  type Price {
+    id: String!
+    productId: String!
+    currencyId: String!
+    amount: Float!
+    type: PriceType!
+    status: PriceStatus!
+    validFrom: DateTime
+    validUntil: DateTime
+    createdAt: DateTime!
+    updatedAt: DateTime!
+  }
 
-	enum CurrencyStatus {
-		ACTIVE
-		INACTIVE
-	}
+  type ProductCategory {
+    id: String!
+    name: String!
+    slug: String!
+    description: String
+    createdAt: DateTime!
+    updatedAt: DateTime!
+  }
 
-	type ProductDimensions {
-		length: Float!
-		width: Float!
-		height: Float!
-	}
+  type ProductType {
+    id: String!
+    name: String!
+    slug: String! 
+    description: String
+    createdById: String!
+    organizationId: String!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+  }
 
-	type Product {
-		id: ID!
-		name: String!
-		slug: String!
-		description: String
-		categoryId: ID!
-		productTypeId: ID!
-		status: ProductStatus!
-		organizationId: ID!
-		createdById: ID!
-		imageUrl: String
-		sku: String
-		barcode: String
-		weight: Float
-		dimensions: ProductDimensions
-		meta: JSON
-		createdAt: DateTime!
-		updatedAt: DateTime!
-	}
+  enum CurrencyStatus {
+    active
+    inactive
+  }
 
-	type ProductCategory {
-		id: ID!
-		name: String!
-		slug: String!
-		description: String
-		createdAt: DateTime!
-		updatedAt: DateTime!
-	}
+  type Currency {
+    id: String!
+    code: String!
+    name: String!
+    symbol: String!
+    status: CurrencyStatus!
+    exchangeRate: Float
+    createdAt: DateTime!
+    updatedAt: DateTime!
+  }
 
-	type ProductType {
-		id: ID!
-		name: String!
-		slug: String!
-		description: String
-		organizationId: ID!
-		createdById: ID!
-		createdAt: DateTime!
-		updatedAt: DateTime!
-	}
+  enum PriceType {
+    regular
+    sale
+    wholesale
+    bulk
+  }
 
-	type Price {
-		id: ID!
-		productId: ID!
-		currencyId: ID!
-		amount: Float!
-		type: PriceType!
-		status: PriceStatus!
-		validFrom: DateTime
-		validUntil: DateTime
-		createdAt: DateTime!
-		updatedAt: DateTime!
-	}
+  enum PriceStatus {
+    active
+    inactive
+    expired
+  }
 
-	type Currency {
-		id: ID!
-		code: String!
-		name: String!
-		symbol: String!
-		status: CurrencyStatus!
-		exchangeRate: Float
-		createdAt: DateTime!
-		updatedAt: DateTime!
-	}
+  type ProductDimensions {
+    length: Float
+    width: Float
+    height: Float
+  }
 
-	input CreateProductInput {
-		name: String!
-		description: String
-		categoryId: ID!
-		productTypeId: ID!
-		status: ProductStatus
-		organizationId: ID!
-		imageUrl: String
-		sku: String
-		barcode: String
-		weight: Float
-		dimensions: ProductDimensionsInput
-		meta: JSON
-	}
+  input AddPriceInput {
+    productId: String!
+    currencyId: String!
+    amount: Float!
+    type: PriceType
+    status: PriceStatus
+    validFrom: DateTime
+    validUntil: DateTime
+  }
 
-	input ProductDimensionsInput {
-		length: Float!
-		width: Float!
-		height: Float!
-	}
+  input CreateProductCategoryInput {
+    name: String! 
+    description: String
+  }
 
-	input CreateProductCategoryInput {
-		name: String!
-		description: String
-	}
+  input ProductDimensionsInput {
+    length: Float
+    width: Float
+    height: Float
+  }
 
-	input SaveProductTypeInput {
-		id: ID
-		name: String!
-		description: String
-		organizationId: ID!
-	}
+  input SaveProductInput {
+    id: String
+    name: String!
+    description: String
+    categoryId: String!
+    productTypeId: String!
+    status: ProductStatus
+    imageUrl: String
+    sku: String
+    barcode: String
+    weight: Float
+    dimensions: ProductDimensionsInput
+    meta: JSON
+  }
 
-	input AddPriceInput {
-		productId: ID!
-		currencyId: ID!
-		amount: Float!
-		type: PriceType
-		status: PriceStatus
-		validFrom: DateTime
-		validUntil: DateTime
-	}
+  input SaveProductTypeInput {
+    id: String
+    name: String!
+    description: String
+    organizationId: String!
+  }
 
-	input UpdateCurrencyInput {
-		currencyId: ID!
-		name: String
-		symbol: String
-		status: CurrencyStatus
-		exchangeRate: Float
-	}
+  input SaveCurrencyInput {
+    currencyId: String
+    code: String
+    name: String
+    symbol: String
+    status: CurrencyStatus
+    exchangeRate: Float
+  }
 
-	type CreateProductResult {
-		success: Boolean!
-		product: Product
-		error: String
-	}
+  type Mutation {
+    addPrice(input: AddPriceInput!): Price!
+    createProductCategory(input: CreateProductCategoryInput!): ProductCategory!
+    saveProduct(input: SaveProductInput!): Product!
+    saveProductType(input: SaveProductTypeInput!): ProductType!
+    saveCurrency(input: SaveCurrencyInput!): Currency!
+  }
 
-	type CreateProductCategoryResult {
-		success: Boolean!
-		productCategory: ProductCategory
-		error: String
-	}
+  input ProductFiltersInput {
+    status: ProductStatus
+    categoryId: String
+    productTypeId: String
+    search: String
+    hasSku: Boolean
+    hasBarcode: Boolean
+    hasImage: Boolean
+    createdAfter: DateTime
+    createdBefore: DateTime
+    updatedAfter: DateTime
+    updatedBefore: DateTime
+    limit: Int
+    page: Int
+    sortBy: String
+    sortOrder: String
+  }
 
-	type SaveProductTypeResult {
-		success: Boolean!
-		productType: ProductType
-		error: String
-	}
+  input FindProductByOrganizationInput {
+    organizationId: String!
+    filters: ProductFiltersInput
+  }
 
-	type AddPriceResult {
-		success: Boolean!
-		price: Price
-		error: String
-	}
+  type FindProductByOrganizationResult {
+    items: [Product]!
+    totalItems: Int!
+  }
 
-	type UpdateCurrencyResult {
-		success: Boolean!
-		currency: Currency
-		error: String
-	}
+  type Query {
+    findProductByOrganization(input: FindProductByOrganizationInput!): FindProductByOrganizationResult!
+  }
 
-	type Query {
-		products(organizationId: ID!): [Product!]!
-		product(id: ID!): Product
-		productBySlug(slug: String!): Product
-		productsByCategory(categoryId: ID!): [Product!]!
-		productsByType(productTypeId: ID!): [Product!]!
-		productCategories: [ProductCategory!]!
-		productCategory(id: ID!): ProductCategory
-		productCategoryBySlug(slug: String!): ProductCategory
-		productTypes(organizationId: ID!): [ProductType!]!
-		productType(id: ID!): ProductType
-		productTypeBySlug(slug: String!, organizationId: ID!): ProductType
-		prices(productId: ID!): [Price!]!
-		currencies: [Currency!]!
-		currency(id: ID!): Currency
-		currencyByCode(code: String!): Currency
-	}
-
-	type Mutation {
-		createProduct(input: CreateProductInput!): CreateProductResult!
-		createProductCategory(input: CreateProductCategoryInput!): CreateProductCategoryResult!
-		saveProductType(input: SaveProductTypeInput!): SaveProductTypeResult!
-		addPrice(input: AddPriceInput!): AddPriceResult!
-		updateCurrency(input: UpdateCurrencyInput!): UpdateCurrencyResult!
-	}
-
-	scalar DateTime
-	scalar JSON
+    
 `;

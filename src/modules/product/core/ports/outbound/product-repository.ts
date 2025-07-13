@@ -47,5 +47,8 @@ export type ProductRepository = Pick<
 	findByOrganizationIdWithFilters(
 		organizationId: string,
 		filters: ProductFilters.Filters,
-	): Promise<Product.Model[]>;
+	): Promise<{
+		items: Product.Model[];
+		totalItems: number;
+	}>;
 };

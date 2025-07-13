@@ -36,6 +36,7 @@
 		"graphql": "^16.11.0",
 		"jsonwebtoken": "^9.0.2",
 		"mongoose": "^8.16.1",
+		"pino": "^9.7.0",
 		"postmark": "^4.0.5",
 		"pug": "^3.0.3",
 		"uuid": "^11.1.0",

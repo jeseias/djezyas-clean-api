@@ -17,7 +17,10 @@ export namespace FindOrganizationProducts {
 		filters?: Filters;
 	};
 
-	export type Result = Product.Model[];
+	export type Result = {
+		items: Product.Model[];
+		totalItems: number;
+	};
 }
 
 export class FindOrganizationProductsUseCase {

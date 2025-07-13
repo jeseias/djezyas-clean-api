@@ -30,7 +30,7 @@ export class LoadMyOrganizationsUseCase {
 	async execute(
 		params: LoadMyOrganizations.Params,
 	): Promise<LoadMyOrganizations.Result> {
-		const memberships = await this.organizationMemberRepository.findByUserId(
+		const memberships = await this.organizationMemberRepository.findAllByUserId(
 			params.userId,
 		);
 

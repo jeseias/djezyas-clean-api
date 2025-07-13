@@ -9,8 +9,8 @@ export type OrganizationMemberRepository = Pick<
 		userId: string;
 		organizationId: string;
 	}): Promise<OrganizationMember.Model | null>;
+	findAllByUserId(userId: string): Promise<OrganizationMember.Model[]>;
 	findByOrganizationId(
 		organizationId: string,
 	): Promise<OrganizationMember.Model[]>;
-	// Add more methods as needed
 };

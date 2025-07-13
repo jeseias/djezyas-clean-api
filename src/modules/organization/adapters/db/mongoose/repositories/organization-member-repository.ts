@@ -49,7 +49,19 @@ export class MongooseOrganizationMemberRepository
 		}
 	}
 
-	async findByUserId(userId: string): Promise<OrganizationMember.Model[]> {
+	async findByUserId(params: {
+		userId: string;
+		organizationId: string;
+	}): Promise<OrganizationMember.Model | null> {
+		const { userId, organizationId } = params;
+		const doc = await OrganizationMemberModel.findOne({
+			userId,
+			organizationId,
+		});
+		return doc ? this.mapToDomain(doc) : null;
+	}
+
+	async findAllByUserId(userId: string): Promise<OrganizationMember.Model[]> {
 		const docs = await OrganizationMemberModel.find({ userId });
 		return docs.map((doc) => this.mapToDomain(doc));
 	}
