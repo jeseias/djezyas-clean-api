@@ -20,6 +20,9 @@ export const handleResolver = <T extends (...args: any[]) => Promise<any>>(
 
 export const makeResolver = <T extends (...args: any[]) => any>(
 	fn: T,
+	options?: {
+		isAdmin?: boolean;
+	},
 ): ReturnType<typeof withUser> => {
-	return withUser(handleResolver(fn));
+	return withUser(handleResolver(fn), options);
 };

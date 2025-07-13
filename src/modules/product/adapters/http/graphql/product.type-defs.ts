@@ -1,4 +1,7 @@
 export const productTypeDefs = `#graphql
+  scalar JSON
+  scalar DateTime
+  
 	enum ProductStatus {
     active
     inactive

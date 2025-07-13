@@ -1,7 +1,8 @@
 import { makeVerifyTokenUseCase } from "@/src/modules/user/adapters/factories/use-cases.factory";
+import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 
 export function requireAuth(context: any) {
-	if (!context.user) throw new Error("Unauthorized");
+	if (!context.user) throw new AppError("Unauthorized", 401, ErrorCode.UNAUTHORIZED);
 	return context.user;
 }
 
@@ -55,9 +56,18 @@ export function withUser<TArgs = any, TResult = any>(
 		},
 		info?: any,
 	) => Promise<TResult>,
+	options?: {
+		isAdmin?: boolean;
+	},
 ) {
 	return async (_: any, args: TArgs, context: any, info: any) => {
-		if (!context.user) throw new Error("Unauthorized");
+		if (!context.user) throw new AppError("Unauthorized", 401, ErrorCode.UNAUTHORIZED);
+		
+		// Check if admin role is required
+		if (options?.isAdmin && context.user.role !== "admin") {
+			throw new AppError("Admin access required", 403, ErrorCode.ADMIN_ACCESS_REQUIRED);
+		}
+		
 		const useCaseContext = {
 			userId: context.user.id,
 			userEmail: context.user.email,

@@ -3,13 +3,11 @@ import { productUseCasesFactory } from "../../factories";
 
 export const productResolvers = {
 	Query: {
-		Query: {
-			findProductByOrganization: makeResolver(async ({ input }, { userId }) => {
-				return productUseCasesFactory
-					.findProductsByOrganization()
-					.execute({ ...input, userId });
-			}),
-		},
+    findProductByOrganization: makeResolver(async ({ input }, { userId }) => {
+      return productUseCasesFactory
+        .findProductsByOrganization()
+        .execute({ ...input, userId });
+    }),
 	},
 	Mutation: {
 		addPrice: makeResolver(async ({ input }) => {
@@ -18,7 +16,7 @@ export const productResolvers = {
 
 		createProductCategory: makeResolver(async ({ input }) => {
 			return productUseCasesFactory.createProductCategory().execute(input);
-		}),
+		}, { isAdmin: true }),
 
 		saveProduct: makeResolver(async ({ input }, { userId }) => {
 			return productUseCasesFactory.saveProduct().execute({
@@ -45,6 +43,6 @@ export const productResolvers = {
 				id: input.currencyId,
 				...input,
 			});
-		}),
+		}, { isAdmin: true }),
 	},
 };
