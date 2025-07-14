@@ -15,6 +15,7 @@ import type { ProductRepository } from "@/src/modules/product/core/ports/outboun
 import { isUserValidService } from "@/src/modules/user/adapters/factories/service.factory";
 import type { IsUserValidService } from "@/src/modules/user/core/app/services";
 import { CreateOrderUseCase } from "../../app/use-cases";
+import { UpdateOrderStatusUseCase } from "../../app/use-cases/update-order-status/update-order-status.use-case";
 import type { OrderRepository } from "../../domain/repositories/order-repository";
 import { orderMongooseRepository } from "./repository.factory";
 
@@ -37,6 +38,10 @@ export class OrderUseCasesFactory {
 			this.productRepository,
 			this.priceRepository,
 		);
+	}
+
+	updateOrderStatus() {
+		return new UpdateOrderStatusUseCase(this.orderRepository);
 	}
 }
 

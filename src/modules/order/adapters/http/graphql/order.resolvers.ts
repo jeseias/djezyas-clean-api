@@ -6,5 +6,11 @@ export const orderResolvers = {
 		createOrder: makeResolver(async ({ input }, { userId }) => {
 			return orderUseCasesFactory.createOrder().execute({ ...input, userId });
 		}),
+		updateOrderStatus: makeResolver(async ({ input }, { userId }) => {
+			return orderUseCasesFactory.updateOrderStatus().execute({
+				...input,
+				userId,
+			});
+		}),
 	},
 };

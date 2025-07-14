@@ -77,7 +77,13 @@ export const orderTypeDefs = `#graphql
     findOrdersByUser(input: FindOrdersByUserInput!): FindOrdersResult!
   }
 
+  input UpdateOrderStatusInput {
+    orderId: String!
+    status: OrderStatus!
+  }
+
   type Mutation {
     createOrder(input: CreateOrderInput!): Order!
+    updateOrderStatus(input: UpdateOrderStatusInput!): Order!
   }
 `;
