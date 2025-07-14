@@ -204,6 +204,10 @@ export namespace Product {
 			this.props.updatedAt = new Date();
 		}
 
+		isActive(): boolean {
+			return this.props.status === Status.ACTIVE;
+		}
+
 		updateFromDTO(
 			params: Partial<Omit<CreateParams, "organizationId" | "createdById">>,
 		): void {

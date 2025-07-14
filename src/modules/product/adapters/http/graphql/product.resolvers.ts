@@ -54,16 +54,6 @@ export const productResolvers = {
 				.execute({ ...input, userId });
 		}),
 
-		saveCurrency: makeResolver(
-			async ({ input }) => {
-				return productUseCasesFactory.saveCurrency().execute({
-					id: input.currencyId,
-					...input,
-				});
-			},
-			{ isAdmin: true },
-		),
-
 		updatePriceAmount: makeResolver(async ({ input }, { userId }) => {
 			return productUseCasesFactory
 				.updatePriceAmount()

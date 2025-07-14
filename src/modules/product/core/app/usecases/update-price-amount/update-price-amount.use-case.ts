@@ -48,9 +48,9 @@ export class UpdatePriceAmountUseCase {
 		const price = Price.Entity.fromModel(priceModel);
 		price.updateAmount(params.amount);
 
-		await this.priceRepository.update(price.toJSON());
+		await this.priceRepository.update(price.getSnapshot());
 
-		return price.toJSON();
+		return price.getSnapshot();
 	}
 
 	private async validateUserAccess(

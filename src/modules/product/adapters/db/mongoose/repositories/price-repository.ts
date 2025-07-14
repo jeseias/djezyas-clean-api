@@ -1,16 +1,11 @@
-import type { Price } from "@/src/modules/product/core/domain/entities";
+import { Price } from "@/src/modules/product/core/domain/entities";
 import type { PriceRepository } from "@/src/modules/product/core/ports/outbound/price-repository";
-import { PriceModel } from "../price-model";
+import { type PriceDocument, PriceModel } from "../price-model";
 
 export class MongoosePriceRepository implements PriceRepository {
 	async create(price: Price.Model): Promise<Price.Model> {
 		const doc = await PriceModel.create(price);
-		const json = doc.toJSON();
-		return {
-			...json,
-			type: json.type as Price.Type,
-			status: json.status as Price.Status,
-		};
+		return this.toEntity(doc.toJSON());
 	}
 
 	async update(data: Partial<Price.Model>): Promise<Price.Model> {
@@ -26,12 +21,7 @@ export class MongoosePriceRepository implements PriceRepository {
 			throw new Error("Price not found");
 		}
 
-		const json = doc.toJSON();
-		return {
-			...json,
-			type: json.type as Price.Type,
-			status: json.status as Price.Status,
-		};
+		return this.toEntity(doc.toJSON());
 	}
 
 	async delete(id: string): Promise<void> {
@@ -42,23 +32,13 @@ export class MongoosePriceRepository implements PriceRepository {
 		const doc = await PriceModel.findOne({ id });
 		if (!doc) return null;
 
-		const json = doc.toJSON();
-		return {
-			...json,
-			type: json.type as Price.Type,
-			status: json.status as Price.Status,
-		};
+		return this.toEntity(doc.toJSON());
 	}
 
 	async findByProductId(productId: string): Promise<Price.Model[]> {
 		const docs = await PriceModel.find({ productId });
 		return docs.map((doc) => {
-			const json = doc.toJSON();
-			return {
-				...json,
-				type: json.type as Price.Type,
-				status: json.status as Price.Status,
-			};
+			return this.toEntity(doc.toJSON());
 		});
 	}
 
@@ -68,12 +48,22 @@ export class MongoosePriceRepository implements PriceRepository {
 	): Promise<Price.Model[]> {
 		const docs = await PriceModel.find({ productId, currencyId });
 		return docs.map((doc) => {
-			const json = doc.toJSON();
-			return {
-				...json,
-				type: json.type as Price.Type,
-				status: json.status as Price.Status,
-			};
+			return this.toEntity(doc.toJSON());
+		});
+	}
+
+	private toEntity(json: PriceDocument): Price.Model {
+		return Price.Entity.fromModel({
+			id: json.id,
+			productId: json.productId,
+			currency: json.currency,
+			unitAmount: json.unitAmount,
+			type: json.type as Price.Type,
+			status: json.status as Price.Status,
+			validFrom: json.validFrom,
+			validUntil: json.validUntil,
+			createdAt: json.createdAt,
+			updatedAt: json.updatedAt,
 		});
 	}
 }

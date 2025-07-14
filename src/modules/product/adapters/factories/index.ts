@@ -1,5 +1,4 @@
 export {
-	currencyMongooseRepository,
 	priceMongooseRepository,
 	productCategoryMongooseRepository,
 	productMongooseRepository,

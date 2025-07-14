@@ -1,5 +1,6 @@
 import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import { type Id, id } from "@/src/modules/shared/value-objects";
+import type { Product } from "./product";
 
 export namespace Price {
 	export enum Type {
@@ -18,8 +19,9 @@ export namespace Price {
 	export type Model = {
 		id: Id;
 		productId: Id;
-		currencyId: Id;
-		amount: number;
+		product?: Product.Model;
+		currency: string;
+		unitAmount: number;
 		type: Type;
 		status: Status;
 		validFrom?: Date;
@@ -29,9 +31,10 @@ export namespace Price {
 	};
 
 	export type CreateParams = {
+		id?: Id;
 		productId: Id;
-		currencyId: Id;
-		amount: number;
+		currency: string;
+		unitAmount: number;
 		type?: Type;
 		status?: Status;
 		validFrom?: Date;
@@ -42,12 +45,14 @@ export namespace Price {
 		private constructor(private readonly props: Model) {}
 
 		static create(params: CreateParams): Entity {
+			Entity.validateAmount(params.unitAmount);
+
 			const now = new Date();
 			const price: Model = {
-				id: id(),
+				id: params.id ?? id(),
 				productId: params.productId,
-				currencyId: params.currencyId,
-				amount: params.amount,
+				currency: params.currency,
+				unitAmount: params.unitAmount,
 				type: params.type ?? Type.REGULAR,
 				status: params.status ?? Status.ACTIVE,
 				validFrom: params.validFrom,
@@ -55,6 +60,7 @@ export namespace Price {
 				createdAt: now,
 				updatedAt: now,
 			};
+
 			return new Entity(price);
 		}
 
@@ -62,8 +68,8 @@ export namespace Price {
 			return new Entity(model);
 		}
 
-		static validateAmount(amount: number): void {
-			if (amount <= 0) {
+		static validateAmount(unitAmount: number): void {
+			if (unitAmount <= 0) {
 				throw new AppError(
 					"Price amount must be greater than zero",
 					400,
@@ -78,11 +84,11 @@ export namespace Price {
 		get productId(): Id {
 			return this.props.productId;
 		}
-		get currencyId(): Id {
-			return this.props.currencyId;
+		get currency(): string {
+			return this.props.currency;
 		}
-		get amount(): number {
-			return this.props.amount;
+		get unitAmount(): number {
+			return this.props.unitAmount;
 		}
 		get type(): Type {
 			return this.props.type;
@@ -103,9 +109,9 @@ export namespace Price {
 			return this.props.updatedAt;
 		}
 
-		updateAmount(amount: number): void {
-			Entity.validateAmount(amount);
-			this.props.amount = amount;
+		updateAmount(unitAmount: number): void {
+			Entity.validateAmount(unitAmount);
+			this.props.unitAmount = unitAmount;
 			this.props.updatedAt = new Date();
 		}
 
@@ -125,21 +131,21 @@ export namespace Price {
 			this.props.updatedAt = new Date();
 		}
 
-		isValid(): boolean {
+		isExpired(): boolean {
 			const now = new Date();
-			if (this.props.status !== Status.ACTIVE) {
-				return false;
-			}
-			if (this.props.validFrom && now < this.props.validFrom) {
-				return false;
-			}
-			if (this.props.validUntil && now > this.props.validUntil) {
-				return false;
-			}
-			return true;
+			return !!this.props.validUntil && now > this.props.validUntil;
 		}
 
-		toJSON(): Model {
+		isValid(): boolean {
+			const now = new Date();
+			return (
+				this.props.status === Status.ACTIVE &&
+				(!this.props.validFrom || now >= this.props.validFrom) &&
+				(!this.props.validUntil || now <= this.props.validUntil)
+			);
+		}
+
+		getSnapshot(): Model {
 			return { ...this.props };
 		}
 	}

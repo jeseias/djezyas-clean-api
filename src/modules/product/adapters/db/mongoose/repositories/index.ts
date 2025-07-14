@@ -1,4 +1,3 @@
-export * from "./currency-repository";
 export * from "./price-repository";
 export * from "./product-category-repository";
 export * from "./product-repository";

@@ -62,22 +62,6 @@ export const productTypeDefs = `#graphql
     updatedAt: DateTime!
   }
 
-  enum CurrencyStatus {
-    active
-    inactive
-  }
-
-  type Currency {
-    id: String!
-    code: String!
-    name: String!
-    symbol: String!
-    status: CurrencyStatus!
-    exchangeRate: Float
-    createdAt: DateTime!
-    updatedAt: DateTime!
-  }
-
   enum PriceType {
     regular
     sale
@@ -138,15 +122,6 @@ export const productTypeDefs = `#graphql
     name: String!
     description: String
     organizationId: String!
-  }
-
-  input SaveCurrencyInput {
-    currencyId: String
-    code: String
-    name: String
-    symbol: String
-    status: CurrencyStatus
-    exchangeRate: Float
   }
 
   input ProductFiltersInput {
@@ -225,7 +200,6 @@ export const productTypeDefs = `#graphql
     createProductCategory(input: CreateProductCategoryInput!): ProductCategory!
     saveProduct(input: SaveProductInput!): Product!
     saveProductType(input: SaveProductTypeInput!): ProductType!
-    saveCurrency(input: SaveCurrencyInput!): Currency!
     updatePriceAmount(input: UpdatePriceAmountInput!): Price!
     updatePriceStatus(input: UpdatePriceStatusInput!): Price!
     updateProductStatus(input: UpdateProductStatusInput!): Product!

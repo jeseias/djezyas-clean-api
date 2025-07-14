@@ -4,6 +4,10 @@ import { ModelValidator } from "./model-validator";
 // This file ensures all models are registered in the correct order
 
 export {
+	type OrderDocument,
+	OrderModel,
+} from "../../../../order/adapters/db/mongoose/order-model";
+export {
 	type OrganizationInvitationDocument,
 	OrganizationInvitationModel,
 } from "../../../../organization/adapters/db/mongoose/organization-invitation-model";
@@ -11,16 +15,11 @@ export {
 	type OrganizationMemberDocument,
 	OrganizationMemberModel,
 } from "../../../../organization/adapters/db/mongoose/organization-member-model";
-
 // Organization module models
 export {
 	type OrganizationDocument,
 	OrganizationModel,
 } from "../../../../organization/adapters/db/mongoose/organization-model";
-export {
-	type CurrencyDocument,
-	CurrencyModel,
-} from "../../../../product/adapters/db/mongoose/currency-model";
 export {
 	type PriceDocument,
 	PriceModel,
@@ -42,13 +41,11 @@ export {
 	type SessionDocument,
 	SessionModel,
 } from "../../../../user/adapters/db/mongoose/session-model";
-// User module models
 export {
 	type UserDocument,
 	UserModel,
 } from "../../../../user/adapters/db/mongoose/user-model";
 
-// Expected model names for validation
 const EXPECTED_MODELS = [
 	"User",
 	"Session",
@@ -59,15 +56,10 @@ const EXPECTED_MODELS = [
 	"ProductCategory",
 	"ProductType",
 	"Price",
-	"Currency",
+	"Order",
 ];
 
-// Model registration function to ensure proper initialization
 export function registerAllModels(): void {
-	// This function ensures all models are imported and registered
-	// The imports above will trigger model registration
-
-	// Validate model registration
 	const validation = ModelValidator.validateModelRegistration(EXPECTED_MODELS);
 
 	if (!validation.isValid) {
@@ -80,14 +72,12 @@ export function registerAllModels(): void {
 		}
 	}
 
-	// Check for duplicate issues
 	const duplicateCheck = ModelValidator.checkForDuplicateIssues();
 	if (duplicateCheck.hasIssues) {
 		console.warn("⚠️ Potential duplicate schema issues detected:");
 		duplicateCheck.issues.forEach((issue) => console.warn(`  - ${issue}`));
 	}
 
-	// Log model status
 	ModelValidator.logModelStatus();
 
 	console.log("✅ All mongoose models registered successfully");

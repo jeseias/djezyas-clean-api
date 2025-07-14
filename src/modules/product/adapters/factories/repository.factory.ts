@@ -1,4 +1,3 @@
-import { MongooseCurrencyRepository } from "@/src/modules/product/adapters/db/mongoose/repositories/currency-repository";
 import { MongoosePriceRepository } from "@/src/modules/product/adapters/db/mongoose/repositories/price-repository";
 import { MongooseProductCategoryRepository } from "@/src/modules/product/adapters/db/mongoose/repositories/product-category-repository";
 import { MongooseProductRepository } from "@/src/modules/product/adapters/db/mongoose/repositories/product-repository";
@@ -10,4 +9,3 @@ export const productCategoryMongooseRepository =
 export const productTypeMongooseRepository =
 	new MongooseProductTypeRepository();
 export const priceMongooseRepository = new MongoosePriceRepository();
-export const currencyMongooseRepository = new MongooseCurrencyRepository();

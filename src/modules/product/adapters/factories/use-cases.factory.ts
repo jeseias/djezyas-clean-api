@@ -12,13 +12,11 @@ import { AddPriceUseCase } from "@/src/modules/product/core/app/usecases/add-pri
 import { CreateProductCategoryUseCase } from "@/src/modules/product/core/app/usecases/create-product-category/create-product-category.use-case";
 import { GetProductByIdUseCase } from "@/src/modules/product/core/app/usecases/get-product-by-id/get-product-by-id.use-case";
 import { LoadPricesByProductIdUseCase } from "@/src/modules/product/core/app/usecases/load-prices-by-product-id/load-prices-by-product-id.use-case";
-import { SaveCurrencyUseCase } from "@/src/modules/product/core/app/usecases/save-currency/save-currency.use-case";
 import { SaveProductUseCase } from "@/src/modules/product/core/app/usecases/save-product/save-product.use-case";
 import { SaveProductTypeUseCase } from "@/src/modules/product/core/app/usecases/save-product-type/save-product-type.use-case";
 import { UpdatePriceAmountUseCase } from "@/src/modules/product/core/app/usecases/update-price-amount/update-price-amount.use-case";
 import { UpdatePriceStatusUseCase } from "@/src/modules/product/core/app/usecases/update-price-status/update-price-status.use-case";
 import { UpdateProductStatusUseCase } from "@/src/modules/product/core/app/usecases/update-product-status/update-product-status.use-case";
-import type { CurrencyRepository } from "@/src/modules/product/core/ports/outbound/currency-repository";
 import type { PriceRepository } from "@/src/modules/product/core/ports/outbound/price-repository";
 import type { ProductCategoryRepository } from "@/src/modules/product/core/ports/outbound/product-category-repository";
 import type { ProductRepository } from "@/src/modules/product/core/ports/outbound/product-repository";
@@ -30,7 +28,6 @@ import type { UserRepository } from "@/src/modules/user/core/ports/outbound/user
 import { FindOrganizationProductsUseCase } from "../../core/app/usecases/find-products-by-organization/find-products-by-organization.use-case";
 import { ListProductCategoriesUseCase } from "../../core/app/usecases/list-product-categories/list-product-categories.use-case";
 import {
-	currencyMongooseRepository,
 	priceMongooseRepository,
 	productCategoryMongooseRepository,
 	productMongooseRepository,
@@ -45,7 +42,6 @@ export class ProductUseCasesFactory {
 		private readonly userRepository: UserRepository,
 		private readonly organizationRepository: OrganizationRepository,
 		private readonly priceRepository: PriceRepository,
-		private readonly currencyRepository: CurrencyRepository,
 		private readonly isUserValidService: IsUserValidService,
 		private readonly isOrganizationValidService: IsOrganizationValidService,
 		private readonly isOrganizationMemberService: IsOrganizationMemberService,
@@ -83,15 +79,7 @@ export class ProductUseCasesFactory {
 	}
 
 	addPrice() {
-		return new AddPriceUseCase(
-			this.priceRepository,
-			this.productRepository,
-			this.currencyRepository,
-		);
-	}
-
-	saveCurrency() {
-		return new SaveCurrencyUseCase(this.currencyRepository);
+		return new AddPriceUseCase(this.priceRepository, this.productRepository);
 	}
 
 	listProductCategories() {
@@ -154,7 +142,6 @@ export const productUseCasesFactory = new ProductUseCasesFactory(
 	userMongooseRepository,
 	organizationMongooseRepository,
 	priceMongooseRepository,
-	currencyMongooseRepository,
 	isUserValidService,
 	isOrganizationValidService,
 	isOrganizationMemberService,

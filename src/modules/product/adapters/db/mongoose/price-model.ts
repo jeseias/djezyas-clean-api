@@ -3,8 +3,8 @@ import mongoose, { type Document, Schema } from "mongoose";
 export interface PriceDocument extends Document {
 	id: string;
 	productId: string;
-	currencyId: string;
-	amount: number;
+	currency: string;
+	unitAmount: number;
 	type: string;
 	status: string;
 	validFrom?: Date;
@@ -24,12 +24,11 @@ const priceSchema = new Schema<PriceDocument>(
 			required: true,
 			ref: "Product",
 		},
-		currencyId: {
+		currency: {
 			type: String,
 			required: true,
-			ref: "Currency",
 		},
-		amount: {
+		unitAmount: {
 			type: Number,
 			required: true,
 		},

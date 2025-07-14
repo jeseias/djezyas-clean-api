@@ -43,17 +43,14 @@ export class UpdatePriceStatusUseCase {
 			throw new AppError("Product not found", 404, ErrorCode.ENTITY_NOT_FOUND);
 		}
 
-		 await this.validateUserAccess(
-			params.userId,
-			productModel.organizationId,
-		);
+		await this.validateUserAccess(params.userId, productModel.organizationId);
 
 		const price = Price.Entity.fromModel(priceModel);
 		price.updateStatus(params.status);
 
-		await this.priceRepository.update(price.toJSON());
+		await this.priceRepository.update(price.getSnapshot());
 
-		return price.toJSON();
+		return price.getSnapshot();
 	}
 
 	private async validateUserAccess(
@@ -68,4 +65,4 @@ export class UpdatePriceStatusUseCase {
 			organizationId,
 		);
 	}
-} 
+}
