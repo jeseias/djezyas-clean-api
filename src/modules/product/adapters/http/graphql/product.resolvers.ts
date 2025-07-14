@@ -63,5 +63,11 @@ export const productResolvers = {
 			},
 			{ isAdmin: true },
 		),
+
+		updateProductStatus: makeResolver(async ({ input }, { userId }) => {
+			return productUseCasesFactory
+				.updateProductStatus()
+				.execute({ ...input, userId });
+		}),
 	},
 };

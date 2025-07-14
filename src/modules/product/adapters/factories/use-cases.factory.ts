@@ -15,6 +15,7 @@ import { LoadPricesByProductIdUseCase } from "@/src/modules/product/core/app/use
 import { SaveCurrencyUseCase } from "@/src/modules/product/core/app/usecases/save-currency/save-currency.use-case";
 import { SaveProductUseCase } from "@/src/modules/product/core/app/usecases/save-product/save-product.use-case";
 import { SaveProductTypeUseCase } from "@/src/modules/product/core/app/usecases/save-product-type/save-product-type.use-case";
+import { UpdateProductStatusUseCase } from "@/src/modules/product/core/app/usecases/update-product-status/update-product-status.use-case";
 import type { CurrencyRepository } from "@/src/modules/product/core/ports/outbound/currency-repository";
 import type { PriceRepository } from "@/src/modules/product/core/ports/outbound/price-repository";
 import type { ProductCategoryRepository } from "@/src/modules/product/core/ports/outbound/product-category-repository";
@@ -110,6 +111,15 @@ export class ProductUseCasesFactory {
 			this.isOrganizationValidService,
 			this.isOrganizationMemberService,
 			this.priceRepository,
+			this.productRepository,
+		);
+	}
+
+	updateProductStatus() {
+		return new UpdateProductStatusUseCase(
+			this.isUserValidService,
+			this.isOrganizationValidService,
+			this.isOrganizationMemberService,
 			this.productRepository,
 		);
 	}

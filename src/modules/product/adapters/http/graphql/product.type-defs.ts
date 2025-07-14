@@ -6,7 +6,7 @@ export const productTypeDefs = `#graphql
     active
     inactive
     draft
-    archived
+    deleted
   }
 
   type Product {
@@ -149,14 +149,6 @@ export const productTypeDefs = `#graphql
     exchangeRate: Float
   }
 
-  type Mutation {
-    addPrice(input: AddPriceInput!): Price!
-    createProductCategory(input: CreateProductCategoryInput!): ProductCategory!
-    saveProduct(input: SaveProductInput!): Product!
-    saveProductType(input: SaveProductTypeInput!): ProductType!
-    saveCurrency(input: SaveCurrencyInput!): Currency!
-  }
-
   input ProductFiltersInput {
     status: ProductStatus
     categoryId: String
@@ -206,11 +198,25 @@ export const productTypeDefs = `#graphql
     productId: String!
   }
 
+  input UpdateProductStatusInput {
+    productId: String!
+    status: ProductStatus!
+  }
+
   type Query {
     findProductByOrganization(input: FindProductByOrganizationInput!): FindProductByOrganizationResult!
     getProductById(input: GetProductByIdInput!): Product!
     loadPricesByProductId(input: LoadPricesByProductIdInput!): [Price]!
     listProductCategories(input: ListProductCategoriesInput!): ListProductCategoriesResult!
+  }
+
+  type Mutation {
+    addPrice(input: AddPriceInput!): Price!
+    createProductCategory(input: CreateProductCategoryInput!): ProductCategory!
+    saveProduct(input: SaveProductInput!): Product!
+    saveProductType(input: SaveProductTypeInput!): ProductType!
+    saveCurrency(input: SaveCurrencyInput!): Currency!
+    updateProductStatus(input: UpdateProductStatusInput!): Product!
   }
 
     

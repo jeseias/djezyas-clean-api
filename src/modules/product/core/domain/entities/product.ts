@@ -12,7 +12,7 @@ export namespace Product {
 		ACTIVE = "active",
 		INACTIVE = "inactive",
 		DRAFT = "draft",
-		ARCHIVED = "archived",
+		DELETED = "deleted",
 	}
 
 	export type Model = {
