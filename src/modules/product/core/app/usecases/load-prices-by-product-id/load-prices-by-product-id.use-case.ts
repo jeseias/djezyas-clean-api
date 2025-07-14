@@ -5,7 +5,7 @@ import type {
 import type { OrganizationMember } from "@/src/modules/organization/core/domain/entities/organization-member";
 import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import type { IsUserValidService } from "@/src/modules/user/core/app/services";
-import { Price } from "../../../domain/entities";
+import type { Price } from "../../../domain/entities";
 import type { PriceRepository } from "../../../ports/outbound/price-repository";
 import type { ProductRepository } from "../../../ports/outbound/product-repository";
 
@@ -27,16 +27,18 @@ export class LoadPricesByProductIdUseCase {
 		private readonly productRepository: ProductRepository,
 	) {}
 
-	async execute(params: LoadPricesByProductId.Params): Promise<LoadPricesByProductId.Result> {
-		const productModel = await this.productRepository.findById(params.productId);
+	async execute(
+		params: LoadPricesByProductId.Params,
+	): Promise<LoadPricesByProductId.Result> {
+		const productModel = await this.productRepository.findById(
+			params.productId,
+		);
 		if (!productModel) {
 			throw new AppError("Product not found", 404, ErrorCode.ENTITY_NOT_FOUND);
 		}
 
-		// Validate user access to the organization
 		await this.validateUserAccess(params.userId, productModel.organizationId);
 
-		// Load all prices for the product
 		const prices = await this.priceRepository.findByProductId(params.productId);
 
 		return prices;
@@ -54,4 +56,4 @@ export class LoadPricesByProductIdUseCase {
 			organizationId,
 		);
 	}
-} 
+}
