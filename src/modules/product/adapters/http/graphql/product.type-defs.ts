@@ -203,6 +203,11 @@ export const productTypeDefs = `#graphql
     status: ProductStatus!
   }
 
+  input UpdatePriceAmountInput {
+    priceId: String!
+    amount: Float!
+  }
+
   type Query {
     findProductByOrganization(input: FindProductByOrganizationInput!): FindProductByOrganizationResult!
     getProductById(input: GetProductByIdInput!): Product!
@@ -216,6 +221,7 @@ export const productTypeDefs = `#graphql
     saveProduct(input: SaveProductInput!): Product!
     saveProductType(input: SaveProductTypeInput!): ProductType!
     saveCurrency(input: SaveCurrencyInput!): Currency!
+    updatePriceAmount(input: UpdatePriceAmountInput!): Price!
     updateProductStatus(input: UpdateProductStatusInput!): Product!
   }
 

@@ -1,3 +1,4 @@
+import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import { type Id, id } from "@/src/modules/shared/value-objects";
 
 export namespace Price {
@@ -61,6 +62,16 @@ export namespace Price {
 			return new Entity(model);
 		}
 
+		static validateAmount(amount: number): void {
+			if (amount <= 0) {
+				throw new AppError(
+					"Price amount must be greater than zero",
+					400,
+					ErrorCode.INVALID_PRICE,
+				);
+			}
+		}
+
 		get id(): Id {
 			return this.props.id;
 		}
@@ -93,6 +104,7 @@ export namespace Price {
 		}
 
 		updateAmount(amount: number): void {
+			Entity.validateAmount(amount);
 			this.props.amount = amount;
 			this.props.updatedAt = new Date();
 		}

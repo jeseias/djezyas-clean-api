@@ -64,6 +64,12 @@ export const productResolvers = {
 			{ isAdmin: true },
 		),
 
+		updatePriceAmount: makeResolver(async ({ input }, { userId }) => {
+			return productUseCasesFactory
+				.updatePriceAmount()
+				.execute({ ...input, userId });
+		}),
+
 		updateProductStatus: makeResolver(async ({ input }, { userId }) => {
 			return productUseCasesFactory
 				.updateProductStatus()

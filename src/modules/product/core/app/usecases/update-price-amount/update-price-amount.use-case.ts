@@ -5,32 +5,39 @@ import type {
 import type { OrganizationMember } from "@/src/modules/organization/core/domain/entities/organization-member";
 import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import type { IsUserValidService } from "@/src/modules/user/core/app/services";
-import { Product } from "../../../domain/entities";
+import { Price } from "../../../domain/entities";
+import type { PriceRepository } from "../../../ports/outbound/price-repository";
 import type { ProductRepository } from "../../../ports/outbound/product-repository";
 
-export namespace UpdateProductStatus {
+export namespace UpdatePriceAmount {
 	export type Params = {
-		productId: string;
-		status: Product.Status;
+		priceId: string;
+		amount: number;
 		userId: string;
 	};
 
-	export type Result = Product.Model;
+	export type Result = Price.Model;
 }
 
-export class UpdateProductStatusUseCase {
+export class UpdatePriceAmountUseCase {
 	constructor(
 		private readonly isUserValidService: IsUserValidService,
 		private readonly isOrganizationValidService: IsOrganizationValidService,
 		private readonly isOrganizationMemberService: IsOrganizationMemberService,
+		private readonly priceRepository: PriceRepository,
 		private readonly productRepository: ProductRepository,
 	) {}
 
 	async execute(
-		params: UpdateProductStatus.Params,
-	): Promise<UpdateProductStatus.Result> {
+		params: UpdatePriceAmount.Params,
+	): Promise<UpdatePriceAmount.Result> {
+		const priceModel = await this.priceRepository.findById(params.priceId);
+		if (!priceModel) {
+			throw new AppError("Price not found", 404, ErrorCode.ENTITY_NOT_FOUND);
+		}
+
 		const productModel = await this.productRepository.findById(
-			params.productId,
+			priceModel.productId,
 		);
 		if (!productModel) {
 			throw new AppError("Product not found", 404, ErrorCode.ENTITY_NOT_FOUND);
@@ -38,13 +45,12 @@ export class UpdateProductStatusUseCase {
 
 		await this.validateUserAccess(params.userId, productModel.organizationId);
 
-		const product = Product.Entity.fromModel(productModel);
+		const price = Price.Entity.fromModel(priceModel);
+		price.updateAmount(params.amount);
 
-		product.updateStatus(params.status);
+		await this.priceRepository.update(price.toJSON());
 
-		await this.productRepository.update(product.toJSON());
-
-		return product.toJSON();
+		return price.toJSON();
 	}
 
 	private async validateUserAccess(
