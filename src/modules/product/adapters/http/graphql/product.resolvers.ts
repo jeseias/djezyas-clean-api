@@ -70,6 +70,12 @@ export const productResolvers = {
 				.execute({ ...input, userId });
 		}),
 
+		updatePriceStatus: makeResolver(async ({ input }, { userId }) => {
+			return productUseCasesFactory
+				.updatePriceStatus()
+				.execute({ ...input, userId });
+		}),
+
 		updateProductStatus: makeResolver(async ({ input }, { userId }) => {
 			return productUseCasesFactory
 				.updateProductStatus()
