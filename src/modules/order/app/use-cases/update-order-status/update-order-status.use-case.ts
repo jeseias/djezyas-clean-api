@@ -13,14 +13,12 @@ export namespace UpdateOrderStatus {
 }
 
 export class UpdateOrderStatusUseCase {
-	constructor(
-		private readonly orderRepository: OrderRepository,
-	) {}
+	constructor(private readonly orderRepository: OrderRepository) {}
 
 	async execute(
 		params: UpdateOrderStatus.Params,
 	): Promise<UpdateOrderStatus.Result> {
-    const orderModel = await this.orderRepository.findById(params.orderId);
+		const orderModel = await this.orderRepository.findById(params.orderId);
 		if (!orderModel) {
 			throw new AppError(
 				`Order with ID ${params.orderId} not found`,
@@ -29,21 +27,19 @@ export class UpdateOrderStatusUseCase {
 			);
 		}
 
-    if (orderModel.userId !== params.userId) {
-      throw new AppError(
-        `User ${params.userId} is not authorized to update order ${params.orderId}`,
-        403,
-        ErrorCode.UNAUTHORIZED,
-      );
-    }
+		if (orderModel.userId !== params.userId) {
+			throw new AppError(
+				`User ${params.userId} is not authorized to update order ${params.orderId}`,
+				403,
+				ErrorCode.UNAUTHORIZED,
+			);
+		}
 
 		const order = Order.Entity.fromModel(orderModel);
 
 		this.updateOrderStatus(order, params.status);
 
-		const updatedOrder = await this.orderRepository.update(
-			order.getSnapshot(),
-		);
+		const updatedOrder = await this.orderRepository.update(order.getSnapshot());
 
 		return updatedOrder;
 	}

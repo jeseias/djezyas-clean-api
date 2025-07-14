@@ -49,7 +49,7 @@ export enum ErrorCode {
 	TOKEN_INVALID = 1406,
 	TOKEN_EXPIRED = 1407,
 	INVALID_STATUS = 1408,
-  
+
 	// ===== Validation/Use Case Specific (1500-1599) =====
 	REGISTER_VALIDATION_ERROR = 1501,
 	LOGIN_VALIDATION_ERROR = 1502,
