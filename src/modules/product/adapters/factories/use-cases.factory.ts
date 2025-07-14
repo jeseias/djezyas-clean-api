@@ -1,13 +1,17 @@
-import { isOrganizationValidService } from "@/src/modules/organization/adapters/factories";
 import {
-	organizationMemberMongooseRepository,
-	organizationMongooseRepository,
-} from "@/src/modules/organization/adapters/factories/repository.factory";
-import type { IsOrganizationValidService } from "@/src/modules/organization/core/app/services";
-import type { OrganizationMemberRepository } from "@/src/modules/organization/core/ports/outbound/organization-member-repository";
+	isOrganizationMemberService,
+	isOrganizationValidService,
+} from "@/src/modules/organization/adapters/factories";
+import { organizationMongooseRepository } from "@/src/modules/organization/adapters/factories/repository.factory";
+import type {
+	IsOrganizationMemberService,
+	IsOrganizationValidService,
+} from "@/src/modules/organization/core/app/services";
 import type { OrganizationRepository } from "@/src/modules/organization/core/ports/outbound/organization-repository";
 import { AddPriceUseCase } from "@/src/modules/product/core/app/usecases/add-price/add-price.use-case";
 import { CreateProductCategoryUseCase } from "@/src/modules/product/core/app/usecases/create-product-category/create-product-category.use-case";
+import { GetProductByIdUseCase } from "@/src/modules/product/core/app/usecases/get-product-by-id/get-product-by-id.use-case";
+import { LoadPricesByProductIdUseCase } from "@/src/modules/product/core/app/usecases/load-prices-by-product-id/load-prices-by-product-id.use-case";
 import { SaveCurrencyUseCase } from "@/src/modules/product/core/app/usecases/save-currency/save-currency.use-case";
 import { SaveProductUseCase } from "@/src/modules/product/core/app/usecases/save-product/save-product.use-case";
 import { SaveProductTypeUseCase } from "@/src/modules/product/core/app/usecases/save-product-type/save-product-type.use-case";
@@ -41,7 +45,7 @@ export class ProductUseCasesFactory {
 		private readonly currencyRepository: CurrencyRepository,
 		private readonly isUserValidService: IsUserValidService,
 		private readonly isOrganizationValidService: IsOrganizationValidService,
-		private readonly organizationMemberRepository: OrganizationMemberRepository,
+		private readonly isOrganizationMemberService: IsOrganizationMemberService,
 	) {}
 
 	saveProduct() {
@@ -71,7 +75,7 @@ export class ProductUseCasesFactory {
 			this.isUserValidService,
 			this.isOrganizationValidService,
 			this.productRepository,
-			this.organizationMemberRepository,
+			this.isOrganizationMemberService,
 		);
 	}
 
@@ -90,6 +94,25 @@ export class ProductUseCasesFactory {
 	listProductCategories() {
 		return new ListProductCategoriesUseCase(this.productCategoryRepository);
 	}
+
+	getProductById() {
+		return new GetProductByIdUseCase(
+			this.isUserValidService,
+			this.isOrganizationValidService,
+			this.isOrganizationMemberService,
+			this.productRepository,
+		);
+	}
+
+	loadPricesByProductId() {
+		return new LoadPricesByProductIdUseCase(
+			this.isUserValidService,
+			this.isOrganizationValidService,
+			this.isOrganizationMemberService,
+			this.priceRepository,
+			this.productRepository,
+		);
+	}
 }
 
 export const productUseCasesFactory = new ProductUseCasesFactory(
@@ -102,5 +125,5 @@ export const productUseCasesFactory = new ProductUseCasesFactory(
 	currencyMongooseRepository,
 	isUserValidService,
 	isOrganizationValidService,
-	organizationMemberMongooseRepository,
+	isOrganizationMemberService,
 );

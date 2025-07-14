@@ -1,3 +1,4 @@
+import type { OrganizationMember } from "@/src/modules/organization/core/domain/entities/organization-member";
 import {
 	type Id,
 	id,
@@ -227,6 +228,35 @@ export namespace Product {
 
 		toJSON(): Model {
 			return { ...this.props };
+		}
+
+		toJSONForRole(
+			role: OrganizationMember.Role,
+		): Model | (Omit<Model, "createdById"> & { createdById?: string }) {
+			if (role === "owner" || role === "admin") {
+				return this.toJSON();
+			}
+
+			const { createdById: _, meta, ...filteredProduct } = this.props;
+
+			return {
+				...filteredProduct,
+				meta: this.filterMetaByRole(meta, role),
+			};
+		}
+
+		private filterMetaByRole(
+			meta: Record<string, unknown> | undefined,
+			role: OrganizationMember.Role,
+		): Record<string, unknown> | undefined {
+			if (!meta) return undefined;
+
+			if (role === "member") {
+				const { ...publicMeta } = meta;
+				return publicMeta;
+			}
+
+			return meta;
 		}
 	}
 }

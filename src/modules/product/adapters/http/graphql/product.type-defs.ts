@@ -198,8 +198,18 @@ export const productTypeDefs = `#graphql
     totalItems: Int!
   }
 
+  input GetProductByIdInput {
+    productId: String!
+  }
+
+  input LoadPricesByProductIdInput {
+    productId: String!
+  }
+
   type Query {
     findProductByOrganization(input: FindProductByOrganizationInput!): FindProductByOrganizationResult!
+    getProductById(input: GetProductByIdInput!): Product!
+    loadPricesByProductId(input: LoadPricesByProductIdInput!): [Price]!
     listProductCategories(input: ListProductCategoriesInput!): ListProductCategoriesResult!
   }
 

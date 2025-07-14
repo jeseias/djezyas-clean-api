@@ -8,6 +8,16 @@ export const productResolvers = {
 				.findProductsByOrganization()
 				.execute({ ...input, userId });
 		}),
+		getProductById: makeResolver(async ({ input }, { userId }) => {
+			return productUseCasesFactory
+				.getProductById()
+				.execute({ ...input, userId });
+		}),
+		loadPricesByProductId: makeResolver(async ({ input }, { userId }) => {
+			return productUseCasesFactory
+				.loadPricesByProductId()
+				.execute({ ...input, userId });
+		}),
 		listProductCategories: makeResolver(async ({ input }) => {
 			return productUseCasesFactory.listProductCategories().execute(input);
 		}),

@@ -1,8 +1,10 @@
-import type { IsOrganizationValidService } from "@/src/modules/organization/core/app/services";
-import type { OrganizationMemberRepository } from "@/src/modules/organization/core/ports/outbound/organization-member-repository";
-import { AppError, ErrorCode } from "@/src/modules/shared/errors";
+import type {
+	IsOrganizationMemberService,
+	IsOrganizationValidService,
+} from "@/src/modules/organization/core/app/services";
+import type { OrganizationMember } from "@/src/modules/organization/core/domain/entities/organization-member";
 import type { IsUserValidService } from "@/src/modules/user/core/app/services";
-import type { Product } from "../../../domain/entities";
+import { Product } from "../../../domain/entities";
 import type {
 	ProductFilters,
 	ProductRepository,
@@ -18,7 +20,10 @@ export namespace FindOrganizationProducts {
 	};
 
 	export type Result = {
-		items: Product.Model[];
+		items: (
+			| Product.Model
+			| (Omit<Product.Model, "createdById"> & { createdById?: string })
+		)[];
 		totalItems: number;
 	};
 }
@@ -28,48 +33,42 @@ export class FindOrganizationProductsUseCase {
 		private readonly isUserValidService: IsUserValidService,
 		private readonly isOrganizationValidService: IsOrganizationValidService,
 		private readonly productRepository: ProductRepository,
-		private readonly organizationMemberRepository: Pick<
-			OrganizationMemberRepository,
-			"findByUserId"
-		>,
+		private readonly isOrganizationMemberService: IsOrganizationMemberService,
 	) {}
 
 	async execute(
 		params: FindOrganizationProducts.Params,
 	): Promise<FindOrganizationProducts.Result> {
-		await this.validateUserAccess(params.userId, params.organizationId);
+		const membership = await this.validateUserAccess(
+			params.userId,
+			params.organizationId,
+		);
 
 		const filters = params.filters || {};
-		return await this.productRepository.findByOrganizationIdWithFilters(
+		const result = await this.productRepository.findByOrganizationIdWithFilters(
 			params.organizationId,
 			filters,
 		);
+
+		return {
+			items: result.items.map((productModel) => {
+				const product = Product.Entity.fromModel(productModel);
+				return product.toJSONForRole(membership.role);
+			}),
+			totalItems: result.totalItems,
+		};
 	}
 
 	private async validateUserAccess(
 		userId: string,
 		organizationId: string,
-	): Promise<void> {
+	): Promise<OrganizationMember.Model> {
 		await this.isUserValidService.execute(userId);
 		await this.isOrganizationValidService.execute(organizationId);
 
-		await this.validateOrganizationMembership(userId, organizationId);
-	}
-
-	private async validateOrganizationMembership(
-		userId: string,
-		organizationId: string,
-	): Promise<void> {
-		const membership = await this.organizationMemberRepository.findByUserId({
+		return await this.isOrganizationMemberService.execute(
 			userId,
 			organizationId,
-		});
-		if (!membership) {
-			throw new AppError(
-				"User is not a member of the organization",
-				403,
-				ErrorCode.UNAUTHORIZED,
-			);
-		}
+		);
 	}
 }
