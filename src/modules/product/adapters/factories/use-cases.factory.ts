@@ -21,6 +21,7 @@ import { isUserValidService } from "@/src/modules/user/adapters/factories/servic
 import type { IsUserValidService } from "@/src/modules/user/core/app/services";
 import type { UserRepository } from "@/src/modules/user/core/ports/outbound/user-repository";
 import { FindOrganizationProductsUseCase } from "../../core/app/usecases/find-products-by-organization/find-products-by-organization.use-case";
+import { ListProductCategoriesUseCase } from "../../core/app/usecases/list-product-categories/list-product-categories.use-case";
 import {
 	currencyMongooseRepository,
 	priceMongooseRepository,
@@ -84,6 +85,10 @@ export class ProductUseCasesFactory {
 
 	saveCurrency() {
 		return new SaveCurrencyUseCase(this.currencyRepository);
+	}
+
+	listProductCategories() {
+		return new ListProductCategoriesUseCase(this.productCategoryRepository);
 	}
 }
 

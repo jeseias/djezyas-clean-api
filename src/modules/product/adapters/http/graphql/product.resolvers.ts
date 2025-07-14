@@ -3,20 +3,26 @@ import { productUseCasesFactory } from "../../factories";
 
 export const productResolvers = {
 	Query: {
-    findProductByOrganization: makeResolver(async ({ input }, { userId }) => {
-      return productUseCasesFactory
-        .findProductsByOrganization()
-        .execute({ ...input, userId });
-    }),
+		findProductByOrganization: makeResolver(async ({ input }, { userId }) => {
+			return productUseCasesFactory
+				.findProductsByOrganization()
+				.execute({ ...input, userId });
+		}),
+		listProductCategories: makeResolver(async ({ input }) => {
+			return productUseCasesFactory.listProductCategories().execute(input);
+		}),
 	},
 	Mutation: {
 		addPrice: makeResolver(async ({ input }) => {
 			return productUseCasesFactory.addPrice().execute(input);
 		}),
 
-		createProductCategory: makeResolver(async ({ input }) => {
-			return productUseCasesFactory.createProductCategory().execute(input);
-		}, { isAdmin: true }),
+		createProductCategory: makeResolver(
+			async ({ input }) => {
+				return productUseCasesFactory.createProductCategory().execute(input);
+			},
+			{ isAdmin: true },
+		),
 
 		saveProduct: makeResolver(async ({ input }, { userId }) => {
 			return productUseCasesFactory.saveProduct().execute({
@@ -38,11 +44,14 @@ export const productResolvers = {
 				.execute({ ...input, userId });
 		}),
 
-		saveCurrency: makeResolver(async ({ input }) => {
-			return productUseCasesFactory.saveCurrency().execute({
-				id: input.currencyId,
-				...input,
-			});
-		}, { isAdmin: true }),
+		saveCurrency: makeResolver(
+			async ({ input }) => {
+				return productUseCasesFactory.saveCurrency().execute({
+					id: input.currencyId,
+					...input,
+				});
+			},
+			{ isAdmin: true },
+		),
 	},
 };

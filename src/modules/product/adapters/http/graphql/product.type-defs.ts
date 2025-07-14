@@ -185,8 +185,22 @@ export const productTypeDefs = `#graphql
     totalItems: Int!
   }
 
+  input ListProductCategoriesInput {
+    page: Int
+    limit: Int
+    sort: String
+    order: String
+    search: String
+  }
+
+  type ListProductCategoriesResult {
+    items: [ProductCategory]!
+    totalItems: Int!
+  }
+
   type Query {
     findProductByOrganization(input: FindProductByOrganizationInput!): FindProductByOrganizationResult!
+    listProductCategories(input: ListProductCategoriesInput!): ListProductCategoriesResult!
   }
 
     

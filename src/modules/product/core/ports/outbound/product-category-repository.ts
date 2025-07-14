@@ -6,5 +6,11 @@ export type ProductCategoryRepository = Pick<
 	"create" | "update" | "delete" | "findById"
 > & {
 	findBySlug(slug: string): Promise<ProductCategory.Model | null>;
-	findAll(): Promise<ProductCategory.Model[]>;
+	findAll(params?: {
+		page?: number;
+		limit?: number;
+		sort?: string;
+		order?: string;
+		search?: string;
+	}): Promise<ProductCategory.Model[]>;
 };
