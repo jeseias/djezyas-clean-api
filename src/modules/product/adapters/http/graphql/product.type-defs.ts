@@ -124,6 +124,12 @@ export const productTypeDefs = `#graphql
     organizationId: String!
   }
 
+  input CreateProductTypeInput {
+    name: String!
+    description: String
+    organizationId: String!
+  }
+
   input ProductFiltersInput {
     status: ProductStatus
     categoryId: String
@@ -198,6 +204,7 @@ export const productTypeDefs = `#graphql
   type Mutation {
     addPrice(input: AddPriceInput!): Price!
     createProductCategory(input: CreateProductCategoryInput!): ProductCategory!
+    createProductType(input: CreateProductTypeInput!): ProductType!
     saveProduct(input: SaveProductInput!): Product!
     saveProductType(input: SaveProductTypeInput!): ProductType!
     updatePriceAmount(input: UpdatePriceAmountInput!): Price!
