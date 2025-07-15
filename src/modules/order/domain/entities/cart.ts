@@ -45,9 +45,9 @@ export namespace Cart {
 			return this.props.items.length === 0;
 		}
 
-    get id(): Id {
-      return this.props.id;
-    }
+		get id(): Id {
+			return this.props.id;
+		}
 
 		get userId(): Id {
 			return this.props.userId;

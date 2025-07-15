@@ -171,6 +171,20 @@ export const productTypeDefs = `#graphql
     totalItems: Int!
   }
 
+  input ListProductTypesInput {
+    organizationId: String!
+    page: Int
+    limit: Int
+    sort: String
+    order: String
+    search: String
+  }
+
+  type ListProductTypesResult {
+    items: [ProductType]!
+    totalItems: Int!
+  }
+
   input GetProductByIdInput {
     productId: String!
   }
@@ -199,6 +213,7 @@ export const productTypeDefs = `#graphql
     getProductById(input: GetProductByIdInput!): Product!
     loadPricesByProductId(input: LoadPricesByProductIdInput!): [Price]!
     listProductCategories(input: ListProductCategoriesInput!): ListProductCategoriesResult!
+    listProductTypes(input: ListProductTypesInput!): ListProductTypesResult!
   }
 
   type Mutation {

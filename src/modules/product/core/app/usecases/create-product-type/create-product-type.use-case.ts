@@ -1,7 +1,9 @@
-import type { IsOrganizationMemberService } from "@/src/modules/organization/core/app/services";
-import type { IsOrganizationValidService } from "@/src/modules/organization/core/app/services";
-import type { IsUserValidService } from "@/src/modules/user/core/app/services";
+import type {
+	IsOrganizationMemberService,
+	IsOrganizationValidService,
+} from "@/src/modules/organization/core/app/services";
 import { AppError, ErrorCode } from "@/src/modules/shared/errors";
+import type { IsUserValidService } from "@/src/modules/user/core/app/services";
 import { ProductType } from "../../../domain/entities";
 import type { ProductTypeRepository } from "../../../ports/outbound/product-type-repository";
 
@@ -29,7 +31,10 @@ export class CreateProductTypeUseCase {
 	): Promise<CreateProductType.Result> {
 		await this.isUserValidService.execute(params.userId);
 		await this.isOrganizationValidService.execute(params.organizationId);
-		await this.isOrganizationMemberService.execute(params.userId, params.organizationId);
+		await this.isOrganizationMemberService.execute(
+			params.userId,
+			params.organizationId,
+		);
 		await this.validateProductTypeName(params.name, params.organizationId);
 
 		const productType = ProductType.Entity.create({
@@ -60,6 +65,4 @@ export class CreateProductTypeUseCase {
 			);
 		}
 	}
-
-
-} 
+}

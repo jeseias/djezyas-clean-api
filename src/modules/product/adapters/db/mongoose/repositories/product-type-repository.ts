@@ -56,12 +56,54 @@ export class MongooseProductTypeRepository implements ProductTypeRepository {
 
 	async findByOrganizationId(
 		organizationId: string,
-	): Promise<ProductType.Model[]> {
-		const docs = await ProductTypeModel.find({ organizationId });
-		return docs.map((doc) => ({
+		options?: {
+			page?: number;
+			limit?: number;
+			sort?: string;
+			order?: string;
+			search?: string;
+		},
+	): Promise<{
+		items: ProductType.Model[];
+		totalItems: number;
+	}> {
+		const query: any = { organizationId };
+
+		if (options?.search) {
+			query.$or = [
+				{ name: { $regex: options.search, $options: "i" } },
+				{ description: { $regex: options.search, $options: "i" } },
+			];
+		}
+
+		let sortObj: any = {};
+		if (options?.sort) {
+			const sortOrder = options.order === "desc" ? -1 : 1;
+			sortObj[options.sort] = sortOrder;
+		} else {
+			sortObj = { createdAt: -1 };
+		}
+
+		const page = options?.page || 1;
+		const limit = options?.limit || 10;
+		const skip = (page - 1) * limit;
+
+		const totalItems = await ProductTypeModel.countDocuments(query);
+
+		const docs = await ProductTypeModel.find(query)
+			.sort(sortObj)
+			.skip(skip)
+			.limit(limit);
+
+		const items = docs.map((doc) => ({
 			...doc.toJSON(),
 			slug: Slug.fromValue(doc.slug),
 		}));
+
+		return {
+			items,
+			totalItems,
+		};
 	}
 
 	async findBySlug(

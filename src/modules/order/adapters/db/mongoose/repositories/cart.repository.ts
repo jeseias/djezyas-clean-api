@@ -6,7 +6,7 @@ import { CartModel } from "../cart.model";
 export class MongooseCartRepository implements CartRepository {
 	async findById(id: Id): Promise<Cart.Entity | null> {
 		const cart = await CartModel.findById(id).lean();
-		return cart && this.mapToDomain(cart)
+		return cart && this.mapToDomain(cart);
 	}
 
 	async create(cart: Cart.Entity): Promise<Cart.Entity> {

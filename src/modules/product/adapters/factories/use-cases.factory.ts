@@ -12,6 +12,7 @@ import { AddPriceUseCase } from "@/src/modules/product/core/app/usecases/add-pri
 import { CreateProductCategoryUseCase } from "@/src/modules/product/core/app/usecases/create-product-category/create-product-category.use-case";
 import { CreateProductTypeUseCase } from "@/src/modules/product/core/app/usecases/create-product-type/create-product-type.use-case";
 import { GetProductByIdUseCase } from "@/src/modules/product/core/app/usecases/get-product-by-id/get-product-by-id.use-case";
+import { ListProductTypesUseCase } from "@/src/modules/product/core/app/usecases/list-product-types/list-product-types.use-case";
 import { LoadPricesByProductIdUseCase } from "@/src/modules/product/core/app/usecases/load-prices-by-product-id/load-prices-by-product-id.use-case";
 import { SaveProductUseCase } from "@/src/modules/product/core/app/usecases/save-product/save-product.use-case";
 import { SaveProductTypeUseCase } from "@/src/modules/product/core/app/usecases/save-product-type/save-product-type.use-case";
@@ -72,6 +73,15 @@ export class ProductUseCasesFactory {
 
 	createProductType() {
 		return new CreateProductTypeUseCase(
+			this.productTypeRepository,
+			this.isUserValidService,
+			this.isOrganizationValidService,
+			this.isOrganizationMemberService,
+		);
+	}
+
+	listProductTypes() {
+		return new ListProductTypesUseCase(
 			this.productTypeRepository,
 			this.isUserValidService,
 			this.isOrganizationValidService,

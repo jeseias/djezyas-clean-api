@@ -21,6 +21,11 @@ export const productResolvers = {
 		listProductCategories: makeResolver(async ({ input }) => {
 			return productUseCasesFactory.listProductCategories().execute(input);
 		}),
+		listProductTypes: makeResolver(async ({ input }, { userId }) => {
+			return productUseCasesFactory
+				.listProductTypes()
+				.execute({ ...input, userId });
+		}),
 	},
 	Mutation: {
 		addPrice: makeResolver(async ({ input }) => {

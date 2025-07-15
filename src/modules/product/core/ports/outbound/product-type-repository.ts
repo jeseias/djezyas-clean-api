@@ -5,7 +5,19 @@ export type ProductTypeRepository = Pick<
 	Repository<ProductType.Model>,
 	"create" | "update" | "delete" | "findById"
 > & {
-	findByOrganizationId(organizationId: string): Promise<ProductType.Model[]>;
+	findByOrganizationId(
+		organizationId: string,
+		options?: {
+			page?: number;
+			limit?: number;
+			sort?: string;
+			order?: string;
+			search?: string;
+		},
+	): Promise<{
+		items: ProductType.Model[];
+		totalItems: number;
+	}>;
 	findBySlug(
 		slug: string,
 		organizationId: string,
