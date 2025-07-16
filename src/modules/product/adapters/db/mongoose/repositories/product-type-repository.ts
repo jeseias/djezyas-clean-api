@@ -1,22 +1,21 @@
-import type { ProductType } from "@/src/modules/product/core/domain/entities";
+import { ProductType } from "@/src/modules/product/core/domain/entities";
 import type { ProductTypeRepository } from "@/src/modules/product/core/ports/outbound/product-type-repository";
-import { Slug } from "@/src/modules/shared/value-objects";
-import { ProductTypeModel } from "../product-type-model";
+import {
+	type ProductTypeDocument,
+	ProductTypeModel,
+} from "../product-type-model";
 
 export class MongooseProductTypeRepository implements ProductTypeRepository {
-	async create(productType: ProductType.Model): Promise<ProductType.Model> {
+	async create(productType: ProductType.Model): Promise<ProductType.Entity> {
 		const doc = await ProductTypeModel.create({
 			...productType,
 			slug: productType.slug.toString(),
 		});
 
-		return {
-			...doc.toJSON(),
-			slug: Slug.fromValue(doc.slug),
-		};
+		return this.toDomainEntity(doc);
 	}
 
-	async update(data: Partial<ProductType.Model>): Promise<ProductType.Model> {
+	async update(data: Partial<ProductType.Model>): Promise<ProductType.Entity> {
 		if (!data.id) {
 			throw new Error("ID is required for update");
 		}
@@ -34,24 +33,18 @@ export class MongooseProductTypeRepository implements ProductTypeRepository {
 			throw new Error("ProductType not found");
 		}
 
-		return {
-			...doc.toJSON(),
-			slug: Slug.fromValue(doc.slug),
-		};
+		return this.toDomainEntity(doc);
 	}
 
 	async delete(id: string): Promise<void> {
 		await ProductTypeModel.findOneAndDelete({ id });
 	}
 
-	async findById(id: string): Promise<ProductType.Model | null> {
+	async findById(id: string): Promise<ProductType.Entity | null> {
 		const doc = await ProductTypeModel.findOne({ id });
 		if (!doc) return null;
 
-		return {
-			...doc.toJSON(),
-			slug: Slug.fromValue(doc.slug),
-		};
+		return this.toDomainEntity(doc);
 	}
 
 	async findByOrganizationId(
@@ -64,7 +57,7 @@ export class MongooseProductTypeRepository implements ProductTypeRepository {
 			search?: string;
 		},
 	): Promise<{
-		items: ProductType.Model[];
+		items: ProductType.Entity[];
 		totalItems: number;
 	}> {
 		const query: any = { organizationId };
@@ -95,10 +88,7 @@ export class MongooseProductTypeRepository implements ProductTypeRepository {
 			.skip(skip)
 			.limit(limit);
 
-		const items = docs.map((doc) => ({
-			...doc.toJSON(),
-			slug: Slug.fromValue(doc.slug),
-		}));
+		const items = docs.map((doc) => this.toDomainEntity(doc));
 
 		return {
 			items,
@@ -109,34 +99,38 @@ export class MongooseProductTypeRepository implements ProductTypeRepository {
 	async findBySlug(
 		slug: string,
 		organizationId: string,
-	): Promise<ProductType.Model | null> {
+	): Promise<ProductType.Entity | null> {
 		const doc = await ProductTypeModel.findOne({ slug, organizationId });
 		if (!doc) return null;
 
-		return {
-			...doc.toJSON(),
-			slug: Slug.fromValue(doc.slug),
-		};
+		return this.toDomainEntity(doc);
 	}
 
 	async findByName(
 		name: string,
 		organizationId: string,
-	): Promise<ProductType.Model | null> {
+	): Promise<ProductType.Entity | null> {
 		const doc = await ProductTypeModel.findOne({ name, organizationId });
 		if (!doc) return null;
 
-		return {
-			...doc.toJSON(),
-			slug: Slug.fromValue(doc.slug),
-		};
+		return this.toDomainEntity(doc);
 	}
 
-	async findByCreatedById(createdById: string): Promise<ProductType.Model[]> {
+	async findByCreatedById(createdById: string): Promise<ProductType.Entity[]> {
 		const docs = await ProductTypeModel.find({ createdById });
-		return docs.map((doc) => ({
-			...doc.toJSON(),
-			slug: Slug.fromValue(doc.slug),
-		}));
+		return docs.map((doc) => this.toDomainEntity(doc));
+	}
+
+	private toDomainEntity(doc: ProductTypeDocument): ProductType.Entity {
+		return ProductType.Entity.fromModel({
+			id: doc.id,
+			name: doc.name,
+			slug: doc.slug,
+			description: doc.description,
+			organizationId: doc.organizationId,
+			createdById: doc.createdById,
+			createdAt: doc.createdAt,
+			updatedAt: doc.updatedAt,
+		});
 	}
 }

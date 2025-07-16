@@ -18,7 +18,7 @@ export namespace ListProductTypes {
 	};
 
 	export type Result = {
-		items: ProductType.Model[];
+		items: ProductType.Props[];
 		totalItems: number;
 	};
 }
@@ -53,8 +53,8 @@ export class ListProductTypesUseCase {
 		);
 
 		return {
-			items: result.items,
+			items: result.items.map((item) => item.toJSON()),
 			totalItems: result.totalItems,
 		};
 	}
-} 
+}

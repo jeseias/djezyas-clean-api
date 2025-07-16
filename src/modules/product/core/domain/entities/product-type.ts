@@ -1,15 +1,18 @@
 import { type Id, id, Slug } from "@/src/modules/shared/value-objects";
 
 export namespace ProductType {
-	export type Model = {
+	export type Props = {
 		id: Id;
 		name: string;
-		slug: Slug;
+		slug: string;
 		description?: string;
 		organizationId: Id;
 		createdById: Id;
 		createdAt: Date;
 		updatedAt: Date;
+	};
+	export type Model = Omit<Props, "slug"> & {
+		slug: Slug;
 	};
 
 	export type CreateParams = {
@@ -37,8 +40,11 @@ export namespace ProductType {
 			return new Entity(productType);
 		}
 
-		static fromModel(model: Model): Entity {
-			return new Entity(model);
+		static fromModel(model: Props): Entity {
+			return new Entity({
+				...model,
+				slug: Slug.create(model.slug),
+			});
 		}
 
 		get id(): Id {
@@ -77,8 +83,8 @@ export namespace ProductType {
 			this.props.updatedAt = new Date();
 		}
 
-		toJSON(): Model {
-			return { ...this.props };
+		toJSON(): Props {
+			return { ...this.props, slug: this.props.slug.toString() };
 		}
 	}
 }
