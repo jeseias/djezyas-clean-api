@@ -11,6 +11,7 @@ export const envSchema = z.object({
 	JWT_DEFAULT_EXPIRES_IN: z.string(),
 	SWAGGER_DOCS_USERNAME: z.string(),
 	SWAGGER_DOCS_PASSWORD: z.string(),
+	SERVER_URL: z.string().url(),
 });
 
 const _envSchema = envSchema.safeParse(process.env);

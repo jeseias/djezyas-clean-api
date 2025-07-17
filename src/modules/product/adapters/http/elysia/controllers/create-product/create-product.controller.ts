@@ -4,7 +4,7 @@ import {
 	Controller,
 	type ControllerRequest,
 	type ControllerResponse,
-} from "@/src/modules/shared/adapters/http/elysia/elysia-controller-adapter";
+} from "@/src/modules/shared/adapters/http/elysia/controller";
 import type { StorageAdapter } from "@/src/modules/shared/ports/storage-adapter";
 import { createSaveProductPreRunners } from "./prerunners";
 import { type SaveProductBody } from "./schemas";

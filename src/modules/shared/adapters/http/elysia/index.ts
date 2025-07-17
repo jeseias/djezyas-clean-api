@@ -1,1 +1,1 @@
-export * from "./elysia-controller-adapter";
+export * from "./controller";

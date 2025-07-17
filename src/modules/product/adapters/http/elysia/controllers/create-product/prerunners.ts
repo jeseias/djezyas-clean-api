@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { ControllerRequest, PreRunner } from "@/src/modules/shared/adapters/http/elysia/elysia-controller-adapter";
+import type { ControllerRequest, PreRunner } from "@/src/modules/shared/adapters/http/elysia/controller";
 import type { StorageAdapter } from "@/src/modules/shared/ports/storage-adapter";
 import { uploadImageUrlPreRunner } from "@/src/modules/shared/prerunners/upload-image-url";
 import { saveProductSchema, type SaveProductBody } from "./schemas";
@@ -24,5 +24,6 @@ export function createSaveProductPreRunners(storage: StorageAdapter): PreRunner<
 	return [
 		uploadImageUrlPreRunner<SaveProductBody>(storage, "imageUrl"),
 		createZodPreRunner(saveProductSchema),
+		"auth",
 	];
 } 
