@@ -264,7 +264,7 @@ export class MongooseProductRepository implements ProductRepository {
 
 		const sort: Record<string, 1 | -1> = {};
 		sort[sortBy] = sortOrder === "asc" ? 1 : -1;
-
+    
 		let queryBuilder = ProductModel.find(query).sort(sort);
 
 		if (offset) {
@@ -275,6 +275,7 @@ export class MongooseProductRepository implements ProductRepository {
 		}
 
 		const docs = await queryBuilder.exec();
+
 		const totalItems = await ProductModel.countDocuments(query);
 
 		const items = docs.map((doc) => {

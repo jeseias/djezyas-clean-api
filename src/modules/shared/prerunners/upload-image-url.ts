@@ -13,7 +13,8 @@ export const uploadImageUrlPreRunner = <
 ): PreRunner<Body, Query, Params, Headers> => {
 	return async (req: ControllerRequest<Body, Query, Params, Headers>) => {
 		const file = (req.body as any)?.[fieldName];
-		if (!(file instanceof File)) return;
+		
+    if (!(file instanceof File)) return;
 
 		const url = await storageAdapter.upload(file);
 

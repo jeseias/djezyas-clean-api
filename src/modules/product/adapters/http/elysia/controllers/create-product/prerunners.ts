@@ -13,6 +13,7 @@ export function createZodPreRunner<Body>(
 ): PreRunner<Body, unknown, unknown, unknown> {
 	return async (req: ControllerRequest<Body, unknown, unknown, unknown>) => {
 		const result = schema.safeParse(req.body);
+		console.log({ result })
 		if (!result.success) {
 			throw {
 				statusCode: 400,

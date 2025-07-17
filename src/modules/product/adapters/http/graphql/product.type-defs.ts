@@ -226,6 +226,4 @@ export const productTypeDefs = `#graphql
     updatePriceStatus(input: UpdatePriceStatusInput!): Price!
     updateProductStatus(input: UpdateProductStatusInput!): Product!
   }
-
-    
 `;
