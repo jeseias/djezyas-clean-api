@@ -1,8 +1,12 @@
-import { z } from "zod";
-import type { ControllerRequest, PreRunner } from "@/src/modules/shared/adapters/http/elysia/controller";
+import type { z } from "zod";
+import type { ControllerRequest } from "@/src/modules/shared/adapters/http/elysia/controller";
+import type {
+	PreRunner,
+	PreRunnerOrKey,
+} from "@/src/modules/shared/adapters/http/elysia/pre-runners";
 import type { StorageAdapter } from "@/src/modules/shared/ports/storage-adapter";
 import { uploadImageUrlPreRunner } from "@/src/modules/shared/prerunners/upload-image-url";
-import { saveProductSchema, type SaveProductBody } from "./schemas";
+import { type SaveProductBody, saveProductSchema } from "./schemas";
 
 export function createZodPreRunner<Body>(
 	schema: z.ZodType<Body>,
@@ -20,10 +24,12 @@ export function createZodPreRunner<Body>(
 	};
 }
 
-export function createSaveProductPreRunners(storage: StorageAdapter): PreRunner<SaveProductBody, unknown, unknown, unknown>[] {
+export function createSaveProductPreRunners(
+	storage: StorageAdapter,
+): PreRunnerOrKey<SaveProductBody, unknown, unknown, unknown>[] {
 	return [
+		"auth",
 		uploadImageUrlPreRunner<SaveProductBody>(storage, "imageUrl"),
 		createZodPreRunner(saveProductSchema),
-		"auth",
 	];
-} 
+}

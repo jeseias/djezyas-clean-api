@@ -1,9 +1,12 @@
-import type { ControllerRequest, PreRunner } from "../adapters/http/elysia/controller";
 import { makeVerifyTokenUseCase } from "@/src/modules/user/adapters/factories/use-cases.factory";
+import type { ControllerRequest } from "../adapters/http/elysia/controller";
+import type { PreRunner } from "../adapters/http/elysia/pre-runners";
 
-export const authPreRunner: PreRunner<any, any, any, any> = async (req: ControllerRequest<any, any, any, any>) => {
+export const authPreRunner: PreRunner<any, any, any, any> = async (
+	req: ControllerRequest<any, any, any, any>,
+) => {
 	const authHeader = req.headers.authorization || req.headers["x-access-token"];
-	
+
 	if (!authHeader) {
 		throw {
 			statusCode: 401,
@@ -11,8 +14,8 @@ export const authPreRunner: PreRunner<any, any, any, any> = async (req: Controll
 		};
 	}
 
-	const token = authHeader.startsWith("Bearer ") 
-		? authHeader.substring(7) 
+	const token = authHeader.startsWith("Bearer ")
+		? authHeader.substring(7)
 		: authHeader;
 
 	if (!token) {

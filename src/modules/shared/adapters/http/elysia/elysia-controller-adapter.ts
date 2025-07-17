@@ -9,10 +9,14 @@ export function elysiaControllerAdapter<
 	TResult = any,
 >(
 	controller: Controller<TBody, TQuery, TParams, THeaders, TResult>,
-	requestMapper?: (ctx: Context) => ControllerRequest<TBody, TQuery, TParams, THeaders>,
+	requestMapper?: (
+		ctx: Context,
+	) => ControllerRequest<TBody, TQuery, TParams, THeaders>,
 ) {
 	return async (ctx: Context) => {
-		const defaultMapper = (ctx: Context): ControllerRequest<TBody, TQuery, TParams, THeaders> => ({
+		const defaultMapper = (
+			ctx: Context,
+		): ControllerRequest<TBody, TQuery, TParams, THeaders> => ({
 			body: ctx.body as TBody,
 			query: ctx.query as TQuery,
 			params: ctx.params as TParams,
@@ -23,9 +27,9 @@ export function elysiaControllerAdapter<
 
 		const mapper = requestMapper || defaultMapper;
 		const request = mapper(ctx);
-		
+
 		const response = await controller.handle(request);
-		
+
 		ctx.set.status = response.statusCode;
 		return response.data;
 	};

@@ -1,6 +1,8 @@
 // src/modules/shared/adapters/http/elysia/controller.ts
-import { AppError } from "../../../errors";
+
 import { DefaultPreRunners } from "@/src/modules/shared/prerunners/default-prerunners";
+import { AppError } from "../../../errors";
+import type { PreRunner, PreRunnerOrKey } from "./pre-runners";
 
 type AuthenticatedUser = {
 	id: string;
@@ -29,23 +31,7 @@ export type ControllerResponse<T = unknown> = {
 	data?: T;
 };
 
-export type PreRunner<Body, Query, Params, Headers> = (
-	req: ControllerRequest<Body, Query, Params, Headers>,
-) => Promise<void>;
-
-type DefaultPreRunnersKeys = keyof typeof DefaultPreRunners;
-
-type PreRunnerOrKey<Body, Query, Params, Headers> =
-	| DefaultPreRunnersKeys
-	| PreRunner<Body, Query, Params, Headers>;
-
-export abstract class Controller<
-	Body,
-	Query,
-	Params,
-	Headers,
-	Result,
-> {
+export abstract class Controller<Body, Query, Params, Headers, Result> {
 	constructor(
 		private readonly useCase: {
 			execute: (params: Body) => Promise<Result>;
@@ -54,7 +40,7 @@ export abstract class Controller<
 	) {
 		this.resolvedPreRunners = preRunners.map((runner) => {
 			if (typeof runner === "string") {
-				const defaultRunner = DefaultPreRunners[runner];
+				const defaultRunner = DefaultPreRunners?.[runner];
 				if (!defaultRunner) {
 					throw new Error(`Default pre-runner "${runner}" not found`);
 				}
@@ -64,7 +50,12 @@ export abstract class Controller<
 		});
 	}
 
-	private readonly resolvedPreRunners: PreRunner<Body, Query, Params, Headers>[];
+	private readonly resolvedPreRunners: PreRunner<
+		Body,
+		Query,
+		Params,
+		Headers
+	>[];
 
 	abstract execute(
 		request: ControllerRequest<Body, Query, Params, Headers, Result>,

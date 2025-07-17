@@ -25,4 +25,4 @@ export const saveProductSchema = z
 	})
 	.strict();
 
-export type SaveProductBody = z.infer<typeof saveProductSchema>; 
+export type SaveProductBody = z.infer<typeof saveProductSchema>;

@@ -1,5 +1,5 @@
 import type { SaveProductUseCase } from "@/src/modules/product/core/app/usecases/save-product/save-product.use-case";
-import { Product } from "@/src/modules/product/core/domain/entities";
+import type { Product } from "@/src/modules/product/core/domain/entities";
 import {
 	Controller,
 	type ControllerRequest,
@@ -7,7 +7,7 @@ import {
 } from "@/src/modules/shared/adapters/http/elysia/controller";
 import type { StorageAdapter } from "@/src/modules/shared/ports/storage-adapter";
 import { createSaveProductPreRunners } from "./prerunners";
-import { type SaveProductBody } from "./schemas";
+import type { SaveProductBody } from "./schemas";
 
 export class SaveProductController extends Controller<
 	SaveProductBody,
@@ -43,4 +43,3 @@ export class SaveProductController extends Controller<
 		};
 	}
 }
-
