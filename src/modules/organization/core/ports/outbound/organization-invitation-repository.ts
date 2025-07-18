@@ -13,6 +13,8 @@ export type OrganizationInvitationRepository = Pick<
 	findByOrganizationId(
 		organizationId: string,
 	): Promise<OrganizationInvitation.Model[]>;
-	findByEmail(email: string): Promise<OrganizationInvitation.ModelWithOrganization[]>;
+	findByEmail(
+		email: string,
+	): Promise<OrganizationInvitation.ModelWithOrganization[]>;
 	// Add more methods as needed
 };

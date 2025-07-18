@@ -1,3 +1,4 @@
+import type { Organization } from "../../../../core/domain/entities/organization";
 import type { OrganizationInvitation } from "../../../../core/domain/entities/organization-invitation";
 import type { OrganizationInvitationRepository } from "../../../../core/ports/outbound/organization-invitation-repository";
 import type { OrganizationRepository } from "../../../../core/ports/outbound/organization-repository";
@@ -6,7 +7,9 @@ import { OrganizationInvitationModel } from "../organization-invitation-model";
 export class MongooseOrganizationInvitationRepository
 	implements OrganizationInvitationRepository
 {
-	constructor(private readonly organizationRepository: OrganizationRepository) {}
+	constructor(
+		private readonly organizationRepository: OrganizationRepository,
+	) {}
 
 	private mapToDomain(doc: any): OrganizationInvitation.Model {
 		return doc.toJSON();
@@ -77,30 +80,47 @@ export class MongooseOrganizationInvitationRepository
 		return docs.map((doc) => this.mapToDomain(doc));
 	}
 
-	async findByEmail(email: string): Promise<OrganizationInvitation.ModelWithOrganization[]> {
-		const invitations = await OrganizationInvitationModel.find({ email }).populate("organization");
+	async findByEmail(
+		email: string,
+	): Promise<OrganizationInvitation.ModelWithOrganization[]> {
+		const invitations = await OrganizationInvitationModel.find({
+			email,
+		}).populate("organization");
+
 		const results: OrganizationInvitation.ModelWithOrganization[] = [];
-		
+
 		for (const invitation of invitations) {
 			const invitationData = this.mapToDomain(invitation);
-			const organization = await this.organizationRepository.findById(invitationData.organizationId);
-			
-			if (organization) {
+
+			// Check if organization was populated
+			if (invitation.organization) {
+				const organization = this.mapToDomain(invitation.organization);
 				results.push({
 					...invitationData,
-					organization: {
-            id: organization.id,
-            name: organization.name,
-            slug: organization.slug,
-            logoUrl: organization.logoUrl,
-            plan: organization.plan,
-            status: organization.status,
-            createdAt: organization.createdAt,
-          },
+					organization,
 				});
+			} else {
+				// Fallback to manual fetch if virtual field didn't work
+				const organizationProps = await this.organizationRepository.findById(
+					invitationData.organizationId,
+				);
+
+				if (organizationProps) {
+					// Convert Props to Model by creating a Slug object
+					const { Slug } = await import("@/src/modules/shared/value-objects");
+					const organization: Organization.Model = {
+						...organizationProps,
+						slug: Slug.create(organizationProps.slug),
+					};
+
+					results.push({
+						...invitationData,
+						organization,
+					});
+				}
 			}
 		}
-		
+
 		return results;
 	}
 }

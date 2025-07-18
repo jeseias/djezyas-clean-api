@@ -13,6 +13,7 @@ export interface OrganizationInvitationDocument extends Document {
 	status: OrganizationInvitation.Status;
 	createdAt: Date;
 	updatedAt: Date;
+	organization?: OrganizationInvitation.OrganizationSummary; // Virtual field for populated organization
 }
 
 const organizationInvitationSchema = new Schema<OrganizationInvitationDocument>(
@@ -56,6 +57,7 @@ const organizationInvitationSchema = new Schema<OrganizationInvitationDocument>(
 	{
 		timestamps: true,
 		toJSON: {
+			virtuals: true,
 			transform: (doc, ret) => {
 				delete ret.__v;
 				delete ret._id;
@@ -63,6 +65,7 @@ const organizationInvitationSchema = new Schema<OrganizationInvitationDocument>(
 			},
 		},
 		toObject: {
+			virtuals: true,
 			transform: (doc, ret) => {
 				delete ret.__v;
 				delete ret._id;

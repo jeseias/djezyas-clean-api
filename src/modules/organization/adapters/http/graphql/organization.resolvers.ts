@@ -1,7 +1,7 @@
 import { withUser } from "@/src/main/elysia/plugins";
+import { makeResolver } from "@/src/main/graphql/graphql-utils";
 import type { AcceptInvitation } from "../../../core/app/usecases/accept-invitation/accept-invitation.use-case";
 import { organizationUseCasesFactory } from "../../factories/use-cases.factory";
-import { makeResolver } from "@/src/main/graphql/graphql-utils";
 
 export const organizationResolvers = {
 	Query: {
@@ -28,12 +28,12 @@ export const organizationResolvers = {
 			return result;
 		}),
 
-		loadMyInvitations: makeResolver(async (_, { user }) => {
+		loadMyInvitations: makeResolver(async (_, { userEmail }) => {
 			const loadMyInvitationsUseCase =
 				organizationUseCasesFactory.loadMyInvitations();
 
 			const result = await loadMyInvitationsUseCase.execute({
-				email: user.email,
+				email: userEmail,
 			});
 
 			return result;
@@ -67,11 +67,11 @@ export const organizationResolvers = {
 			return result;
 		}),
 
-		acceptInvitation: withUser(
-			async ({ input }: { input: AcceptInvitation.Params }) => {
+		acceptInvitation: makeResolver(
+			async ({ input }, { userId }) => {
 				const acceptInvitationUseCase =
 					organizationUseCasesFactory.acceptInvitation();
-				const result = await acceptInvitationUseCase.execute(input);
+				const result = await acceptInvitationUseCase.execute({...input, userId});
 
 				return result;
 			},

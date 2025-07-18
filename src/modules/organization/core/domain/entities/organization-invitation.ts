@@ -4,31 +4,33 @@ import { type Id, id } from "@/src/modules/shared/value-objects";
 export namespace OrganizationInvitation {
 	export type Status = "pending" | "accepted" | "expired";
 
-  export type OrganizationSummary = {
-    id: Id;
-    name: string;
-    slug: string;
-    logoUrl?: string;
-    plan?: string;
-    status?: string;
-    createdAt?: Date;
-  }
+	export type OrganizationSummary = {
+		id: Id;
+		name: string;
+		slug: string;
+		logoUrl?: string;
+		plan?: string;
+		status?: string;
+		createdAt?: Date;
+	};
 
 	export type Model = {
 		id: Id;
 		organizationId: Id;
-    organization?: OrganizationSummary
+		organization?: OrganizationSummary;
 		email: string;
 		role: "admin" | "member";
 		token: string;
 		invitedAt: Date;
 		acceptedAt?: Date;
 		status: Status;
+		createdAt: Date;
+		updatedAt: Date;
 	};
 
-  export type ModelWithOrganization = Model & {
-    organization: OrganizationSummary;
-  }
+	export type ModelWithOrganization = Model & {
+		organization: OrganizationSummary;
+	};
 
 	export type CreateParams = {
 		organizationId: Id;
@@ -48,6 +50,8 @@ export namespace OrganizationInvitation {
 				token: uuidv4(),
 				invitedAt: new Date(),
 				status: "pending",
+				createdAt: new Date(),
+				updatedAt: new Date(),
 			});
 		}
 
@@ -79,9 +83,9 @@ export namespace OrganizationInvitation {
 		get status(): Status {
 			return this.props.status;
 		}
-    get organization(): OrganizationSummary | undefined {
-      return this.props.organization;
-    }
+		get organization(): OrganizationSummary | undefined {
+			return this.props.organization;
+		}
 
 		accept(): void {
 			this.props.status = "accepted";

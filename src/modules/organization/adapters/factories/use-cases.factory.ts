@@ -55,7 +55,10 @@ export class OrganizationUseCasesFactory {
 	}
 
 	acceptInvitation() {
-		return new AcceptInvitationUseCase(this.organizationInvitationRepository);
+		return new AcceptInvitationUseCase(
+			this.organizationInvitationRepository,
+			this.organizationMemberRepository,
+		);
 	}
 
 	loadMyOrganizations() {
@@ -66,9 +69,7 @@ export class OrganizationUseCasesFactory {
 	}
 
 	loadMyInvitations() {
-		return new LoadMyInvitationsUseCase(
-			this.organizationInvitationRepository,
-		);
+		return new LoadMyInvitationsUseCase(this.organizationInvitationRepository);
 	}
 }
 

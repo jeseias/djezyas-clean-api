@@ -1,10 +1,13 @@
 import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import { OrganizationInvitation } from "../../../domain/entities/organization-invitation";
+import { OrganizationMember } from "../../../domain/entities/organization-member";
 import type { OrganizationInvitationRepository } from "../../../ports/outbound/organization-invitation-repository";
+import type { OrganizationMemberRepository } from "../../../ports/outbound/organization-member-repository";
 
 export namespace AcceptInvitation {
 	export type Params = {
 		token: string;
+		userId: string;
 	};
 	export type Response = {
 		message: string;
@@ -14,6 +17,7 @@ export namespace AcceptInvitation {
 export class AcceptInvitationUseCase {
 	constructor(
 		private readonly organizationInvitationRepository: OrganizationInvitationRepository,
+		private readonly organizationMemberRepository: OrganizationMemberRepository,
 	) {}
 
 	async execute(
@@ -55,6 +59,19 @@ export class AcceptInvitationUseCase {
 		await this.organizationInvitationRepository.update(
 			invitationEntity.toJSON(),
 		);
+
+		const member = OrganizationMember.Entity.create({
+			organizationId: invitationEntity.organizationId,
+			userId: params.userId,
+			role: invitationEntity.role,
+			invitedAt: invitationEntity.invitedAt,
+			joinedAt: invitationEntity.acceptedAt,
+		});
+
+		await this.organizationMemberRepository.create({
+			...member.toJSON(),
+		});
+		await this.organizationMemberRepository.create(member.toJSON());
 
 		return {
 			message: "Invitation accepted",
