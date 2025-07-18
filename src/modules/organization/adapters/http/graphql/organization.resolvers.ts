@@ -1,6 +1,7 @@
 import { withUser } from "@/src/main/elysia/plugins";
 import type { AcceptInvitation } from "../../../core/app/usecases/accept-invitation/accept-invitation.use-case";
 import { organizationUseCasesFactory } from "../../factories/use-cases.factory";
+import { makeResolver } from "@/src/main/graphql/graphql-utils";
 
 export const organizationResolvers = {
 	Query: {
@@ -16,12 +17,23 @@ export const organizationResolvers = {
 			},
 		),
 
-		loadMyOrganizations: withUser(async (_args, { userId }) => {
+		loadMyOrganizations: withUser(async (_, { userId }) => {
 			const loadMyOrganizationsUseCase =
 				organizationUseCasesFactory.loadMyOrganizations();
 
 			const result = await loadMyOrganizationsUseCase.execute({
 				userId,
+			});
+
+			return result;
+		}),
+
+		loadMyInvitations: makeResolver(async (_, { user }) => {
+			const loadMyInvitationsUseCase =
+				organizationUseCasesFactory.loadMyInvitations();
+
+			const result = await loadMyInvitationsUseCase.execute({
+				email: user.email,
 			});
 
 			return result;

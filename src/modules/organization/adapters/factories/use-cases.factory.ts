@@ -7,6 +7,7 @@ import { AcceptInvitationUseCase } from "../../core/app/usecases/accept-invitati
 import { CreateOrganizationUseCase } from "../../core/app/usecases/create-organization/create-organization.use-case";
 import { GetOrganizationMembersUseCase } from "../../core/app/usecases/get-organization-members/get-organization-members.use-case";
 import { InviteMemberUseCase } from "../../core/app/usecases/invite-member/invite-member.use-case";
+import { LoadMyInvitationsUseCase } from "../../core/app/usecases/load-my-invitations/load-my-invitations.use-case";
 import { LoadMyOrganizationsUseCase } from "../../core/app/usecases/load-my-organizations/load-my-organizations.use-case";
 import type { OrganizationInvitationRepository } from "../../core/ports/outbound/organization-invitation-repository";
 import type { OrganizationMemberRepository } from "../../core/ports/outbound/organization-member-repository";
@@ -61,6 +62,12 @@ export class OrganizationUseCasesFactory {
 		return new LoadMyOrganizationsUseCase(
 			this.organizationMemberRepository,
 			this.organizationRepository,
+		);
+	}
+
+	loadMyInvitations() {
+		return new LoadMyInvitationsUseCase(
+			this.organizationInvitationRepository,
 		);
 	}
 }

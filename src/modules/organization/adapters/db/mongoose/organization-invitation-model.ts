@@ -1,5 +1,6 @@
 import mongoose, { type Document, Schema } from "mongoose";
 import type { OrganizationInvitation } from "../../../core/domain/entities/organization-invitation";
+import { OrganizationModel } from "./organization-model";
 
 export interface OrganizationInvitationDocument extends Document {
 	id: string;
@@ -70,6 +71,13 @@ const organizationInvitationSchema = new Schema<OrganizationInvitationDocument>(
 		},
 	},
 );
+
+organizationInvitationSchema.virtual("organization", {
+	ref: "Organization",
+	localField: "organizationId",
+	foreignField: "id",
+	justOne: true,
+});
 
 organizationInvitationSchema.index({ id: 1 }, { unique: true });
 organizationInvitationSchema.index(

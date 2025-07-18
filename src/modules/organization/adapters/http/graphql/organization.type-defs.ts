@@ -44,6 +44,16 @@ export const organizationTypeDefs = `#graphql
     updatedAt: String!
   }
 
+  type OrganizationSummary {
+    id: String!
+    name: String!
+    slug: String!
+    logoUrl: String
+    plan: OrganizationPlanType
+    status: OrganizationStatus
+    createdAt: String!
+  }
+
   type OrganizationMember {
     id: String!
     organizationId: String!
@@ -111,6 +121,22 @@ export const organizationTypeDefs = `#graphql
     organizations: [OrganizationSummary!]!
   }
 
+  type InvitationSummary {
+    id: String!
+    organizationId: String!
+    organization: OrganizationSummary!
+    email: String!
+    role: OrganizationInvitationRole!
+    token: String!
+    invitedAt: String!
+    acceptedAt: String
+    status: OrganizationInvitationStatus!
+  }
+
+  type LoadMyInvitationsResult {
+    invitations: [InvitationSummary!]!
+  }
+
   type AcceptInvitationResult {
     message: String!
   }
@@ -139,6 +165,7 @@ export const organizationTypeDefs = `#graphql
   type Query {
     getOrganizationMembers(input: GetOrganizationMembersInput!): GetOrganizationMembersResult!
     loadMyOrganizations: LoadMyOrganizationsResult!
+    loadMyInvitations: LoadMyInvitationsResult!
   }
 
   type Mutation {

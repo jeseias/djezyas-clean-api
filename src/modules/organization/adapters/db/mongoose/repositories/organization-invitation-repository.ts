@@ -1,10 +1,13 @@
 import type { OrganizationInvitation } from "../../../../core/domain/entities/organization-invitation";
 import type { OrganizationInvitationRepository } from "../../../../core/ports/outbound/organization-invitation-repository";
+import type { OrganizationRepository } from "../../../../core/ports/outbound/organization-repository";
 import { OrganizationInvitationModel } from "../organization-invitation-model";
 
 export class MongooseOrganizationInvitationRepository
 	implements OrganizationInvitationRepository
 {
+	constructor(private readonly organizationRepository: OrganizationRepository) {}
+
 	private mapToDomain(doc: any): OrganizationInvitation.Model {
 		return doc.toJSON();
 	}
@@ -72,5 +75,32 @@ export class MongooseOrganizationInvitationRepository
 	): Promise<OrganizationInvitation.Model[]> {
 		const docs = await OrganizationInvitationModel.find({ organizationId });
 		return docs.map((doc) => this.mapToDomain(doc));
+	}
+
+	async findByEmail(email: string): Promise<OrganizationInvitation.ModelWithOrganization[]> {
+		const invitations = await OrganizationInvitationModel.find({ email }).populate("organization");
+		const results: OrganizationInvitation.ModelWithOrganization[] = [];
+		
+		for (const invitation of invitations) {
+			const invitationData = this.mapToDomain(invitation);
+			const organization = await this.organizationRepository.findById(invitationData.organizationId);
+			
+			if (organization) {
+				results.push({
+					...invitationData,
+					organization: {
+            id: organization.id,
+            name: organization.name,
+            slug: organization.slug,
+            logoUrl: organization.logoUrl,
+            plan: organization.plan,
+            status: organization.status,
+            createdAt: organization.createdAt,
+          },
+				});
+			}
+		}
+		
+		return results;
 	}
 }
