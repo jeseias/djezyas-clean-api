@@ -21,8 +21,8 @@ export namespace FindOrganizationProducts {
 
 	export type Result = {
 		items: (
-			| Product.Model
-			| (Omit<Product.Model, "createdById"> & { createdById?: string })
+			| Product.Props
+			| (Omit<Product.Props, "createdById"> & { createdById?: string })
 		)[];
 		totalItems: number;
 	};

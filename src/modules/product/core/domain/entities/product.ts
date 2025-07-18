@@ -15,10 +15,10 @@ export namespace Product {
 		DELETED = "deleted",
 	}
 
-	export type Model = {
-		id: Id;
+  export type Props = {
+    id: Id;
 		name: string;
-		slug: Slug;
+		slug: string;
 		description?: string;
 		categoryId: Id;
 		productTypeId: Id;
@@ -37,7 +37,11 @@ export namespace Product {
 		meta?: Record<string, unknown>;
 		createdAt: Date;
 		updatedAt: Date;
-	};
+  }
+
+	export type Model = Omit<Props, 'slug'> & {
+    slug: Slug
+  }
 
 	export type CreateParams = {
 		name: string;
@@ -230,13 +234,13 @@ export namespace Product {
 			this.props.updatedAt = new Date();
 		}
 
-		toJSON(): Model {
-			return { ...this.props };
+		toJSON(): Props {
+			return { ...this.props, slug: this.props.slug.value };
 		}
 
 		toJSONForRole(
 			role: OrganizationMember.Role,
-		): Model | (Omit<Model, "createdById"> & { createdById?: string }) {
+		): Props | (Omit<Props, "createdById"> & { createdById?: string }) {
 			if (role === "owner" || role === "admin") {
 				return this.toJSON();
 			}
@@ -245,6 +249,7 @@ export namespace Product {
 
 			return {
 				...filteredProduct,
+				slug: this.props.slug.value,
 				meta: this.filterMetaByRole(meta, role),
 			};
 		}

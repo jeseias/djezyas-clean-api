@@ -33,10 +33,7 @@ export type ControllerResponse<T = unknown> = {
 
 export abstract class Controller<Body, Query, Params, Headers, Result> {
 	constructor(
-		private readonly useCase: {
-			execute: (params: Body) => Promise<Result>;
-		},
-		preRunners: PreRunnerOrKey<Body, Query, Params, Headers>[] = [],
+		preRunners: PreRunnerOrKey<Body, Query, Params, Headers>[] = []
 	) {
 		this.resolvedPreRunners = preRunners.map((runner) => {
 			if (typeof runner === "string") {
@@ -58,23 +55,20 @@ export abstract class Controller<Body, Query, Params, Headers, Result> {
 	>[];
 
 	abstract execute(
-		request: ControllerRequest<Body, Query, Params, Headers, Result>,
-	): Promise<ControllerResponse>;
+		request: ControllerRequest<Body, Query, Params, Headers>
+	): Promise<ControllerResponse<Result>>;
 
 	async handle(
-		request: ControllerRequest<Body, Query, Params, Headers>,
+		request: ControllerRequest<Body, Query, Params, Headers>
 	): Promise<ControllerResponse> {
 		try {
 			for (const runner of this.resolvedPreRunners) {
 				await runner(request);
 			}
 
-			const result = await this.useCase.execute(request.body);
+			const result = await this.execute(request);
 
-			return {
-				statusCode: 200,
-				data: result,
-			};
+			return result;
 		} catch (error) {
 			console.error("Controller error:", error);
 

@@ -20,14 +20,11 @@ export class SaveProductController extends Controller<
 		private readonly saveProductUseCase: SaveProductUseCase,
 		private readonly storage: StorageAdapter,
 	) {
-		super(
-			{ execute: () => Promise.resolve() } as any,
-			createSaveProductPreRunners(storage),
-		);
+		super(createSaveProductPreRunners(storage));
 	}
 
 	async execute(
-		request: ControllerRequest<SaveProductBody>,
+		request: ControllerRequest<SaveProductBody>
 	): Promise<ControllerResponse<Product.Model>> {
 		const useCaseParams = {
 			...request.body,
