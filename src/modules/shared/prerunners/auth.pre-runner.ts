@@ -6,9 +6,8 @@ export const authPreRunner: PreRunner<any, any, any, any> = async (
 	req: ControllerRequest<any, any, any, any>,
 ) => {
 	const authHeader = req.headers.authorization || req.headers["x-access-token"];
-  
-	
-  if (!authHeader) {
+
+	if (!authHeader) {
 		throw {
 			statusCode: 401,
 			message: "Authorization header is required",

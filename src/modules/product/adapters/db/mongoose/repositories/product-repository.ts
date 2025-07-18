@@ -4,25 +4,19 @@ import type {
 	ProductFilters,
 	ProductRepository,
 } from "@/src/modules/product/core/ports/outbound/product-repository";
-import { Slug } from "@/src/modules/shared/value-objects";
-import { ProductModel } from "../product-model";
+import { type ProductDocument, ProductModel } from "../product-model";
 
 export class MongooseProductRepository implements ProductRepository {
-	async create(product: Product.Model): Promise<Product.Model> {
+	async create(product: Product.Props): Promise<Product.Props> {
 		const doc = await ProductModel.create({
 			...product,
 			slug: product.slug.toString(),
 		});
 
-		const json = doc.toJSON();
-		return {
-			...json,
-			slug: Slug.fromValue(doc.slug),
-			status: json.status as Product.Status,
-		};
+		return this.toDomainProps(doc.toJSON());
 	}
 
-	async update(data: Partial<Product.Model>): Promise<Product.Model> {
+	async update(data: Partial<Product.Props>): Promise<Product.Props> {
 		if (!data.id) {
 			throw new Error("ID is required for update");
 		}
@@ -40,142 +34,82 @@ export class MongooseProductRepository implements ProductRepository {
 			throw new Error("Product not found");
 		}
 
-		const json = doc.toJSON();
-		return {
-			...json,
-			slug: Slug.fromValue(doc.slug),
-			status: json.status as Product.Status,
-		};
+		return this.toDomainProps(doc.toJSON());
 	}
 
 	async delete(id: string): Promise<void> {
 		await ProductModel.findOneAndDelete({ id });
 	}
 
-	async findById(id: string): Promise<Product.Model | null> {
+	async findById(id: string): Promise<Product.Props | null> {
 		const doc = await ProductModel.findOne({ id });
 		if (!doc) return null;
 
-		const json = doc.toJSON();
-		return {
-			...json,
-			slug: Slug.fromValue(doc.slug),
-			status: json.status as Product.Status,
-		};
+		return this.toDomainProps(doc.toJSON());
 	}
 
-	async findByOrganizationId(organizationId: string): Promise<Product.Model[]> {
+	async findByOrganizationId(organizationId: string): Promise<Product.Props[]> {
 		const docs = await ProductModel.find({ organizationId });
-		return docs.map((doc) => {
-			const json = doc.toJSON();
-			return {
-				...json,
-				slug: Slug.fromValue(doc.slug),
-				status: json.status as Product.Status,
-			};
-		});
+		return docs.map(this.toDomainProps);
 	}
 
-	async findBySlug(slug: string): Promise<Product.Model | null> {
+	async findBySlug(slug: string): Promise<Product.Props | null> {
 		const doc = await ProductModel.findOne({ slug });
 		if (!doc) return null;
 
-		const json = doc.toJSON();
-		return {
-			...json,
-			slug: Slug.fromValue(doc.slug),
-			status: json.status as Product.Status,
-		};
+		return this.toDomainProps(doc.toJSON());
 	}
 
 	async findBySku(
 		sku: string,
 		organizationId: string,
-	): Promise<Product.Model | null> {
+	): Promise<Product.Props | null> {
 		const doc = await ProductModel.findOne({ sku, organizationId });
 		if (!doc) return null;
 
-		const json = doc.toJSON();
-		return {
-			...json,
-			slug: Slug.fromValue(doc.slug),
-			status: json.status as Product.Status,
-		};
+		return this.toDomainProps(doc.toJSON());
 	}
 
 	async findByBarcode(
 		barcode: string,
 		organizationId: string,
-	): Promise<Product.Model | null> {
+	): Promise<Product.Props | null> {
 		const doc = await ProductModel.findOne({ barcode, organizationId });
 		if (!doc) return null;
 
-		const json = doc.toJSON();
-		return {
-			...json,
-			slug: Slug.fromValue(doc.slug),
-			status: json.status as Product.Status,
-		};
+		return this.toDomainProps(doc.toJSON());
 	}
 
-	async findByCategoryId(categoryId: string): Promise<Product.Model[]> {
+	async findByCategoryId(categoryId: string): Promise<Product.Props[]> {
 		const docs = await ProductModel.find({ categoryId });
-		return docs.map((doc) => {
-			const json = doc.toJSON();
-			return {
-				...json,
-				slug: Slug.fromValue(doc.slug),
-				status: json.status as Product.Status,
-			};
-		});
+		return docs.map(this.toDomainProps);
 	}
 
-	async findByProductTypeId(productTypeId: string): Promise<Product.Model[]> {
+	async findByProductTypeId(productTypeId: string): Promise<Product.Props[]> {
 		const docs = await ProductModel.find({ productTypeId });
-		return docs.map((doc) => {
-			const json = doc.toJSON();
-			return {
-				...json,
-				slug: Slug.fromValue(doc.slug),
-				status: json.status as Product.Status,
-			};
-		});
+		return docs.map(this.toDomainProps);
 	}
 
 	async findByOrganizationIdAndCategoryId(
 		organizationId: string,
 		categoryId: string,
-	): Promise<Product.Model[]> {
+	): Promise<Product.Props[]> {
 		const docs = await ProductModel.find({ organizationId, categoryId });
-		return docs.map((doc) => {
-			const json = doc.toJSON();
-			return {
-				...json,
-				slug: Slug.fromValue(doc.slug),
-				status: json.status as Product.Status,
-			};
-		});
+		return docs.map(this.toDomainProps);
 	}
 
 	async findByOrganizationIdAndProductTypeId(
 		organizationId: string,
 		productTypeId: string,
-	): Promise<Product.Model[]> {
+	): Promise<Product.Props[]> {
 		const docs = await ProductModel.find({ organizationId, productTypeId });
-		return docs.map((doc) => {
-			const json = doc.toJSON();
-			return {
-				...json,
-				slug: Slug.fromValue(doc.slug),
-				status: json.status as Product.Status,
-			};
-		});
+		return docs.map(this.toDomainProps);
 	}
 
 	async findByOrganizationIdWithFilters(
 		organizationId: string,
 		filters: ProductFilters.Filters,
-	): Promise<{ items: Product.Model[]; totalItems: number }> {
+	): Promise<{ items: Product.Props[]; totalItems: number }> {
 		const {
 			categoryId,
 			productTypeId,
@@ -194,7 +128,7 @@ export class MongooseProductRepository implements ProductRepository {
 			sortOrder = "desc",
 		} = filters;
 
-		const query: FilterQuery<Product.Model> = { organizationId };
+		const query: FilterQuery<Product.Props> = { organizationId };
 
 		if (categoryId) {
 			query.categoryId = categoryId;
@@ -264,7 +198,7 @@ export class MongooseProductRepository implements ProductRepository {
 
 		const sort: Record<string, 1 | -1> = {};
 		sort[sortBy] = sortOrder === "asc" ? 1 : -1;
-    
+
 		let queryBuilder = ProductModel.find(query).sort(sort);
 
 		if (offset) {
@@ -278,18 +212,33 @@ export class MongooseProductRepository implements ProductRepository {
 
 		const totalItems = await ProductModel.countDocuments(query);
 
-		const items = docs.map((doc) => {
-			const json = doc.toJSON();
-			return {
-				...json,
-				slug: Slug.fromValue(doc.slug),
-				status: json.status as Product.Status,
-			};
-		});
+		const items = docs.map(this.toDomainProps);
 
 		return {
 			items,
 			totalItems,
+		};
+	}
+
+	private toDomainProps(doc: ProductDocument): Product.Props {
+		return {
+			id: doc.id,
+			name: doc.name,
+			slug: doc.slug,
+			description: doc.description,
+			categoryId: doc.categoryId,
+			productTypeId: doc.productTypeId,
+			status: doc.status as Product.Status,
+			organizationId: doc.organizationId,
+			createdById: doc.createdById,
+			imageUrl: doc.imageUrl,
+			sku: doc.sku,
+			barcode: doc.barcode,
+			weight: doc.weight,
+			dimensions: doc.dimensions,
+			meta: doc.meta,
+			createdAt: doc.createdAt,
+			updatedAt: doc.updatedAt,
 		};
 	}
 }

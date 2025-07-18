@@ -24,7 +24,7 @@ export class SaveProductController extends Controller<
 	}
 
 	async execute(
-		request: ControllerRequest<SaveProductBody>
+		request: ControllerRequest<SaveProductBody>,
 	): Promise<ControllerResponse<Product.Model>> {
 		const useCaseParams = {
 			...request.body,

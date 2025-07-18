@@ -15,8 +15,8 @@ export namespace Product {
 		DELETED = "deleted",
 	}
 
-  export type Props = {
-    id: Id;
+	export type Props = {
+		id: Id;
 		name: string;
 		slug: string;
 		description?: string;
@@ -37,11 +37,11 @@ export namespace Product {
 		meta?: Record<string, unknown>;
 		createdAt: Date;
 		updatedAt: Date;
-  }
+	};
 
-	export type Model = Omit<Props, 'slug'> & {
-    slug: Slug
-  }
+	export type Model = Omit<Props, "slug"> & {
+		slug: Slug;
+	};
 
 	export type CreateParams = {
 		name: string;
@@ -90,8 +90,11 @@ export namespace Product {
 			return new Entity(product);
 		}
 
-		static fromModel(model: Model): Entity {
-			return new Entity(model);
+		static fromModel(model: Props): Entity {
+			return new Entity({
+				...model,
+				slug: Slug.create(model.name),
+			});
 		}
 
 		get id(): Id {

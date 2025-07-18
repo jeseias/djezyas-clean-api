@@ -32,9 +32,7 @@ export type ControllerResponse<T = unknown> = {
 };
 
 export abstract class Controller<Body, Query, Params, Headers, Result> {
-	constructor(
-		preRunners: PreRunnerOrKey<Body, Query, Params, Headers>[] = []
-	) {
+	constructor(preRunners: PreRunnerOrKey<Body, Query, Params, Headers>[] = []) {
 		this.resolvedPreRunners = preRunners.map((runner) => {
 			if (typeof runner === "string") {
 				const defaultRunner = DefaultPreRunners?.[runner];
@@ -55,11 +53,11 @@ export abstract class Controller<Body, Query, Params, Headers, Result> {
 	>[];
 
 	abstract execute(
-		request: ControllerRequest<Body, Query, Params, Headers>
+		request: ControllerRequest<Body, Query, Params, Headers>,
 	): Promise<ControllerResponse<Result>>;
 
 	async handle(
-		request: ControllerRequest<Body, Query, Params, Headers>
+		request: ControllerRequest<Body, Query, Params, Headers>,
 	): Promise<ControllerResponse> {
 		try {
 			for (const runner of this.resolvedPreRunners) {

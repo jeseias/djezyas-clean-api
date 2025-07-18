@@ -44,10 +44,9 @@ export class FindOrganizationProductsUseCase {
 			params.organizationId,
 		);
 
-    
 		const filters = params.filters || {};
 		const result = await this.productRepository.findByOrganizationIdWithFilters(
-      params.organizationId,
+			params.organizationId,
 			filters,
 		);
 

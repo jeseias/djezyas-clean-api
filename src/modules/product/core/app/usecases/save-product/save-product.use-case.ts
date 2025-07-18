@@ -30,7 +30,7 @@ export namespace SaveProduct {
 		meta?: Record<string, unknown>;
 	};
 
-	export type Result = Product.Model;
+	export type Result = Product.Props;
 }
 
 export class SaveProductUseCase {
@@ -121,7 +121,7 @@ export class SaveProductUseCase {
 		}
 
 		const isUpdate = !!params.id;
-		let existingProduct: Product.Model | null = null;
+		let existingProduct: Product.Props | null = null;
 
 		if (isUpdate) {
 			existingProduct = await this.productRepository.findById(params.id!);

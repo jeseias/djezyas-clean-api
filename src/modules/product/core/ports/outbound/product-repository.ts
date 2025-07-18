@@ -24,31 +24,31 @@ export namespace ProductFilters {
 }
 
 export type ProductRepository = Pick<
-	Repository<Product.Model>,
+	Repository<Product.Props>,
 	"create" | "update" | "delete" | "findById"
 > & {
-	findByOrganizationId(organizationId: string): Promise<Product.Model[]>;
-	findBySlug(slug: string): Promise<Product.Model | null>;
-	findBySku(sku: string, organizationId: string): Promise<Product.Model | null>;
+	findByOrganizationId(organizationId: string): Promise<Product.Props[]>;
+	findBySlug(slug: string): Promise<Product.Props | null>;
+	findBySku(sku: string, organizationId: string): Promise<Product.Props | null>;
 	findByBarcode(
 		barcode: string,
 		organizationId: string,
-	): Promise<Product.Model | null>;
-	findByCategoryId(categoryId: string): Promise<Product.Model[]>;
-	findByProductTypeId(productTypeId: string): Promise<Product.Model[]>;
+	): Promise<Product.Props | null>;
+	findByCategoryId(categoryId: string): Promise<Product.Props[]>;
+	findByProductTypeId(productTypeId: string): Promise<Product.Props[]>;
 	findByOrganizationIdAndCategoryId(
 		organizationId: string,
 		categoryId: string,
-	): Promise<Product.Model[]>;
+	): Promise<Product.Props[]>;
 	findByOrganizationIdAndProductTypeId(
 		organizationId: string,
 		productTypeId: string,
-	): Promise<Product.Model[]>;
+	): Promise<Product.Props[]>;
 	findByOrganizationIdWithFilters(
 		organizationId: string,
 		filters: ProductFilters.Filters,
 	): Promise<{
-		items: Product.Model[];
+		items: Product.Props[];
 		totalItems: number;
 	}>;
 };
