@@ -18,6 +18,7 @@ import {
 	organizationMongooseRepository,
 } from "./repository.factory";
 import { organizationTemplateService } from "./service.factory";
+import { LoadStoresUseCase } from "../../core/app/usecases/load-stores";
 
 export class OrganizationUseCasesFactory {
 	constructor(
@@ -71,6 +72,10 @@ export class OrganizationUseCasesFactory {
 	loadMyInvitations() {
 		return new LoadMyInvitationsUseCase(this.organizationInvitationRepository);
 	}
+
+  loadStores() {
+    return new LoadStoresUseCase(this.organizationRepository);
+  }
 }
 
 export const organizationUseCasesFactory = new OrganizationUseCasesFactory(

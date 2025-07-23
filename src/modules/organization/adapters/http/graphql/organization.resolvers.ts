@@ -38,6 +38,20 @@ export const organizationResolvers = {
 
 			return result;
 		}),
+
+		listStores: makeResolver(
+			async ({ input }: { input: ListStoresInput }) => {
+				const loadStoresUseCase = organizationUseCasesFactory.loadStores();
+				const result = await loadStoresUseCase.execute({
+					page: input.page || 1,
+					limit: input.limit || 10,
+					search: input.search,
+				});
+
+				return result;
+			},
+			{ requireAuth: false }
+		),
 	},
 
 	Mutation: {
@@ -98,4 +112,10 @@ interface InviteMemberInput {
 	organizationId: string;
 	email: string;
 	role: "admin" | "member";
+}
+
+interface ListStoresInput {
+	page?: number;
+	limit?: number;
+	search?: string;
 }

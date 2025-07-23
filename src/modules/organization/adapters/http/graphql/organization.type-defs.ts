@@ -44,6 +44,13 @@ export const organizationTypeDefs = `#graphql
     updatedAt: String!
   }
 
+  type Store {
+    slug: String!
+    name: String!
+    logoUrl: String
+    createdAt: DateTime!
+  }
+
   type OrganizationSummary {
     id: String!
     name: String!
@@ -162,10 +169,24 @@ export const organizationTypeDefs = `#graphql
     role: OrganizationInvitationRole!
   }
 
+  input ListStoresInput {
+    page: Int
+    limit: Int
+    search: String
+  }
+
+  type ListStoresResult {
+    stores: [Store]!
+    total: Int!
+    page: Int!
+    limit: Int!
+  }
+
   type Query {
     getOrganizationMembers(input: GetOrganizationMembersInput!): GetOrganizationMembersResult!
     loadMyOrganizations: LoadMyOrganizationsResult!
     loadMyInvitations: LoadMyInvitationsResult!
+    listStores(input: ListStoresInput!): ListStoresResult!
   }
 
   type Mutation {

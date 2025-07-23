@@ -22,7 +22,16 @@ export const makeResolver = <T extends (...args: any[]) => any>(
 	fn: T,
 	options?: {
 		isAdmin?: boolean;
+		requireAuth?: boolean;
 	},
-): ReturnType<typeof withUser> => {
-	return withUser(handleResolver(fn), options);
+): ReturnType<typeof withUser> | T => {
+	const resolver = handleResolver(fn);
+	
+	// If requireAuth is explicitly set to false, return the resolver without authentication
+	if (options?.requireAuth === false) {
+		return resolver;
+	}
+	
+	// Default behavior: require authentication
+	return withUser(resolver, options);
 };
