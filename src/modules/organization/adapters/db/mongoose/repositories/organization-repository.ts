@@ -1,3 +1,4 @@
+import type { FilterQuery } from "mongoose";
 import type { Organization } from "../../../../core/domain/entities/organization";
 import type { OrganizationRepository } from "../../../../core/ports/outbound/organization-repository";
 import { OrganizationModel } from "../organization-model";
@@ -9,6 +10,15 @@ export class MongooseOrganizationRepository implements OrganizationRepository {
 			slug: doc.slug,
 		};
 	}
+
+  private mapToStore(doc: any): Organization.Store {
+    return {
+      slug: doc.slug,
+      name: doc.name,
+      logoUrl: doc.logoUrl,
+      createdAt: doc.createdAt,
+    };
+  }
 
 	private mapToDatabase(organization: Organization.Props) {
 		return {
@@ -64,4 +74,25 @@ export class MongooseOrganizationRepository implements OrganizationRepository {
 		const docs = await OrganizationModel.find({ ownerId });
 		return docs.map((doc) => this.mapToDomain(doc));
 	}
+
+  async listStores(params: { page?: number; limit?: number; search?: string; }): Promise<{ totalItems: number; items: Organization.Store[]; }> {
+    const { page = 1, limit = 10, search } = params;
+
+    const query: FilterQuery<Organization.Model> = {};
+
+    if (search) {
+      query.name = { $regex: search, $options: 'i' };
+    }
+
+    const total = await OrganizationModel.countDocuments(query);
+    const items = await OrganizationModel.find(query)
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    return {
+      totalItems: total,
+      items: items.map((item) => this.mapToStore(item)),
+    };
+  }
 }
