@@ -1,6 +1,5 @@
 import { withUser } from "@/src/main/elysia/plugins";
 import { makeResolver } from "@/src/main/graphql/graphql-utils";
-import type { AcceptInvitation } from "../../../core/app/usecases/accept-invitation/accept-invitation.use-case";
 import { organizationUseCasesFactory } from "../../factories/use-cases.factory";
 
 export const organizationResolvers = {
