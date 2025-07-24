@@ -21,7 +21,7 @@ export async function tryCatch<T>(
 		if (error instanceof AppError) {
 			throw error;
 		}
-		
+
 		// Convert any other error to AppError
 		throw new AppError(errorMessage, statusCode, errorCode);
 	}
@@ -48,8 +48,8 @@ export function tryCatchSync<T>(
 		if (error instanceof AppError) {
 			throw error;
 		}
-		
+
 		// Convert any other error to AppError
 		throw new AppError(errorMessage, statusCode, errorCode);
 	}
-} 
+}
