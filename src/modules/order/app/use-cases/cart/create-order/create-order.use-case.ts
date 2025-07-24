@@ -7,8 +7,8 @@ import type { PriceRepository } from "@/src/modules/product/core/ports/outbound/
 import type { ProductRepository } from "@/src/modules/product/core/ports/outbound/product-repository";
 import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import type { IsUserValidService } from "@/src/modules/user/core/app/services";
-import { Order } from "../../../domain/entities";
-import type { OrderRepository } from "../../../domain/repositories/order-repository";
+import { Order } from "../../../../domain/entities";
+import type { OrderRepository } from "../../../../domain/repositories/order-repository";
 
 export namespace CreateOrder {
 	export type Item = {

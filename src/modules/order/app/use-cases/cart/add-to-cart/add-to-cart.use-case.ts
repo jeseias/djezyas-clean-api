@@ -2,8 +2,8 @@ import { Product } from "@/src/modules/product/core/domain/entities";
 import type { ProductRepository } from "@/src/modules/product/core/ports/outbound/product-repository";
 import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import type { Id } from "@/src/modules/shared/value-objects";
-import { Cart } from "../../../domain/entities";
-import type { CartRepository } from "../../../domain/repositories/cart-repository";
+import { Cart } from "../../../../domain/entities";
+import type { CartRepository } from "../../../../domain/repositories/cart-repository";
 
 export namespace AddToCart {
 	export type Params = {

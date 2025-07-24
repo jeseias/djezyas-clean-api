@@ -1,6 +1,6 @@
 import type { ProductRepository } from "@/src/modules/product/core/ports/outbound/product-repository";
-import { Cart } from "../../../domain/entities";
-import type { CartRepository } from "../../../domain/repositories/cart-repository";
+import { Cart } from "../../../../domain/entities";
+import type { CartRepository } from "../../../../domain/repositories/cart-repository";
 
 export namespace GetCart {
 	export type Params = {
