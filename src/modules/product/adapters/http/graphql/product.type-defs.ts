@@ -27,6 +27,16 @@ export const productTypeDefs = `#graphql
     meta: JSON
     createdAt: DateTime!
     updatedAt: DateTime!
+    price: Price
+  }
+
+  type B2CProductPrice {
+    currency: String!
+    unitAmount: Float!
+    type: PriceType
+    status: PriceStatus
+    validFrom: DateTime
+    validUntil: DateTime
   }
 
   type B2CProduct {
@@ -35,6 +45,7 @@ export const productTypeDefs = `#graphql
     description: String
     imageUrl: String
     weight: Float
+    price: B2CProductPrice
     dimensions: ProductDimensions
     category: B2CCategory!
     productType: B2CProductType!
@@ -55,8 +66,7 @@ export const productTypeDefs = `#graphql
   type Price {
     id: String!
     productId: String!
-    currencyId: String!
-    amount: Float!
+    unitAmount: Float!
     type: PriceType!
     status: PriceStatus!
     validFrom: DateTime
@@ -125,6 +135,15 @@ export const productTypeDefs = `#graphql
     height: Float
   }
 
+  input SaveProductPriceInput {
+    currency: String!
+    unitAmount: Float!
+    type: PriceType
+    status: PriceStatus
+    validFrom: DateTime
+    validUntil: DateTime
+  }
+
   input SaveProductInput {
     id: String
     name: String!
@@ -138,6 +157,7 @@ export const productTypeDefs = `#graphql
     weight: Float
     dimensions: ProductDimensionsInput
     meta: JSON
+    price: SaveProductPriceInput
   }
 
   input SaveProductTypeInput {

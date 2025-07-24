@@ -6,6 +6,7 @@ import {
 	type Url,
 	url,
 } from "@/src/modules/shared/value-objects";
+import type { Price } from "./price";
 
 export namespace Product {
 	export enum Status {
@@ -28,6 +29,7 @@ export namespace Product {
 		imageUrl?: Url | string;
 		sku?: string;
 		barcode?: string;
+    price?: Price.Model
 		weight?: number;
 		dimensions?: {
 			length: number;

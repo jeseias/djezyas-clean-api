@@ -53,10 +53,12 @@ export class ProductUseCasesFactory {
 	saveProduct() {
 		return new SaveProductUseCase(
 			this.productRepository,
-			this.userRepository,
-			this.organizationRepository,
+			this.isUserValidService,
+			this.isOrganizationValidService,
+			this.isOrganizationMemberService,
 			this.productCategoryRepository,
 			this.productTypeRepository,
+			this.priceRepository,
 		);
 	}
 

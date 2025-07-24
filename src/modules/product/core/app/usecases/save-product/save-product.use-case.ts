@@ -1,9 +1,11 @@
-import { Organization } from "@/src/modules/organization/core/domain/entities";
-import type { OrganizationRepository } from "@/src/modules/organization/core/ports/outbound/organization-repository";
+import type {
+	IsOrganizationMemberService,
+	IsOrganizationValidService,
+} from "@/src/modules/organization/core/app/services";
 import { AppError, ErrorCode } from "@/src/modules/shared/errors";
-import { User } from "@/src/modules/user/core/domain/entities";
-import type { UserRepository } from "@/src/modules/user/core/ports/outbound/user-repository";
-import { Product } from "../../../domain/entities";
+import type { IsUserValidService } from "@/src/modules/user/core/app/services";
+import { Price, Product } from "../../../domain/entities";
+import type { PriceRepository } from "../../../ports/outbound/price-repository";
 import type { ProductCategoryRepository } from "../../../ports/outbound/product-category-repository";
 import type { ProductRepository } from "../../../ports/outbound/product-repository";
 import type { ProductTypeRepository } from "../../../ports/outbound/product-type-repository";
@@ -28,6 +30,14 @@ export namespace SaveProduct {
 			height: number;
 		};
 		meta?: Record<string, unknown>;
+		price: {
+			currency: string;
+			unitAmount: number;
+			type?: Price.Type;
+			status?: Price.Status;
+			validFrom?: Date;
+			validUntil?: Date;
+		};
 	};
 
 	export type Result = Product.Props;
@@ -36,64 +46,41 @@ export namespace SaveProduct {
 export class SaveProductUseCase {
 	constructor(
 		private readonly productRepository: ProductRepository,
-		private readonly userRepository: UserRepository,
-		private readonly organizationRepository: OrganizationRepository,
+		private readonly isUserValidService: IsUserValidService,
+		private readonly isOrganizationValid: IsOrganizationValidService,
+		private readonly isMember: IsOrganizationMemberService,
 		private readonly productCategoryRepository: ProductCategoryRepository,
 		private readonly productTypeRepository: ProductTypeRepository,
+		private readonly priceRepository: PriceRepository,
 	) {}
 
 	async execute(params: SaveProduct.Params): Promise<SaveProduct.Result> {
-		const userModel = await this.userRepository.findById(params.createdById);
-		if (!userModel) {
-			throw new AppError("User must exist", 400, ErrorCode.USER_NOT_FOUND);
-		}
-		const user = User.Entity.fromModel(userModel);
+		await this.isUserValidService.execute(params.createdById);
+		await this.isOrganizationValid.execute(params.organizationId);
+		await this.isMember.execute(params.createdById, params.organizationId);
 
-		if (!user.isEmailVerified()) {
-			throw new AppError(
-				"User must have a verified account",
-				400,
-				ErrorCode.EMAIL_NOT_VERIFIED,
-			);
-		}
-		if (!user.isActive()) {
-			throw new AppError(
-				"User account must be active",
-				400,
-				ErrorCode.USER_NOT_ACTIVE,
-			);
-		}
-		if (user.isBlocked()) {
-			throw new AppError(
-				"User account is blocked",
-				400,
-				ErrorCode.USER_BLOCKED,
+		await this.validateProductCategory(params.categoryId);
+		await this.validateProductType(params.productTypeId, params.organizationId);
+
+		let existingProduct: Product.Props | null = null;
+
+		if (params.id) {
+			existingProduct = await this.validateExistingProduct(
+				params.id,
+				params.organizationId,
 			);
 		}
 
-		const orgModel = await this.organizationRepository.findById(
-			params.organizationId,
-		);
-		if (!orgModel) {
-			throw new AppError(
-				"Organization must exist",
-				400,
-				ErrorCode.ENTITY_NOT_FOUND,
-			);
+		if (existingProduct) {
+			return await this.updateProduct(existingProduct, params);
+		} else {
+			return await this.createProduct(params);
 		}
-		const org = Organization.Entity.fromModel(orgModel);
+	}
 
-		if (org.status !== Organization.Status.ACTIVE) {
-			throw new AppError(
-				"Organization must be active",
-				400,
-				ErrorCode.ORGANIZATION_NOT_ACTIVE,
-			);
-		}
-
-		const categoryModel = await this.productCategoryRepository.findById(
-			params.categoryId,
-		);
+	private async validateProductCategory(categoryId: string): Promise<void> {
+		const categoryModel =
+			await this.productCategoryRepository.findById(categoryId);
 		if (!categoryModel) {
 			throw new AppError(
 				"Product category must exist",
@@ -101,10 +88,14 @@ export class SaveProductUseCase {
 				ErrorCode.ENTITY_NOT_FOUND,
 			);
 		}
+	}
 
-		const productTypeModel = await this.productTypeRepository.findById(
-			params.productTypeId,
-		);
+	private async validateProductType(
+		productTypeId: string,
+		organizationId: string,
+	): Promise<void> {
+		const productTypeModel =
+			await this.productTypeRepository.findById(productTypeId);
 		if (!productTypeModel) {
 			throw new AppError(
 				"Product type must exist",
@@ -112,96 +103,93 @@ export class SaveProductUseCase {
 				ErrorCode.ENTITY_NOT_FOUND,
 			);
 		}
-		if (productTypeModel.organizationId !== params.organizationId) {
+		if (productTypeModel.organizationId !== organizationId) {
 			throw new AppError(
 				"Product type must belong to the organization",
 				400,
 				ErrorCode.ENTITY_NOT_FOUND,
 			);
 		}
+	}
 
-		const isUpdate = !!params.id;
-		let existingProduct: Product.Props | null = null;
-
-		if (isUpdate) {
-			existingProduct = await this.productRepository.findById(params.id!);
-			if (!existingProduct) {
-				throw new AppError(
-					"Product not found",
-					404,
-					ErrorCode.ENTITY_NOT_FOUND,
-				);
-			}
-			if (existingProduct.organizationId !== params.organizationId) {
-				throw new AppError(
-					"Product does not belong to the organization",
-					403,
-					ErrorCode.UNAUTHORIZED,
-				);
-			}
+	private async validateExistingProduct(
+		productId: string,
+		organizationId: string,
+	): Promise<Product.Props> {
+		const existingProduct = await this.productRepository.findById(productId);
+		if (!existingProduct) {
+			throw new AppError("Product not found", 404, ErrorCode.ENTITY_NOT_FOUND);
 		}
-
-		if (params.sku) {
-			const existingProductWithSku = await this.productRepository.findBySku(
-				params.sku,
-				params.organizationId,
+		if (existingProduct.organizationId !== organizationId) {
+			throw new AppError(
+				"Product does not belong to the organization",
+				403,
+				ErrorCode.UNAUTHORIZED,
 			);
-			if (
-				existingProductWithSku &&
-				(!isUpdate || existingProductWithSku.id !== params.id)
-			) {
-				throw new AppError(
-					"SKU must be unique within organization",
-					400,
-					ErrorCode.PRODUCT_SKU_ALREADY_EXISTS,
-				);
-			}
 		}
+		return existingProduct;
+	}
 
-		if (params.barcode) {
-			const existingProductWithBarcode =
-				await this.productRepository.findByBarcode(
-					params.barcode,
-					params.organizationId,
-				);
-			if (
-				existingProductWithBarcode &&
-				(!isUpdate || existingProductWithBarcode.id !== params.id)
-			) {
-				throw new AppError(
-					"Barcode must be unique within organization",
-					400,
-					ErrorCode.PRODUCT_BARCODE_ALREADY_EXISTS,
-				);
-			}
-		}
+	private async updateProduct(
+		existingProduct: Product.Props,
+		params: SaveProduct.Params,
+	): Promise<Product.Props> {
+		const productEntity = Product.Entity.fromModel(existingProduct);
+		productEntity.updateFromDTO(params);
 
-		if (isUpdate) {
-			const productEntity = Product.Entity.fromModel(existingProduct!);
+		await this.productRepository.update(productEntity.toJSON());
+    const price = await this.priceRepository.findByProductId(productEntity.id)
 
-			productEntity.updateFromDTO(params);
+		return {
+      ...productEntity.toJSON(),
+      price: price?.[0]
+    };
+	}
 
-			await this.productRepository.update(productEntity.toJSON());
-			return productEntity.toJSON();
-		} else {
-			const product = Product.Entity.create({
-				name: params.name,
-				description: params.description,
-				categoryId: params.categoryId,
-				productTypeId: params.productTypeId,
-				status: params.status,
-				organizationId: params.organizationId,
-				createdById: params.createdById,
-				imageUrl: params.imageUrl,
-				sku: params.sku,
-				barcode: params.barcode,
-				weight: params.weight,
-				dimensions: params.dimensions,
-				meta: params.meta,
-			});
+	private async createProduct(
+		params: SaveProduct.Params,
+	): Promise<Product.Props> {
+		const product = Product.Entity.create({
+			name: params.name,
+			description: params.description,
+			categoryId: params.categoryId,
+			productTypeId: params.productTypeId,
+			status: params.status,
+			organizationId: params.organizationId,
+			createdById: params.createdById,
+			imageUrl: params.imageUrl,
+			sku: params.sku,
+			barcode: params.barcode,
+			weight: params.weight,
+			dimensions: params.dimensions,
+			meta: params.meta,
+		});
 
-			await this.productRepository.create(product.toJSON());
-			return product.toJSON();
-		}
+		await this.productRepository.create(product.toJSON());
+		const price = await this.createProductPrice(product.id, params.price);
+
+		return {
+      ...product.toJSON(),
+      price
+    };
+	}
+
+	private async createProductPrice(
+		productId: string,
+		priceParams: SaveProduct.Params["price"],
+	): Promise<Price.Model> {
+		const price = Price.Entity.create({
+			productId,
+			currency: priceParams.currency,
+			unitAmount: priceParams.unitAmount,
+			type: priceParams.type,
+			status: priceParams.status,
+			validFrom: priceParams.validFrom,
+			validUntil: priceParams.validUntil,
+		});
+
+		await this.priceRepository.create(price.getSnapshot());
+
+    return price.getSnapshot()
 	}
 }
