@@ -21,15 +21,16 @@ export namespace Order {
 		quantity: number;
 		unitAmount: number;
 		subtotal: number;
+		organizationId: Id; 
 	};
 
 	export type Model = {
 		id: Id;
 		userId: Id;
-		organizationId: Id;
 		items: Item[];
 		totalAmount: number;
 		status: Status;
+		paymentIntentId?: string;
 		meta?: Record<string, any>;
 		createdAt: Date;
 		updatedAt: Date;
@@ -38,16 +39,18 @@ export namespace Order {
 	export type CreateParams = {
 		id?: Id;
 		userId: Id;
-		organizationId: Id;
 		items: {
 			priceId: Id;
 			productId: Id;
 			name: string;
 			quantity: number;
 			unitAmount: number;
+			organizationId: Id;
 			product?: Product.Model;
 			price?: Price.Model;
 		}[];
+		paymentIntentId?: string;
+		meta?: Record<string, any>;
 	};
 
 	export class Entity {
@@ -67,6 +70,7 @@ export namespace Order {
 					quantity: item.quantity,
 					unitAmount: item.unitAmount,
 					subtotal,
+					organizationId: item.organizationId,
 				};
 			});
 
@@ -75,10 +79,11 @@ export namespace Order {
 			const order: Model = {
 				id: params.id ?? id(),
 				userId: params.userId,
-				organizationId: params.organizationId,
 				items,
 				totalAmount,
 				status: Status.PENDING,
+				paymentIntentId: params.paymentIntentId,
+				meta: params.meta ?? {},
 				createdAt: now,
 				updatedAt: now,
 			};
@@ -115,6 +120,10 @@ export namespace Order {
 
 		getSnapshot(): Model {
 			return { ...this.props };
+		}
+
+		getOrganizationIds(): Id[] {
+			return [...new Set(this.props.items.map(i => i.organizationId))];
 		}
 	}
 }
