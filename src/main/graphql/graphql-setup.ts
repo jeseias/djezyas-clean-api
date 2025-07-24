@@ -1,5 +1,7 @@
 import { mergeTypeDefs } from "@graphql-tools/merge";
 import { print } from "graphql";
+import { cartResolvers } from "@/src/modules/order/adapters/http/graphql/cart.resolvers";
+import { cartTypeDefs } from "@/src/modules/order/adapters/http/graphql/cart.type-defs";
 import { orderResolvers } from "@/src/modules/order/adapters/http/graphql/order.resolvers";
 import { orderTypeDefs } from "@/src/modules/order/adapters/http/graphql/order.type-defs";
 import { organizationResolvers } from "@/src/modules/organization/adapters/http/graphql/organization.resolvers";
@@ -15,6 +17,7 @@ export const appTypeDefs = print(
 		organizationTypeDefs,
 		productTypeDefs,
 		orderTypeDefs,
+		cartTypeDefs,
 	]),
 );
 
@@ -24,11 +27,13 @@ export const appResolvers = {
 		...organizationResolvers.Query,
 		...productResolvers.Query,
 		...orderResolvers.Query,
+		...cartResolvers.Query,
 	},
 	Mutation: {
 		...userResolvers.Mutation,
 		...organizationResolvers.Mutation,
 		...productResolvers.Mutation,
 		...orderResolvers.Mutation,
+		...cartResolvers.Mutation,
 	},
 };

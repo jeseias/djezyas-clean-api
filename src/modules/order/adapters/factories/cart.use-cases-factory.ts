@@ -1,6 +1,4 @@
-import {
-	productMongooseRepository,
-} from "@/src/modules/product/adapters/factories/repository.factory";
+import { productMongooseRepository } from "@/src/modules/product/adapters/factories/repository.factory";
 import type { ProductRepository } from "@/src/modules/product/core/ports/outbound/product-repository";
 import {
 	AddToCartUseCase,
@@ -20,10 +18,7 @@ export class CartUseCasesFactory {
 	) {}
 
 	addToCart() {
-		return new AddToCartUseCase(
-			this.cartRepository,
-			this.productRepository,
-		);
+		return new AddToCartUseCase(this.cartRepository, this.productRepository);
 	}
 
 	clearCart() {
@@ -31,10 +26,7 @@ export class CartUseCasesFactory {
 	}
 
 	getCart() {
-		return new GetCartUseCase(
-			this.cartRepository,
-			this.productRepository,
-		);
+		return new GetCartUseCase(this.cartRepository, this.productRepository);
 	}
 
 	removeItem() {
@@ -46,14 +38,11 @@ export class CartUseCasesFactory {
 	}
 
 	validateCart() {
-		return new ValidateCartUseCase(
-			this.cartRepository,
-			this.productRepository,
-		);
+		return new ValidateCartUseCase(this.cartRepository, this.productRepository);
 	}
 }
 
 export const cartUseCasesFactory = new CartUseCasesFactory(
 	cartMongooseRepository,
 	productMongooseRepository,
-); 
+);
