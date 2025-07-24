@@ -10,6 +10,7 @@ const cartItemSchema = new Schema<Cart.Item>(
 		quantity: {
 			type: Number,
 			required: true,
+			min: 1,
 		},
 	},
 	{
@@ -23,10 +24,12 @@ const cartSchema = new Schema<Cart.Model>(
 		id: {
 			type: String,
 			required: true,
+			unique: true,
 		},
 		userId: {
 			type: String,
 			required: true,
+			index: true,
 		},
 		items: {
 			type: [cartItemSchema],
@@ -37,5 +40,7 @@ const cartSchema = new Schema<Cart.Model>(
 		timestamps: true,
 	},
 );
+
+cartSchema.index({ userId: 1 });
 
 export const CartModel = models.Cart || model<Cart.Model>("Cart", cartSchema);

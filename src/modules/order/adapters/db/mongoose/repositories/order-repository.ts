@@ -4,7 +4,7 @@ import type {
 	OrderFilters,
 	OrderRepository,
 } from "@/src/modules/order/domain/repositories/order-repository";
-import { OrderModel } from "../order-model";
+import { OrderModel } from "../models/order-model";
 
 export class MongooseOrderRepository implements OrderRepository {
 	async create(order: Order.Model): Promise<Order.Model> {

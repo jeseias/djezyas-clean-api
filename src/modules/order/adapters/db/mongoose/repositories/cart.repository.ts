@@ -1,7 +1,7 @@
 import { Cart } from "@/src/modules/order/domain/entities";
 import type { CartRepository } from "@/src/modules/order/domain/repositories/cart-repository";
 import type { Id } from "@/src/modules/shared/value-objects";
-import { CartModel } from "../cart.model";
+import { CartModel } from "../models/cart.model";
 
 export class MongooseCartRepository implements CartRepository {
 	async save(cart: Cart.Model): Promise<Cart.Model> {

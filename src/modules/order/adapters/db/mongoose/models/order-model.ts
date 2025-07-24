@@ -1,5 +1,5 @@
 import mongoose, { type Document, Schema } from "mongoose";
-import { Order } from "../../../domain/entities/order";
+import { Order } from "../../../../domain/entities/order";
 
 export interface OrderDocument extends Document {
 	id: string;

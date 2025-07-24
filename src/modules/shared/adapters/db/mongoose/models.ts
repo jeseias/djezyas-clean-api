@@ -6,7 +6,7 @@ import { ModelValidator } from "./model-validator";
 export {
 	type OrderDocument,
 	OrderModel,
-} from "../../../../order/adapters/db/mongoose/order-model";
+} from "../../../../order/adapters/db/mongoose/models/order-model";
 export {
 	type OrganizationInvitationDocument,
 	OrganizationInvitationModel,
