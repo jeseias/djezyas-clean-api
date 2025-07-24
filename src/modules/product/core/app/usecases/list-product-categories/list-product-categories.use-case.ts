@@ -11,7 +11,7 @@ export namespace ListProductCategories {
 	};
 
 	export type Result = {
-		items: ProductCategory.Model[];
+		items: ProductCategory.Props[];
 		totalItems: number;
 	};
 }

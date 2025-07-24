@@ -1,13 +1,17 @@
 import { type Id, id, Slug } from "@/src/modules/shared/value-objects";
 
 export namespace ProductCategory {
-	export type Model = {
+	export type Props = {
 		id: Id;
 		name: string;
-		slug: Slug;
+		slug: string;
 		description?: string;
 		createdAt: Date;
 		updatedAt: Date;
+	};
+
+	export type Model = Omit<Props, "slug"> & {
+		slug: Slug;
 	};
 
 	export type CreateParams = {
@@ -65,8 +69,8 @@ export namespace ProductCategory {
 			this.props.updatedAt = new Date();
 		}
 
-		toJSON(): Model {
-			return { ...this.props };
+		toJSON(): Props {
+			return { ...this.props, slug: this.props.slug.value };
 		}
 	}
 }

@@ -27,7 +27,7 @@ export const productResolvers = {
 				.execute({ ...input, userId });
 		}),
 		listB2CProducts: makeResolver(
-			async ({ input }) => {
+			async (_, { input }) => {
 				const filters = input.filters || {};
 				const { page = 1, limit = 20, ...otherFilters } = filters;
 				const offset = (page - 1) * limit;

@@ -24,9 +24,12 @@ export class LoadStoresUseCase {
 	async execute(params: ILoadStores.Params): Promise<ILoadStores.Result> {
 		try {
 			console.log("🔍 [DEBUG] LoadStoresUseCase.execute - params:", params);
-			
+
 			const result = await this.organizationRepository.listStores(params);
-			console.log("🔍 [DEBUG] LoadStoresUseCase.execute - repository result:", result);
+			console.log(
+				"🔍 [DEBUG] LoadStoresUseCase.execute - repository result:",
+				result,
+			);
 
 			const response = {
 				stores: result.items,
@@ -39,11 +42,14 @@ export class LoadStoresUseCase {
 			return response;
 		} catch (error) {
 			console.error("❌ [DEBUG] Error in LoadStoresUseCase.execute:", {
-				error: error instanceof Error ? {
-					name: error.name,
-					message: error.message,
-					stack: error.stack,
-				} : error,
+				error:
+					error instanceof Error
+						? {
+								name: error.name,
+								message: error.message,
+								stack: error.stack,
+							}
+						: error,
 				params,
 			});
 			throw error;

@@ -52,14 +52,17 @@ export const handleResolver = <T extends (...args: any[]) => Promise<any>>(
 				},
 				context: {
 					functionName: fn.name || "anonymous",
-					args: args.length > 0 ? `Arguments count: ${args.length}` : "No arguments",
-					argsTypes: args.map(arg => typeof arg),
+					args:
+						args.length > 0
+							? `Arguments count: ${args.length}`
+							: "No arguments",
+					argsTypes: args.map((arg) => typeof arg),
 					timestamp: new Date().toISOString(),
 				},
 			});
 
 			// If it's a GraphQL error, re-throw it as is
-			if (error && typeof error === 'object' && 'extensions' in error) {
+			if (error && typeof error === "object" && "extensions" in error) {
 				throw error;
 			}
 

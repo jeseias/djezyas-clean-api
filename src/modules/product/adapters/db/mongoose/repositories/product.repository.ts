@@ -4,9 +4,7 @@ import type {
 	ProductFilters,
 	ProductRepository,
 } from "@/src/modules/product/core/ports/outbound/product-repository";
-import { ProductCategoryModel } from "../product-category-model";
 import { type ProductDocument, ProductModel } from "../product-model";
-import { ProductTypeModel } from "../product-type-model";
 
 export class MongooseProductRepository implements ProductRepository {
 	async create(product: Product.Props): Promise<Product.Props> {
