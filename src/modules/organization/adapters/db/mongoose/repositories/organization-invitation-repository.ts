@@ -1,4 +1,3 @@
-import type { Organization } from "../../../../core/domain/entities/organization";
 import type { OrganizationInvitation } from "../../../../core/domain/entities/organization-invitation";
 import type { OrganizationInvitationRepository } from "../../../../core/ports/outbound/organization-invitation-repository";
 import type { OrganizationRepository } from "../../../../core/ports/outbound/organization-repository";
@@ -92,30 +91,42 @@ export class MongooseOrganizationInvitationRepository
 		for (const invitation of invitations) {
 			const invitationData = this.mapToDomain(invitation);
 
-			// Check if organization was populated
 			if (invitation.organization) {
-				const organization = this.mapToDomain(invitation.organization);
+				const organizationSummary: OrganizationInvitation.OrganizationSummary =
+					{
+						id: invitation.organization.id,
+						name: invitation.organization.name,
+						slug: invitation.organization.slug,
+						logoUrl: invitation.organization.logoUrl,
+						plan: invitation.organization.plan,
+						status: invitation.organization.status,
+						createdAt: invitation.organization.createdAt,
+					};
+
 				results.push({
 					...invitationData,
-					organization,
+					organization: organizationSummary,
 				});
 			} else {
-				// Fallback to manual fetch if virtual field didn't work
 				const organizationProps = await this.organizationRepository.findById(
 					invitationData.organizationId,
 				);
 
 				if (organizationProps) {
-					// Convert Props to Model by creating a Slug object
-					const { Slug } = await import("@/src/modules/shared/value-objects");
-					const organization: Organization.Model = {
-						...organizationProps,
-						slug: Slug.create(organizationProps.slug),
-					};
+					const organizationSummary: OrganizationInvitation.OrganizationSummary =
+						{
+							id: organizationProps.id,
+							name: organizationProps.name,
+							slug: organizationProps.slug,
+							logoUrl: organizationProps.logoUrl,
+							plan: organizationProps.plan,
+							status: organizationProps.status,
+							createdAt: organizationProps.createdAt,
+						};
 
 					results.push({
 						...invitationData,
-						organization,
+						organization: organizationSummary,
 					});
 				}
 			}

@@ -20,7 +20,11 @@ export const app = new Elysia()
 			path: "graphql",
 			context: async ({ request }) => getUserFromRequest(request),
 			maskedErrors: {
-				maskError: (error) => {
+				maskError: (
+					error: unknown,
+					message: string,
+					isDev?: boolean,
+				): Error => {
 					if (
 						error instanceof GraphQLError &&
 						error.originalError instanceof AppError
@@ -37,7 +41,15 @@ export const app = new Elysia()
 							},
 						});
 					}
-					return error;
+
+					// In development, return more detailed error information
+					if (isDev) {
+						return new Error(
+							`${message}: ${error instanceof Error ? error.message : String(error)}`,
+						);
+					}
+
+					return new Error(message);
 				},
 				errorMessage: "Unexpected error.",
 			},

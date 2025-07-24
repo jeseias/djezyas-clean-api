@@ -44,11 +44,6 @@ export type ProductRepository = Pick<
 > & {
 	findByOrganizationId(organizationId: string): Promise<Product.Props[]>;
 	findBySlug(slug: string): Promise<Product.Props | null>;
-	findBySku(sku: string, organizationId: string): Promise<Product.Props | null>;
-	findByBarcode(
-		barcode: string,
-		organizationId: string,
-	): Promise<Product.Props | null>;
 	findByCategoryId(categoryId: string): Promise<Product.Props[]>;
 	findByProductTypeId(productTypeId: string): Promise<Product.Props[]>;
 	findByOrganizationIdAndCategoryId(

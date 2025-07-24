@@ -8,7 +8,7 @@ export namespace CreateProductCategory {
 		description?: string;
 	};
 
-	export type Result = ProductCategory.Model;
+	export type Result = ProductCategory.Props;
 }
 
 export class CreateProductCategoryUseCase {

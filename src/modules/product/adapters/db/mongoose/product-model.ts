@@ -1,4 +1,5 @@
 import mongoose, { type Document, Schema } from "mongoose";
+import type { Price } from "../../../core/domain/entities";
 
 export interface ProductDocument extends Document {
 	id: string;
@@ -18,6 +19,13 @@ export interface ProductDocument extends Document {
 		length: number;
 		width: number;
 		height: number;
+	};
+	default_price_id: string;
+	default_price?: {
+		id: string;
+		currency: string;
+		unitAmount: number;
+		type: Price.Type;
 	};
 	meta: Record<string, unknown>;
 	createdAt: Date;
@@ -54,6 +62,11 @@ const productSchema = new Schema<ProductDocument>(
 			type: String,
 			required: true,
 			ref: "ProductType",
+		},
+		default_price_id: {
+			type: String,
+			required: true,
+			ref: "Price",
 		},
 		status: {
 			type: String,

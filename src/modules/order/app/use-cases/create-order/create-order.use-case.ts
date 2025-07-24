@@ -2,7 +2,7 @@ import type {
 	IsOrganizationMemberService,
 	IsOrganizationValidService,
 } from "@/src/modules/organization/core/app/services";
-import { Price } from "@/src/modules/product/core/domain/entities";
+import { Price, Product } from "@/src/modules/product/core/domain/entities";
 import type { PriceRepository } from "@/src/modules/product/core/ports/outbound/price-repository";
 import type { ProductRepository } from "@/src/modules/product/core/ports/outbound/product-repository";
 import { AppError, ErrorCode } from "@/src/modules/shared/errors";
@@ -115,7 +115,7 @@ export class CreateOrderUseCase {
 				name: product.name,
 				quantity: item.quantity,
 				unitAmount: price.unitAmount,
-				product: product,
+				product: Product.Entity.fromModel(product),
 				price: price.getSnapshot(),
 			});
 		}

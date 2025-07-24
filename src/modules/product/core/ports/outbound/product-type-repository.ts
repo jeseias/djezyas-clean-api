@@ -2,7 +2,7 @@ import type { Repository } from "@/src/modules/shared/ports/outbound/repository"
 import type { ProductType } from "../../domain/entities/product-type";
 
 export type ProductTypeRepository = Pick<
-	Repository<ProductType.Entity>,
+	Repository<ProductType.Props>,
 	"create" | "update" | "delete" | "findById"
 > & {
 	findByOrganizationId(
@@ -15,16 +15,16 @@ export type ProductTypeRepository = Pick<
 			search?: string;
 		},
 	): Promise<{
-		items: ProductType.Entity[];
+		items: ProductType.Props[];
 		totalItems: number;
 	}>;
 	findBySlug(
 		slug: string,
 		organizationId: string,
-	): Promise<ProductType.Entity | null>;
+	): Promise<ProductType.Props | null>;
 	findByName(
 		name: string,
 		organizationId: string,
-	): Promise<ProductType.Entity | null>;
-	findByCreatedById(createdById: string): Promise<ProductType.Entity[]>;
+	): Promise<ProductType.Props | null>;
+	findByCreatedById(createdById: string): Promise<ProductType.Props[]>;
 };

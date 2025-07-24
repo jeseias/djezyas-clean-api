@@ -1,4 +1,4 @@
-import { ProductType } from "@/src/modules/product/core/domain/entities";
+import type { ProductType } from "@/src/modules/product/core/domain/entities";
 import type { ProductTypeRepository } from "@/src/modules/product/core/ports/outbound/product-type-repository";
 import {
 	type ProductTypeDocument,
@@ -6,16 +6,16 @@ import {
 } from "../product-type-model";
 
 export class MongooseProductTypeRepository implements ProductTypeRepository {
-	async create(productType: ProductType.Model): Promise<ProductType.Entity> {
+	async create(productType: ProductType.Props): Promise<ProductType.Props> {
 		const doc = await ProductTypeModel.create({
 			...productType,
 			slug: productType.slug.toString(),
 		});
 
-		return this.toDomainEntity(doc);
+		return this.toDomain(doc);
 	}
 
-	async update(data: Partial<ProductType.Model>): Promise<ProductType.Entity> {
+	async update(data: Partial<ProductType.Props>): Promise<ProductType.Props> {
 		if (!data.id) {
 			throw new Error("ID is required for update");
 		}
@@ -33,18 +33,18 @@ export class MongooseProductTypeRepository implements ProductTypeRepository {
 			throw new Error("ProductType not found");
 		}
 
-		return this.toDomainEntity(doc);
+		return this.toDomain(doc);
 	}
 
 	async delete(id: string): Promise<void> {
 		await ProductTypeModel.findOneAndDelete({ id });
 	}
 
-	async findById(id: string): Promise<ProductType.Entity | null> {
+	async findById(id: string): Promise<ProductType.Props | null> {
 		const doc = await ProductTypeModel.findOne({ id });
 		if (!doc) return null;
 
-		return this.toDomainEntity(doc);
+		return this.toDomain(doc);
 	}
 
 	async findByOrganizationId(
@@ -57,7 +57,7 @@ export class MongooseProductTypeRepository implements ProductTypeRepository {
 			search?: string;
 		},
 	): Promise<{
-		items: ProductType.Entity[];
+		items: ProductType.Props[];
 		totalItems: number;
 	}> {
 		const query: any = { organizationId };
@@ -88,7 +88,7 @@ export class MongooseProductTypeRepository implements ProductTypeRepository {
 			.skip(skip)
 			.limit(limit);
 
-		const items = docs.map((doc) => this.toDomainEntity(doc));
+		const items = docs.map((doc) => this.toDomain(doc));
 
 		return {
 			items,
@@ -99,30 +99,30 @@ export class MongooseProductTypeRepository implements ProductTypeRepository {
 	async findBySlug(
 		slug: string,
 		organizationId: string,
-	): Promise<ProductType.Entity | null> {
+	): Promise<ProductType.Props | null> {
 		const doc = await ProductTypeModel.findOne({ slug, organizationId });
 		if (!doc) return null;
 
-		return this.toDomainEntity(doc);
+		return this.toDomain(doc);
 	}
 
 	async findByName(
 		name: string,
 		organizationId: string,
-	): Promise<ProductType.Entity | null> {
+	): Promise<ProductType.Props | null> {
 		const doc = await ProductTypeModel.findOne({ name, organizationId });
 		if (!doc) return null;
 
-		return this.toDomainEntity(doc);
+		return this.toDomain(doc);
 	}
 
-	async findByCreatedById(createdById: string): Promise<ProductType.Entity[]> {
+	async findByCreatedById(createdById: string): Promise<ProductType.Props[]> {
 		const docs = await ProductTypeModel.find({ createdById });
-		return docs.map((doc) => this.toDomainEntity(doc));
+		return docs.map((doc) => this.toDomain(doc));
 	}
 
-	private toDomainEntity(doc: ProductTypeDocument): ProductType.Entity {
-		return ProductType.Entity.fromModel({
+	private toDomain(doc: ProductTypeDocument): ProductType.Props {
+		return {
 			id: doc.id,
 			name: doc.name,
 			slug: doc.slug,
@@ -131,6 +131,6 @@ export class MongooseProductTypeRepository implements ProductTypeRepository {
 			createdById: doc.createdById,
 			createdAt: doc.createdAt,
 			updatedAt: doc.updatedAt,
-		});
+		};
 	}
 }

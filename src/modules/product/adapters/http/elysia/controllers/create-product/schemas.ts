@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Product } from "@/src/modules/product/core/domain/entities";
+import { Price, Product } from "@/src/modules/product/core/domain/entities";
 
 export const saveProductSchema = z
 	.object({
@@ -22,6 +22,14 @@ export const saveProductSchema = z
 			})
 			.optional(),
 		meta: z.record(z.any()).optional(),
+		price: z.object({
+			currency: z.string().min(1, "Currency is required"),
+			unitAmount: z.number().positive("Unit amount must be positive"),
+			type: z.nativeEnum(Price.Type).optional(),
+			status: z.nativeEnum(Price.Status).optional(),
+			validFrom: z.date().optional(),
+			validUntil: z.date().optional(),
+		}),
 	})
 	.strict();
 

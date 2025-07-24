@@ -53,7 +53,7 @@ export class ListProductTypesUseCase {
 		);
 
 		return {
-			items: result.items.map((item) => item.toJSON()),
+			items: result.items,
 			totalItems: result.totalItems,
 		};
 	}

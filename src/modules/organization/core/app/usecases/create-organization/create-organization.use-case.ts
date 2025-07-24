@@ -65,7 +65,9 @@ export class CreateOrganizationUseCase {
 				members: [],
 			});
 
-			await this.organizationRepository.create(org.getSnapshot());
+			await this.organizationRepository.create(
+				org.getSnapshot() as Organization.Props,
+			);
 
 			const ownerMember = OrganizationMember.Entity.create({
 				organizationId: org.id,
@@ -78,7 +80,7 @@ export class CreateOrganizationUseCase {
 
 			org.addMember(ownerMember.toJSON());
 
-			return org.getSnapshot();
+			return org.getSnapshot() as Organization.Props;
 		} catch (error) {
 			console.error(error);
 			throw new AppError(

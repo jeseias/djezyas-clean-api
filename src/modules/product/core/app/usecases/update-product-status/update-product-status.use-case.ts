@@ -15,7 +15,7 @@ export namespace UpdateProductStatus {
 		userId: string;
 	};
 
-	export type Result = Product.Model;
+	export type Result = Product.Props;
 }
 
 export class UpdateProductStatusUseCase {

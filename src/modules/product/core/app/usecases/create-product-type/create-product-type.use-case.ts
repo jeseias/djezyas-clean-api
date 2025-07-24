@@ -15,7 +15,7 @@ export namespace CreateProductType {
 		userId: string;
 	};
 
-	export type Result = ProductType.Model;
+	export type Result = ProductType.Props;
 }
 
 export class CreateProductTypeUseCase {

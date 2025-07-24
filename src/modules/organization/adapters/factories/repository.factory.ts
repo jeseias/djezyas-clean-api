@@ -9,4 +9,4 @@ export const organizationMongooseRepository =
 export const organizationMemberMongooseRepository =
 	new MongooseOrganizationMemberRepository();
 export const organizationInvitationMongooseRepository =
-	new MongooseOrganizationInvitationRepository();
+	new MongooseOrganizationInvitationRepository(organizationMongooseRepository);

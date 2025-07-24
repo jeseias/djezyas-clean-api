@@ -15,8 +15,10 @@ export namespace GetProductById {
 	};
 
 	export type Result =
-		| Product.Model
-		| (Omit<Product.Model, "createdById"> & { createdById?: string });
+		| Product.Props
+		| (Omit<Product.Props, "createdById"> & {
+				createdById?: string;
+		  });
 }
 
 export class GetProductByIdUseCase {

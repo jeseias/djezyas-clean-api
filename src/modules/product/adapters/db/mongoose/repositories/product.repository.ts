@@ -374,6 +374,8 @@ export class MongooseProductRepository implements ProductRepository {
 			organizationId: doc.organizationId,
 			createdById: doc.createdById,
 			imageUrl: doc.imageUrl,
+			default_price_id: doc.default_price_id,
+			default_price: doc.default_price,
 			sku: doc.sku,
 			barcode: doc.barcode,
 			weight: doc.weight,

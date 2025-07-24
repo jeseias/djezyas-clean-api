@@ -14,7 +14,7 @@ export class SaveProductController extends Controller<
 	unknown,
 	unknown,
 	unknown,
-	Product.Model
+	Product.Props
 > {
 	constructor(
 		private readonly saveProductUseCase: SaveProductUseCase,
@@ -25,18 +25,18 @@ export class SaveProductController extends Controller<
 
 	async execute(
 		request: ControllerRequest<SaveProductBody>,
-	): Promise<ControllerResponse<Product.Model>> {
+	): Promise<ControllerResponse<Product.Props>> {
 		const useCaseParams = {
 			...request.body,
 			createdById: request.user!.id,
 			imageUrl: request.body.imageUrl,
 		};
 
-		const product = await this.saveProductUseCase.execute(useCaseParams);
+		const productProps = await this.saveProductUseCase.execute(useCaseParams);
 
 		return {
 			statusCode: request.body.id ? 200 : 201,
-			data: product,
+			data: productProps,
 		};
 	}
 }
