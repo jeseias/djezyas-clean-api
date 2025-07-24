@@ -388,6 +388,10 @@ export class MongooseProductRepository implements ProductRepository {
 		const category = doc.category?.[0] || {};
 		const productType = doc.productType?.[0] || {};
 
+		const prices = doc.prices || [];
+		const activePrice =
+			prices.find((p: any) => p.status === "active") || prices[0];
+
 		return {
 			slug: doc.slug,
 			name: doc.name,
@@ -403,6 +407,7 @@ export class MongooseProductRepository implements ProductRepository {
 				slug: productType.slug || "",
 				name: productType.name || "",
 			},
+			price: activePrice || null,
 			createdAt: doc.createdAt,
 			updatedAt: doc.updatedAt,
 		};

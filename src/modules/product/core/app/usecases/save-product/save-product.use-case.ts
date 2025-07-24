@@ -138,12 +138,12 @@ export class SaveProductUseCase {
 		productEntity.updateFromDTO(params);
 
 		await this.productRepository.update(productEntity.toJSON());
-    const price = await this.priceRepository.findByProductId(productEntity.id)
+		const price = await this.priceRepository.findByProductId(productEntity.id);
 
 		return {
-      ...productEntity.toJSON(),
-      price: price?.[0]
-    };
+			...productEntity.toJSON(),
+			price: price?.[0],
+		};
 	}
 
 	private async createProduct(
@@ -169,9 +169,9 @@ export class SaveProductUseCase {
 		const price = await this.createProductPrice(product.id, params.price);
 
 		return {
-      ...product.toJSON(),
-      price
-    };
+			...product.toJSON(),
+			price,
+		};
 	}
 
 	private async createProductPrice(
@@ -190,6 +190,6 @@ export class SaveProductUseCase {
 
 		await this.priceRepository.create(price.getSnapshot());
 
-    return price.getSnapshot()
+		return price.getSnapshot();
 	}
 }

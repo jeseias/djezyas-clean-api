@@ -29,7 +29,7 @@ export namespace Product {
 		imageUrl?: Url | string;
 		sku?: string;
 		barcode?: string;
-    price?: Price.Model
+		price?: Price.Model;
 		weight?: number;
 		dimensions?: {
 			length: number;
@@ -64,6 +64,7 @@ export namespace Product {
 			slug: string;
 			name: string;
 		};
+		price?: Price.Model | null;
 		createdAt: Date;
 		updatedAt: Date;
 	};
