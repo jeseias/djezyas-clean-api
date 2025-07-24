@@ -1,6 +1,6 @@
 import { AppError, ErrorCode } from "@/src/modules/shared/errors";
-import { Order } from "../../../domain/entities";
-import type { OrderRepository } from "../../../domain/repositories/order-repository";
+import { Order } from "../../../../domain/entities";
+import type { OrderRepository } from "../../../../domain/repositories/order-repository";
 
 export namespace UpdateOrderStatus {
 	export type Params = {
