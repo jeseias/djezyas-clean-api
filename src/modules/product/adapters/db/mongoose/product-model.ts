@@ -68,6 +68,22 @@ const productSchema = new Schema<ProductDocument>(
 			required: true,
 			ref: "Price",
 		},
+		default_price: {
+			id: {
+				type: String,
+				required: true,
+				ref: "Price",
+			},
+			currency: {},
+			unitAmount: {
+				type: Number,
+				required: true,
+			},
+			type: {
+				type: String,
+				required: true,
+			},
+		},
 		status: {
 			type: String,
 			required: true,

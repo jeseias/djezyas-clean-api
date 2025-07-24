@@ -65,4 +65,5 @@ export type ProductRepository = Pick<
 		items: Product.B2CProduct[];
 		totalItems: number;
 	}>;
+	findManyByIds(ids: string[]): Promise<Product.Props[]>;
 };

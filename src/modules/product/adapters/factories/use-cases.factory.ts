@@ -93,12 +93,7 @@ export class ProductUseCasesFactory {
 	}
 
 	findProductsByOrganization() {
-		return new FindOrganizationProductsUseCase(
-			this.isUserValidService,
-			this.isOrganizationValidService,
-			this.productRepository,
-			this.isOrganizationMemberService,
-		);
+		return new FindOrganizationProductsUseCase(this.productRepository);
 	}
 
 	addPrice() {
@@ -110,12 +105,7 @@ export class ProductUseCasesFactory {
 	}
 
 	getProductById() {
-		return new GetProductByIdUseCase(
-			this.isUserValidService,
-			this.isOrganizationValidService,
-			this.isOrganizationMemberService,
-			this.productRepository,
-		);
+		return new GetProductByIdUseCase(this.productRepository);
 	}
 
 	loadPricesByProductId() {

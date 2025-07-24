@@ -14,15 +14,13 @@ export namespace FindOrganizationProducts {
 	};
 
 	export type Result = {
-		items:  Array<Product.Props>;
+		items: Array<Product.Props>;
 		totalItems: number;
 	};
 }
 
 export class FindOrganizationProductsUseCase {
-	constructor(
-		private readonly productRepository: ProductRepository,
-	) {}
+	constructor(private readonly productRepository: ProductRepository) {}
 
 	async execute(
 		params: FindOrganizationProducts.Params,

@@ -106,6 +106,11 @@ export class MongooseProductRepository implements ProductRepository {
 		return docs.map(this.toDomainProps);
 	}
 
+	async findManyByIds(ids: string[]): Promise<Product.Props[]> {
+		const docs = await ProductModel.find({ id: { $in: ids } });
+		return docs.map(this.toDomainProps);
+	}
+
 	async findByOrganizationIdWithFilters(
 		organizationId: string,
 		filters: ProductFilters.Filters,

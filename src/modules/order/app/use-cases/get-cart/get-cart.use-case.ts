@@ -36,12 +36,41 @@ export class GetCartUseCase {
 			cartModel = cartEntity.getSnapshot();
 		}
 
+		const productIds = cartModel.items.map((item) => item.productId);
 		const products = await this.productRepository.findManyByIds(productIds);
+
+		const productMap = new Map(
+			products.map((product) => [
+				product.id,
+				{
+					slug: product.slug,
+					name: product.name,
+					imageUrl: product.imageUrl,
+					price: {
+						currency: product.default_price?.currency || "AOA",
+						unitAmount: product.default_price?.unitAmount ?? 0,
+					},
+				},
+			]),
+		);
+
+		const enrichedItems: Cart.EnrichedItem[] = cartModel.items.map((item) => {
+			const product = productMap.get(item.productId);
+			if (!product) {
+				throw new Error(`Product ${item.productId} not found in repository`);
+			}
+
+			return {
+				productId: item.productId,
+				quantity: item.quantity,
+				product,
+			};
+		});
 
 		return {
 			id: cartModel.id,
 			userId: cartModel.userId,
-			items: cartModel.items,
+			items: enrichedItems,
 			itemCount: cartModel.items.reduce(
 				(count, item) => count + item.quantity,
 				0,
