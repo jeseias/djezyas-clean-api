@@ -29,6 +29,13 @@ export namespace Product {
 		imageUrl?: Url | string;
 		sku?: string;
 		barcode?: string;
+		default_price_id: Id;
+		default_price?: {
+			id: Id;
+			currency: string;
+			unitAmount: number;
+			type: Price.Type;
+		};
 		price?: Price.Model;
 		weight?: number;
 		dimensions?: {
@@ -77,6 +84,13 @@ export namespace Product {
 		status?: Status;
 		organizationId: Id;
 		createdById: Id;
+		default_price_id: Id;
+		default_price?: {
+			id: Id;
+			currency: string;
+			unitAmount: number;
+			type: Price.Type;
+		};
 		imageUrl?: string;
 		sku?: string;
 		barcode?: string;
@@ -98,6 +112,8 @@ export namespace Product {
 				id: id(),
 				name: params.name,
 				slug: Slug.create(params.name),
+				default_price_id: params.default_price_id,
+				default_price: params.default_price,
 				description: params.description,
 				categoryId: params.categoryId,
 				productTypeId: params.productTypeId,
@@ -175,6 +191,25 @@ export namespace Product {
 		}
 		get updatedAt(): Date {
 			return this.props.updatedAt;
+		}
+
+		get default_price_id(): Id {
+			return this.props.default_price_id;
+		}
+
+		get default_price(): Props["default_price"] | undefined {
+			return this.props.default_price;
+		}
+
+		updateDefaultPrice(price: {
+			id: Id;
+			currency: string;
+			unitAmount: number;
+			type: Price.Type;
+		}): void {
+			this.props.default_price_id = price.id;
+			this.props.default_price = price;
+			this.props.updatedAt = new Date();
 		}
 
 		updateName(name: string): void {

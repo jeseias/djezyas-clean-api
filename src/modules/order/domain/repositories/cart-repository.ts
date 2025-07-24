@@ -1,10 +1,8 @@
-import type { Repository } from "@/src/modules/shared/ports/outbound/repository";
 import type { Id } from "@/src/modules/shared/value-objects";
 import type { Cart } from "../entities";
 
-export type CartRepository = Pick<
-	Repository<Cart.Entity>,
-	"findById" | "create" | "update" | "delete"
-> & {
-	findByUserId: (userId: Id) => Promise<Cart.Entity | null>;
+export type CartRepository = {
+	save: (cart: Cart.Model) => Promise<Cart.Model>;
+	findByUserId: (userId: Id) => Promise<Cart.Model | null>;
+	delete: (cart: Cart.Model) => Promise<void>;
 };

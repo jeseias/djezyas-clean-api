@@ -8,6 +8,18 @@ export namespace Cart {
 		quantity: number;
 	};
 
+	export type EnrichedItem = Omit<Item, "product"> & {
+		product: {
+			slug: string;
+			name: Product.Model["name"];
+			imageUrl: Product.Model["imageUrl"];
+			price: {
+				currency: string;
+				unitAmount: number;
+			};
+		};
+	};
+
 	export type Model = {
 		id: Id;
 		userId: Id;

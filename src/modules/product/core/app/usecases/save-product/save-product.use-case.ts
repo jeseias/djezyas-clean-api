@@ -3,6 +3,7 @@ import type {
 	IsOrganizationValidService,
 } from "@/src/modules/organization/core/app/services";
 import { AppError, ErrorCode } from "@/src/modules/shared/errors";
+import { id } from "@/src/modules/shared/value-objects";
 import type { IsUserValidService } from "@/src/modules/user/core/app/services";
 import { Price, Product } from "../../../domain/entities";
 import type { PriceRepository } from "../../../ports/outbound/price-repository";
@@ -149,7 +150,7 @@ export class SaveProductUseCase {
 	private async createProduct(
 		params: SaveProduct.Params,
 	): Promise<Product.Props> {
-		const product = Product.Entity.create({
+		const tempProduct = Product.Entity.create({
 			name: params.name,
 			description: params.description,
 			categoryId: params.categoryId,
@@ -163,14 +164,25 @@ export class SaveProductUseCase {
 			weight: params.weight,
 			dimensions: params.dimensions,
 			meta: params.meta,
+			default_price_id: id(),
 		});
 
-		await this.productRepository.create(product.toJSON());
-		const price = await this.createProductPrice(product.id, params.price);
+		await this.productRepository.create(tempProduct.toJSON());
+
+		const price = await this.createProductPrice(tempProduct.id, params.price);
+
+		tempProduct.updateDefaultPrice({
+			id: price.id,
+			currency: price.currency,
+			unitAmount: price.unitAmount,
+			type: price.type,
+		});
+
+		await this.productRepository.update(tempProduct.toJSON());
 
 		return {
-			...product.toJSON(),
-			price,
+			...tempProduct.toJSON(),
+			default_price: price,
 		};
 	}
 
