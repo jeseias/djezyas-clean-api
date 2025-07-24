@@ -1,1 +1,1 @@
-export * from './load-stores.use-case'
+export * from "./load-stores.use-case";

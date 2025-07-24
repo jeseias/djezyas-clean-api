@@ -9,6 +9,7 @@ import { GetOrganizationMembersUseCase } from "../../core/app/usecases/get-organ
 import { InviteMemberUseCase } from "../../core/app/usecases/invite-member/invite-member.use-case";
 import { LoadMyInvitationsUseCase } from "../../core/app/usecases/load-my-invitations/load-my-invitations.use-case";
 import { LoadMyOrganizationsUseCase } from "../../core/app/usecases/load-my-organizations/load-my-organizations.use-case";
+import { LoadStoresUseCase } from "../../core/app/usecases/load-stores";
 import type { OrganizationInvitationRepository } from "../../core/ports/outbound/organization-invitation-repository";
 import type { OrganizationMemberRepository } from "../../core/ports/outbound/organization-member-repository";
 import type { OrganizationRepository } from "../../core/ports/outbound/organization-repository";
@@ -18,7 +19,6 @@ import {
 	organizationMongooseRepository,
 } from "./repository.factory";
 import { organizationTemplateService } from "./service.factory";
-import { LoadStoresUseCase } from "../../core/app/usecases/load-stores";
 
 export class OrganizationUseCasesFactory {
 	constructor(
@@ -73,9 +73,9 @@ export class OrganizationUseCasesFactory {
 		return new LoadMyInvitationsUseCase(this.organizationInvitationRepository);
 	}
 
-  loadStores() {
-    return new LoadStoresUseCase(this.organizationRepository);
-  }
+	loadStores() {
+		return new LoadStoresUseCase(this.organizationRepository);
+	}
 }
 
 export const organizationUseCasesFactory = new OrganizationUseCasesFactory(

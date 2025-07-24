@@ -26,6 +26,22 @@ export const productResolvers = {
 				.listProductTypes()
 				.execute({ ...input, userId });
 		}),
+		listB2CProducts: makeResolver(
+			async ({ input }) => {
+				const filters = input.filters || {};
+				const { page = 1, limit = 20, ...otherFilters } = filters;
+				const offset = (page - 1) * limit;
+
+				return productUseCasesFactory.listB2CProducts().execute({
+					filters: {
+						...otherFilters,
+						limit,
+						offset,
+					},
+				});
+			},
+			{ requireAuth: false },
+		),
 	},
 	Mutation: {
 		addPrice: makeResolver(async ({ input }) => {

@@ -58,12 +58,12 @@ export namespace Organization {
 		meta?: Record<string, unknown>;
 	};
 
-  export type Store = {
-    slug: string 
-    name: string 
-    logoUrl?: Url
-    createdAt: Date
-  }
+	export type Store = {
+		slug: string;
+		name: string;
+		logoUrl?: Url;
+		createdAt: Date;
+	};
 
 	export class Entity {
 		private constructor(private readonly props: Model) {}
@@ -167,17 +167,16 @@ export namespace Organization {
 			this.props.updatedAt = new Date();
 		}
 
-		getSnapshot(type: 'store' | 'props' = 'props'): Props | Store {
-			if (type === 'store') {
+		getSnapshot(type: "store" | "props" = "props"): Props | Store {
+			if (type === "store") {
 				return {
 					slug: this.slug.toString(),
 					name: this.name,
 					logoUrl: this.logoUrl,
 					createdAt: this.createdAt,
-
 				};
 			}
-      
+
 			return {
 				...this.props,
 				slug: this.slug.toString(),

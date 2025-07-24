@@ -2,6 +2,7 @@ import type { ErrorHandler } from "elysia";
 import { AppError, ErrorCode } from "@/src/modules/shared/errors/app-error";
 
 export const errorHandler: ErrorHandler = ({ error, set }) => {
+	// Enhanced error logging with more context
 	console.error("==>==>==> Application error:", {
 		error:
 			error instanceof Error
@@ -9,8 +10,11 @@ export const errorHandler: ErrorHandler = ({ error, set }) => {
 						name: error.name,
 						message: error.message,
 						stack: error.stack,
+						constructor: error.constructor.name,
 					}
 				: error,
+		timestamp: new Date().toISOString(),
+		errorType: typeof error,
 	});
 
 	if (error instanceof AppError) {

@@ -1,5 +1,5 @@
 import { withUser } from "@/src/main/elysia/plugins";
-import { makeResolver } from "@/src/main/graphql/graphql-utils";
+import { debugResolver, makeResolver } from "@/src/main/graphql/graphql-utils";
 import { organizationUseCasesFactory } from "../../factories/use-cases.factory";
 
 export const organizationResolvers = {
@@ -39,17 +39,23 @@ export const organizationResolvers = {
 		}),
 
 		listStores: makeResolver(
-			async ({ input }: { input: ListStoresInput }) => {
+			async (_, { input }: { input: ListStoresInput }) => {
+				console.log("🔍 [DEBUG] listStores resolver - input:", input);
+
 				const loadStoresUseCase = organizationUseCasesFactory.loadStores();
+				console.log("🔍 [DEBUG] listStores resolver - use case created");
+
 				const result = await loadStoresUseCase.execute({
 					page: input.page || 1,
 					limit: input.limit || 10,
 					search: input.search,
 				});
 
+				console.log("🔍 [DEBUG] listStores resolver - result:", result);
+
 				return result;
 			},
-			{ requireAuth: false }
+			{ requireAuth: false },
 		),
 	},
 
@@ -80,15 +86,16 @@ export const organizationResolvers = {
 			return result;
 		}),
 
-		acceptInvitation: makeResolver(
-			async ({ input }, { userId }) => {
-				const acceptInvitationUseCase =
-					organizationUseCasesFactory.acceptInvitation();
-				const result = await acceptInvitationUseCase.execute({...input, userId});
+		acceptInvitation: makeResolver(async ({ input }, { userId }) => {
+			const acceptInvitationUseCase =
+				organizationUseCasesFactory.acceptInvitation();
+			const result = await acceptInvitationUseCase.execute({
+				...input,
+				userId,
+			});
 
-				return result;
-			},
-		),
+			return result;
+		}),
 	},
 };
 

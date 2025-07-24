@@ -43,6 +43,29 @@ export namespace Product {
 		slug: Slug;
 	};
 
+	export type B2CProduct = {
+		slug: string;
+		name: string;
+		description?: string;
+		imageUrl?: string;
+		weight?: number;
+		dimensions?: {
+			length: number;
+			width: number;
+			height: number;
+		};
+		category: {
+			slug: string;
+			name: string;
+		};
+		productType: {
+			slug: string;
+			name: string;
+		};
+		createdAt: Date;
+		updatedAt: Date;
+	};
+
 	export type CreateParams = {
 		name: string;
 		description?: string;

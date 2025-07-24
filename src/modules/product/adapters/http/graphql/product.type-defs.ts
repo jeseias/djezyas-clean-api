@@ -29,6 +29,29 @@ export const productTypeDefs = `#graphql
     updatedAt: DateTime!
   }
 
+  type B2CProduct {
+    slug: String!
+    name: String!
+    description: String
+    imageUrl: String
+    weight: Float
+    dimensions: ProductDimensions
+    category: B2CCategory!
+    productType: B2CProductType!
+    createdAt: DateTime!
+    updatedAt: DateTime!
+  }
+
+  type B2CCategory {
+    slug: String!
+    name: String!
+  }
+
+  type B2CProductType {
+    slug: String!
+    name: String!
+  }
+
   type Price {
     id: String!
     productId: String!
@@ -148,14 +171,40 @@ export const productTypeDefs = `#graphql
     sortOrder: String
   }
 
+  input B2CProductFiltersInput {
+    storeSlug: String
+    categoryId: String
+    productTypeId: String
+    search: String
+    minPrice: Float
+    maxPrice: Float
+    currency: String
+    limit: Int
+    page: Int
+    sortBy: String
+    sortOrder: String
+  }
+
   input FindProductByOrganizationInput {
     organizationId: String!
     filters: ProductFiltersInput
   }
 
+  input ListB2CProductsInput {
+    filters: B2CProductFiltersInput
+  }
+
   type FindProductByOrganizationResult {
     items: [Product]!
     totalItems: Int!
+  }
+
+  type ListB2CProductsResult {
+    items: [B2CProduct]!
+    totalItems: Int!
+    page: Int!
+    limit: Int!
+    totalPages: Int!
   }
 
   input ListProductCategoriesInput {
@@ -214,6 +263,7 @@ export const productTypeDefs = `#graphql
     loadPricesByProductId(input: LoadPricesByProductIdInput!): [Price]!
     listProductCategories(input: ListProductCategoriesInput!): ListProductCategoriesResult!
     listProductTypes(input: ListProductTypesInput!): ListProductTypesResult!
+    listB2CProducts(input: ListB2CProductsInput!): ListB2CProductsResult!
   }
 
   type Mutation {

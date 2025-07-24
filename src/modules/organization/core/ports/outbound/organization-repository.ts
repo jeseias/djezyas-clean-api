@@ -6,8 +6,13 @@ export type OrganizationRepository = Pick<
 	"create" | "update" | "delete" | "findById"
 > & {
 	findByOwnerId(ownerId: string): Promise<Organization.Props[]>;
-  listStores(params: { page?: number; limit?: number; search?: string }): Promise<{
-    totalItems: number
-    items: Organization.Store[]
-  }>
+	findBySlug(slug: string): Promise<Organization.Props | null>;
+	listStores(params: {
+		page?: number;
+		limit?: number;
+		search?: string;
+	}): Promise<{
+		totalItems: number;
+		items: Organization.Store[];
+	}>;
 };

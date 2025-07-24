@@ -17,8 +17,23 @@ export namespace ProductFilters {
 		updatedAfter?: Date;
 		updatedBefore?: Date;
 		limit?: number;
-		offset?: number;
+		page?: number;
 		sortBy?: "name" | "createdAt" | "updatedAt" | "status";
+		sortOrder?: "asc" | "desc";
+	};
+
+	export type B2CFilters = {
+		status?: Status;
+		organizationId?: string;
+		categoryId?: string;
+		productTypeId?: string;
+		search?: string;
+		minPrice?: number;
+		maxPrice?: number;
+		currency?: string;
+		limit?: number;
+		page?: number;
+		sortBy?: "name" | "createdAt" | "updatedAt" | "price";
 		sortOrder?: "asc" | "desc";
 	};
 }
@@ -49,6 +64,10 @@ export type ProductRepository = Pick<
 		filters: ProductFilters.Filters,
 	): Promise<{
 		items: Product.Props[];
+		totalItems: number;
+	}>;
+	findB2CProducts(filters: ProductFilters.B2CFilters): Promise<{
+		items: Product.B2CProduct[];
 		totalItems: number;
 	}>;
 };

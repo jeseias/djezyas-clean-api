@@ -1,10 +1,12 @@
 import type { FilterQuery } from "mongoose";
-import type { Product } from "@/src/modules/product/core/domain/entities";
+import { Product } from "@/src/modules/product/core/domain/entities";
 import type {
 	ProductFilters,
 	ProductRepository,
 } from "@/src/modules/product/core/ports/outbound/product-repository";
+import { ProductCategoryModel } from "../product-category-model";
 import { type ProductDocument, ProductModel } from "../product-model";
+import { ProductTypeModel } from "../product-type-model";
 
 export class MongooseProductRepository implements ProductRepository {
 	async create(product: Product.Props): Promise<Product.Props> {
@@ -122,11 +124,13 @@ export class MongooseProductRepository implements ProductRepository {
 			createdBefore,
 			updatedAfter,
 			updatedBefore,
-			limit,
-			offset,
+			limit = 20,
+			page = 1,
 			sortBy = "createdAt",
 			sortOrder = "desc",
 		} = filters;
+
+		const offset = (page - 1) * limit;
 
 		const query: FilterQuery<Product.Props> = { organizationId };
 
@@ -220,6 +224,146 @@ export class MongooseProductRepository implements ProductRepository {
 		};
 	}
 
+	async findB2CProducts(
+		filters: ProductFilters.B2CFilters,
+	): Promise<{ items: Product.B2CProduct[]; totalItems: number }> {
+		const {
+			status,
+			organizationId,
+			categoryId,
+			productTypeId,
+			search,
+			minPrice,
+			maxPrice,
+			currency,
+			limit = 20,
+			page = 1,
+			sortBy = "createdAt",
+			sortOrder = "desc",
+		} = filters;
+
+		const offset = (page - 1) * limit;
+
+		const query: FilterQuery<Product.Props> = {};
+
+		query.status = status || Product.Status.ACTIVE;
+
+		if (organizationId) {
+			query.organizationId = organizationId;
+		}
+		if (categoryId) {
+			query.categoryId = categoryId;
+		}
+		if (productTypeId) {
+			query.productTypeId = productTypeId;
+		}
+
+		if (search) {
+			query.$or = [
+				{ name: { $regex: search, $options: "i" } },
+				{ description: { $regex: search, $options: "i" } },
+			];
+		}
+
+		const pipeline: any[] = [
+			{ $match: query },
+			{
+				$lookup: {
+					from: "prices",
+					localField: "id",
+					foreignField: "productId",
+					as: "prices",
+				},
+			},
+			{
+				$lookup: {
+					from: "productcategories",
+					localField: "categoryId",
+					foreignField: "id",
+					as: "category",
+				},
+			},
+			{
+				$lookup: {
+					from: "producttypes",
+					localField: "productTypeId",
+					foreignField: "id",
+					as: "productType",
+				},
+			},
+		];
+
+		if (minPrice !== undefined || maxPrice !== undefined || currency) {
+			const priceConditions: any[] = [{ status: "active" }];
+
+			if (currency) {
+				priceConditions.push({ currency });
+			}
+
+			if (minPrice !== undefined || maxPrice !== undefined) {
+				const amountCondition: any = {};
+				if (minPrice !== undefined) {
+					amountCondition.$gte = minPrice;
+				}
+				if (maxPrice !== undefined) {
+					amountCondition.$lte = maxPrice;
+				}
+				priceConditions.push({ unitAmount: amountCondition });
+			}
+
+			pipeline.push({
+				$match: {
+					$expr: {
+						$gt: [
+							{
+								$size: {
+									$filter: {
+										input: "$prices",
+										cond: { $and: priceConditions },
+									},
+								},
+							},
+							0,
+						],
+					},
+				},
+			});
+		}
+
+		let sortStage: any = {};
+		if (sortBy === "price") {
+			sortStage = {
+				$sort: {
+					"prices.unitAmount": sortOrder === "asc" ? 1 : -1,
+				},
+			};
+		} else {
+			sortStage = {
+				$sort: {
+					[sortBy]: sortOrder === "asc" ? 1 : -1,
+				},
+			};
+		}
+		pipeline.push(sortStage);
+
+		if (offset) {
+			pipeline.push({ $skip: offset });
+		}
+		if (limit) {
+			pipeline.push({ $limit: limit });
+		}
+
+		const docs = await ProductModel.aggregate(pipeline);
+		const totalItems = await ProductModel.countDocuments(query);
+
+		const items = docs.map((doc) => this.toB2CProduct(doc));
+
+		return {
+			items,
+			totalItems,
+		};
+	}
+
 	private toDomainProps(doc: ProductDocument): Product.Props {
 		return {
 			id: doc.id,
@@ -237,6 +381,30 @@ export class MongooseProductRepository implements ProductRepository {
 			weight: doc.weight,
 			dimensions: doc.dimensions,
 			meta: doc.meta,
+			createdAt: doc.createdAt,
+			updatedAt: doc.updatedAt,
+		};
+	}
+
+	private toB2CProduct(doc: any): Product.B2CProduct {
+		const category = doc.category?.[0] || {};
+		const productType = doc.productType?.[0] || {};
+
+		return {
+			slug: doc.slug,
+			name: doc.name,
+			description: doc.description,
+			imageUrl: doc.imageUrl,
+			weight: doc.weight,
+			dimensions: doc.dimensions,
+			category: {
+				slug: category.slug || "",
+				name: category.name || "",
+			},
+			productType: {
+				slug: productType.slug || "",
+				name: productType.name || "",
+			},
 			createdAt: doc.createdAt,
 			updatedAt: doc.updatedAt,
 		};

@@ -9,9 +9,11 @@ export function requireAuth(context: any) {
 
 export async function getUserFromRequest(request: Request) {
 	const token = request.headers.get("x-access-token");
+
 	if (!token) {
 		return { user: null };
 	}
+
 	try {
 		const verifyTokenUseCase = makeVerifyTokenUseCase();
 		const result = await verifyTokenUseCase.execute({ token });
