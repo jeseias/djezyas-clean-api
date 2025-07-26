@@ -24,8 +24,6 @@ export namespace CreateOrder {
 	};
 
 	export type Result = Order.Model;
-
-  
 }
 
 export class CreateOrderUseCase {
@@ -45,16 +43,19 @@ export class CreateOrderUseCase {
 			throw new AppError(
 				"Order must have at least one item",
 				400,
-				ErrorCode.ENTITY_NOT_FOUND,
+				ErrorCode.EMPTY_ORDER,
 			);
 		}
 
-		const enrichedItems = await this.validateAndEnrichItems(params.items);
+		const enrichedItems = await this.validateAndEnrichItems(
+			params.items,
+			params.organizationId,
+		);
 
 		const order = Order.Entity.create({
 			userId: params.userId,
-			organizationId: params.organizationId,
 			items: enrichedItems,
+			meta: params.meta,
 		});
 
 		const savedOrder = await this.orderRepository.create(order.getSnapshot());
@@ -73,6 +74,7 @@ export class CreateOrderUseCase {
 
 	private async validateAndEnrichItems(
 		items: CreateOrder.Item[],
+		organizationId: string,
 	): Promise<Order.CreateParams["items"]> {
 		const enrichedItems: Order.CreateParams["items"] = [];
 
@@ -117,9 +119,10 @@ export class CreateOrderUseCase {
 				name: product.name,
 				quantity: item.quantity,
 				unitAmount: price.unitAmount,
-				product: Product.Entity.fromModel(product),
+				// TODO: Consider if product field is needed in order items or if we can omit it
+				// product: Product.Entity.fromModel(product).toJSON(), // This would be Product.Props but Order expects Product.Model
 				price: price.getSnapshot(),
-				organizationId: params.organizationId,
+				organizationId: organizationId,
 			});
 		}
 
