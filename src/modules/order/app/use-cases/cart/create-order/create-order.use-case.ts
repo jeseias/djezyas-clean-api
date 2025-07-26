@@ -24,6 +24,8 @@ export namespace CreateOrder {
 	};
 
 	export type Result = Order.Model;
+
+  
 }
 
 export class CreateOrderUseCase {
@@ -117,6 +119,7 @@ export class CreateOrderUseCase {
 				unitAmount: price.unitAmount,
 				product: Product.Entity.fromModel(product),
 				price: price.getSnapshot(),
+				organizationId: params.organizationId,
 			});
 		}
 

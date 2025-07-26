@@ -21,7 +21,7 @@ export namespace Order {
 		quantity: number;
 		unitAmount: number;
 		subtotal: number;
-		organizationId: Id; 
+		organizationId: Id;
 	};
 
 	export type Model = {
@@ -123,7 +123,7 @@ export namespace Order {
 		}
 
 		getOrganizationIds(): Id[] {
-			return [...new Set(this.props.items.map(i => i.organizationId))];
+			return [...new Set(this.props.items.map((i) => i.organizationId))];
 		}
 	}
 }
