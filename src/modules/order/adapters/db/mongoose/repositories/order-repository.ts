@@ -153,7 +153,9 @@ export class MongooseOrderRepository implements OrderRepository {
 			sortOrder = "desc",
 		} = filters;
 
-		const query: FilterQuery<Order.Model> = { "items.organizationId": organizationId };
+		const query: FilterQuery<Order.Model> = {
+			"items.organizationId": organizationId,
+		};
 
 		if (status) {
 			query.status = status;

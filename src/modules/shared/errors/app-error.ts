@@ -63,6 +63,7 @@ export enum ErrorCode {
 
 	// ===== Internal =====
 	INTERNAL_SERVER_ERROR = 1999,
+	EXTERNAL_SERVICE_ERROR = 1998,
 }
 
 export class AppError extends Error {

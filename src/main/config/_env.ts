@@ -12,6 +12,11 @@ export const envSchema = z.object({
 	SWAGGER_DOCS_USERNAME: z.string(),
 	SWAGGER_DOCS_PASSWORD: z.string(),
 	SERVER_URL: z.string().url(),
+
+	// ImageKit
+	IMAGE_KIT_PUBLIC_KEY: z.string(),
+	IMAGE_KIT_PRIVATE_KEY: z.string(),
+	IMAGE_KIT_URL_ENDPOINT: z.string(),
 });
 
 const _envSchema = envSchema.safeParse(process.env);
