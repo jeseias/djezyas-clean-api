@@ -12,6 +12,7 @@ export interface OrderDocument extends Document {
 		quantity: number;
 		unitAmount: number;
 		subtotal: number;
+		organizationId: string;
 		product?: any;
 		price?: any;
 	}[];
@@ -49,6 +50,10 @@ const orderItemSchema = new Schema({
 		type: Number,
 		required: true,
 		min: 0,
+	},
+	organizationId: {
+		type: String,
+		required: true,
 	},
 	product: {
 		type: Schema.Types.Mixed,

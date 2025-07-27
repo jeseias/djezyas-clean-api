@@ -40,7 +40,7 @@ export enum ErrorCode {
 	INVALID_EXCHANGE_RATE = 1303,
 	INVALID_QUANTITY = 1304,
 	INVALID_OPERATION = 1305,
-	
+
 	// ===== Order Module (1600-1699) =====
 	EMPTY_ORDER = 1601,
 	// ===== Shared/Entity/General (1400-1499) =====

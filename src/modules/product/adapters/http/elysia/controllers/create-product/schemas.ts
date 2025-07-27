@@ -23,8 +23,8 @@ export const saveProductSchema = z
 			.optional(),
 		meta: z.record(z.any()).optional(),
 		price: z.object({
-			currency: z.string().min(1, "Currency is required"),
-			unitAmount: z.number().positive("Unit amount must be positive"),
+			currency: z.string().min(3, "Currency is required"),
+			unitAmount: z.coerce.number().positive("Unit amount must be positive"),
 			type: z.nativeEnum(Price.Type).optional(),
 			status: z.nativeEnum(Price.Status).optional(),
 			validFrom: z.date().optional(),

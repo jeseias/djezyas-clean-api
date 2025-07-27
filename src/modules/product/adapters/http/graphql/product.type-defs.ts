@@ -27,7 +27,14 @@ export const productTypeDefs = `#graphql
     meta: JSON
     createdAt: DateTime!
     updatedAt: DateTime!
-    price: Price
+    default_price: DefaultPrice
+  }
+
+  type DefaultPrice {
+    id: String 
+    currency: String! 
+    type: PriceType! 
+    unitAmount: Float!
   }
 
   type B2CProductPrice {
@@ -65,6 +72,7 @@ export const productTypeDefs = `#graphql
 
   type Price {
     id: String!
+    currency: String!
     productId: String!
     unitAmount: Float!
     type: PriceType!

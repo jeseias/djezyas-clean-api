@@ -10,7 +10,11 @@ import { routes } from "./routes";
 import { protectedDocs } from "./swagger/swagger-config";
 
 export const app = new Elysia()
-	.use(cors())
+	.use(cors({
+			origin: ["https://djezyas.com"],
+			credentials: true,
+		}),
+	)
 	.use(protectedDocs)
 	.use(
 		yoga({

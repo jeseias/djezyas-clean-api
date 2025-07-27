@@ -5,6 +5,7 @@ import type {
 	PreRunnerOrKey,
 } from "@/src/modules/shared/adapters/http/elysia/pre-runners";
 import type { StorageAdapter } from "@/src/modules/shared/ports/storage-adapter";
+import { transformBracketNotationPreRunner } from "@/src/modules/shared/prerunners/transform-bracket-notation";
 import { uploadImageUrlPreRunner } from "@/src/modules/shared/prerunners/upload-image-url";
 import { type SaveProductBody, saveProductSchema } from "./schemas";
 
@@ -30,6 +31,7 @@ export function createSaveProductPreRunners(
 	return [
 		"auth",
 		uploadImageUrlPreRunner<SaveProductBody>(storage, "imageUrl"),
+		transformBracketNotationPreRunner<SaveProductBody>(),
 		createZodPreRunner(saveProductSchema),
 	];
 }

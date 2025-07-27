@@ -84,7 +84,7 @@ export namespace Product {
 		organizationId: Id;
 		createdById: Id;
 		default_price_id: Id;
-		default_price?: {
+		default_price: {
 			id: Id;
 			currency: string;
 			unitAmount: number;

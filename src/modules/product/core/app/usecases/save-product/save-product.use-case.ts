@@ -165,6 +165,12 @@ export class SaveProductUseCase {
 			dimensions: params.dimensions,
 			meta: params.meta,
 			default_price_id: id(),
+			default_price: {
+				id: id(),
+				currency: params.price.currency,
+				unitAmount: params.price.unitAmount,
+				type: Price.Type.REGULAR,
+			},
 		});
 
 		await this.productRepository.create(tempProduct.toJSON());
