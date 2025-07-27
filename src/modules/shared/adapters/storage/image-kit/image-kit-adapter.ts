@@ -21,9 +21,9 @@ export class ImageKitAdapter implements StorageAdapter {
 			const result = await this.imagekit.upload({
 				file: buffer,
 				fileName: file.name,
-				folder: "/uploads", 
+				folder: "/uploads",
 				useUniqueFileName: true,
-				tags: ["uploaded"], 
+				tags: ["uploaded"],
 				responseFields: ["url", "fileId", "name"],
 			});
 
