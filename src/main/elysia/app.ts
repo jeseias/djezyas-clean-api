@@ -49,13 +49,26 @@ export const app = new Elysia()
       resolvers: appResolvers,
       graphiql: false,
       path: "graphql",
-      context: async ({ request }) => getUserFromRequest(request),
+      context: async ({ request }) => {
+        console.log('GraphQL request received:', {
+          method: request.method,
+          url: request.url,
+          headers: Object.fromEntries(request.headers.entries())
+        });
+        return getUserFromRequest(request);
+      },
       maskedErrors: {
         maskError: (
           error: unknown,
           message: string,
           isDev?: boolean,
         ): Error => {
+          console.log('GraphQL error:', {
+            error: error instanceof Error ? error.message : String(error),
+            message,
+            isDev
+          });
+          
           if (
             error instanceof GraphQLError &&
             error.originalError instanceof AppError
@@ -87,4 +100,10 @@ export const app = new Elysia()
   )
   .use(routes)
   .get("/graphiql", ({ request }) => graphiqlAuthHandler(request))
-  .get("/health", () => ({ status: "ok", cors: "enabled" }));
+  .get("/health", () => ({ status: "ok", cors: "enabled" }))
+  .post("/test", ({ body }) => ({ 
+    status: "ok", 
+    method: "POST", 
+    body: body,
+    message: "POST request working" 
+  }));
