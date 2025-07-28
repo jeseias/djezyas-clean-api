@@ -41,6 +41,7 @@ export const app = new Elysia()
     allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token', 'Accept', 'Origin'], 
     methods: ['GET', 'POST', 'OPTIONS'],
     exposeHeaders: ['Content-Type', 'Authorization', 'x-access-token'],
+    maxAge: 86400, // Cache preflight for 24 hours
   }))
   .use(protectedDocs)
   .use(
