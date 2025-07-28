@@ -18,19 +18,29 @@ export const app = new Elysia()
       const allowedOrigins = [
         'https://djezyas.com', 
         'https://www.djezyas.com',
+        'https://www.djezyas.com/', // With trailing slash
         'http://localhost:3000', // For local development
         'http://localhost:5173', // For Vite dev server
         'http://localhost:4173', // For Vite preview
       ];
       
-      const isAllowed = origin ? allowedOrigins.includes(origin) : false;
-      console.log('Origin allowed:', isAllowed);
+      // Handle requests without origin (like same-origin requests)
+      if (!origin) {
+        console.log('No origin header, allowing request');
+        return true;
+      }
+      
+      const isAllowed = allowedOrigins.includes(origin);
+      console.log('Origin allowed:', isAllowed, 'for origin:', origin);
+      console.log('Allowed origins:', allowedOrigins);
+      console.log('Request headers:', Object.fromEntries(request.headers.entries()));
       
       return isAllowed;
     },
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token'], 
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token', 'Accept', 'Origin'], 
     methods: ['GET', 'POST', 'OPTIONS'],
+    exposeHeaders: ['Content-Type', 'Authorization', 'x-access-token'],
   }))
   .use(protectedDocs)
   .use(
@@ -76,4 +86,5 @@ export const app = new Elysia()
     }),
   )
   .use(routes)
-  .get("/graphiql", ({ request }) => graphiqlAuthHandler(request));
+  .get("/graphiql", ({ request }) => graphiqlAuthHandler(request))
+  .get("/health", () => ({ status: "ok", cors: "enabled" }));
