@@ -11,7 +11,7 @@ import { protectedDocs } from "./swagger/swagger-config";
 
 export const app = new Elysia()
   .use(cors({
-    origin: ['https://djezyas.com'],
+    origin: ['https://djezyas.com', 'https://www.djezyas.com'],
     credentials: true,
     allowedHeaders: '*',
     methods: '*',
