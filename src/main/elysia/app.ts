@@ -119,7 +119,7 @@ export const app = new Elysia()
     body: body,
     message: "POST request working" 
   }))
-  .options("/graphql", ({ request }) => {
+  .options("/graphql", ({ request }: { request: Request }) => {
     console.log('OPTIONS request to /graphql');
     const origin = request.headers.get('origin');
     console.log('OPTIONS origin:', origin);
@@ -147,13 +147,4 @@ export const app = new Elysia()
     } else {
       return new Response(null, { status: 403 });
     }
-  })
-  .post("/graphql", ({ request, body }) => {
-    console.log('POST request to /graphql');
-    const origin = request.headers.get('origin');
-    console.log('POST origin:', origin);
-    
-    // Let the GraphQL Yoga handler process this
-    // We're just adding logging here
-    return;
   });
