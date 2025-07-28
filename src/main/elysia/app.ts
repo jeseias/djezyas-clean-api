@@ -119,7 +119,41 @@ export const app = new Elysia()
     body: body,
     message: "POST request working" 
   }))
-  .options("/graphql", () => {
+  .options("/graphql", ({ request }) => {
     console.log('OPTIONS request to /graphql');
-    return new Response(null, { status: 204 });
+    const origin = request.headers.get('origin');
+    console.log('OPTIONS origin:', origin);
+    
+    const allowedOrigins = [
+      'https://djezyas.com', 
+      'https://www.djezyas.com',
+      'https://www.djezyas.com/',
+    ];
+    
+    const isAllowed = origin ? allowedOrigins.includes(origin) : false;
+    console.log('OPTIONS origin allowed:', isAllowed);
+    
+    if (isAllowed) {
+      return new Response(null, { 
+        status: 204,
+        headers: {
+          'Access-Control-Allow-Origin': origin || '',
+          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-access-token, Accept, Origin',
+          'Access-Control-Allow-Credentials': 'true',
+          'Access-Control-Max-Age': '86400'
+        }
+      });
+    } else {
+      return new Response(null, { status: 403 });
+    }
+  })
+  .post("/graphql", ({ request, body }) => {
+    console.log('POST request to /graphql');
+    const origin = request.headers.get('origin');
+    console.log('POST origin:', origin);
+    
+    // Let the GraphQL Yoga handler process this
+    // We're just adding logging here
+    return;
   });
