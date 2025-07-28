@@ -14,7 +14,7 @@ export const app = new Elysia()
     origin: ['https://djezyas.com'],
     credentials: true,
     allowedHeaders: '*',
-    methods: ['GET', 'POST', 'OPTIONS'],
+    methods: '*',
   }))
 
   .options("*", () => new Response("OK", {
