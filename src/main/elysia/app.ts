@@ -20,8 +20,8 @@ export const app = new Elysia()
   .options("*", () => new Response("OK", {
     headers: {
       "Access-Control-Allow-Origin": "https://djezyas.com",
-      "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Allow-Methods": "*",
+      "Access-Control-Allow-Headers": "*",
       "Access-Control-Allow-Credentials": "true",
     },
   }))
