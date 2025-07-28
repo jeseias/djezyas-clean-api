@@ -11,34 +11,9 @@ import { protectedDocs } from "./swagger/swagger-config";
 
 export const app = new Elysia()
   .use(cors({
-    origin: (request: Request) => {
-      const origin = request.headers.get('origin');
-      console.log('CORS request from origin:', origin);
-      console.log('Request method:', request.method);
-      
-      const allowedOrigins = [
-        'https://djezyas.com', 
-        'https://www.djezyas.com',
-        'https://www.djezyas.com/', // With trailing slash
-        'http://localhost:3000', // For local development
-        'http://localhost:5173', // For Vite dev server
-        'http://localhost:4173', // For Vite preview
-      ];
-      
-      // Handle requests without origin (like same-origin requests)
-      if (!origin) {
-        console.log('No origin header, allowing request');
-        return true;
-      }
-      
-      const isAllowed = allowedOrigins.includes(origin);
-      console.log('Origin allowed:', isAllowed, 'for origin:', origin);
-      console.log('Allowed origins:', allowedOrigins);
-      
-      return isAllowed;
-    },
+    origin: ['https://djezyas.com', 'https://www.djezyas.com', 'https://www.djezyas.com/'],
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token', 'Accept', 'Origin'], 
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token', 'Accept', 'Origin', 'X-Requested-With'], 
     methods: ['GET', 'POST', 'OPTIONS'],
     exposeHeaders: ['Content-Type', 'Authorization', 'x-access-token'],
     maxAge: 86400, // Cache preflight for 24 hours
@@ -113,38 +88,20 @@ export const app = new Elysia()
   .use(routes)
   .get("/graphiql", ({ request }) => graphiqlAuthHandler(request))
   .get("/health", () => ({ status: "ok", cors: "enabled" }))
-  .post("/test", ({ body }) => ({ 
-    status: "ok", 
-    method: "POST", 
-    body: body,
-    message: "POST request working" 
-  }))
-  .options("/graphql", ({ request }: { request: Request }) => {
-    console.log('OPTIONS request to /graphql');
-    const origin = request.headers.get('origin');
-    console.log('OPTIONS origin:', origin);
+  .post("/test", ({ body, request }) => {
+    console.log('POST /test called');
+    console.log('Request method:', request.method);
+    console.log('Request URL:', request.url);
+    console.log('Request headers:', Object.fromEntries(request.headers.entries()));
+    console.log('Request body:', body);
     
-    const allowedOrigins = [
-      'https://djezyas.com', 
-      'https://www.djezyas.com',
-      'https://www.djezyas.com/',
-    ];
-    
-    const isAllowed = origin ? allowedOrigins.includes(origin) : false;
-    console.log('OPTIONS origin allowed:', isAllowed);
-    
-    if (isAllowed) {
-      return new Response(null, { 
-        status: 204,
-        headers: {
-          'Access-Control-Allow-Origin': origin || '',
-          'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-access-token, Accept, Origin',
-          'Access-Control-Allow-Credentials': 'true',
-          'Access-Control-Max-Age': '86400'
-        }
-      });
-    } else {
-      return new Response(null, { status: 403 });
-    }
-  });
+    return { 
+      status: "ok", 
+      method: "POST", 
+      body: body,
+      message: "POST request working",
+      headers: Object.fromEntries(request.headers.entries())
+    };
+  })
+  // Let Railway handle OPTIONS requests automatically
+  // The CORS plugin will handle preflight requests
