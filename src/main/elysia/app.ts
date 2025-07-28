@@ -11,21 +11,11 @@ import { protectedDocs } from "./swagger/swagger-config";
 
 export const app = new Elysia()
   .use(cors({
-    origin: ['https://djezyas.com', 'https://www.djezyas.com'],
-    credentials: true,
-    allowedHeaders: '*',
-    methods: '*',
+    // origin: ['https://djezyas.com', 'https://www.djezyas.com', 'http://localhost:3000'],
+    // credentials: true,
+    // allowedHeaders: '*',
+    // methods: '*',
   }))
-
-  .options("*", () => new Response("OK", {
-    headers: {
-      "Access-Control-Allow-Origin": "https://djezyas.com",
-      "Access-Control-Allow-Methods": "*",
-      "Access-Control-Allow-Headers": "*",
-      "Access-Control-Allow-Credentials": "true",
-    },
-  }))
-
   .use(protectedDocs)
   .use(
     yoga({
