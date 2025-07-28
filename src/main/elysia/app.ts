@@ -14,6 +14,7 @@ export const app = new Elysia()
     origin: (request: Request) => {
       const origin = request.headers.get('origin');
       console.log('CORS request from origin:', origin);
+      console.log('Request method:', request.method);
       
       const allowedOrigins = [
         'https://djezyas.com', 
@@ -33,7 +34,6 @@ export const app = new Elysia()
       const isAllowed = allowedOrigins.includes(origin);
       console.log('Origin allowed:', isAllowed, 'for origin:', origin);
       console.log('Allowed origins:', allowedOrigins);
-      console.log('Request headers:', Object.fromEntries(request.headers.entries()));
       
       return isAllowed;
     },
@@ -55,7 +55,15 @@ export const app = new Elysia()
           url: request.url,
           headers: Object.fromEntries(request.headers.entries())
         });
-        return getUserFromRequest(request);
+        
+        try {
+          const userContext = await getUserFromRequest(request);
+          console.log('User context resolved:', userContext);
+          return userContext;
+        } catch (error) {
+          console.error('Error in getUserFromRequest:', error);
+          return { user: null };
+        }
       },
       maskedErrors: {
         maskError: (
@@ -63,16 +71,19 @@ export const app = new Elysia()
           message: string,
           isDev?: boolean,
         ): Error => {
-          console.log('GraphQL error:', {
+          console.log('GraphQL error details:', {
             error: error instanceof Error ? error.message : String(error),
+            errorType: error?.constructor?.name,
             message,
-            isDev
+            isDev,
+            stack: error instanceof Error ? error.stack : undefined
           });
           
           if (
             error instanceof GraphQLError &&
             error.originalError instanceof AppError
           ) {
+            console.log('AppError detected:', error.originalError);
             return new GraphQLError(error.message, {
               nodes: error.nodes,
               source: error.source,
@@ -106,4 +117,8 @@ export const app = new Elysia()
     method: "POST", 
     body: body,
     message: "POST request working" 
-  }));
+  }))
+  .options("/graphql", () => {
+    console.log('OPTIONS request to /graphql');
+    return new Response(null, { status: 204 });
+  });

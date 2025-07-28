@@ -41,22 +41,34 @@ export const userResolvers = {
 			{ input }: { input: Login.Params },
 			context: any,
 		) => {
-			const loginUseCase = makeLoginUseCase();
+			console.log('Login mutation called with input:', input);
+			console.log('Context:', context);
+			
+			try {
+				const loginUseCase = makeLoginUseCase();
 
-			let ipAddress = "unknown";
-			if (context.request) {
-				ipAddress =
-					context.request.headers.get("x-forwarded-for") ||
-					context.request.ip ||
-					context.request.socket?.remoteAddress ||
-					"unknown";
+				let ipAddress = "unknown";
+				if (context.request) {
+					ipAddress =
+						context.request.headers.get("x-forwarded-for") ||
+						context.request.ip ||
+						context.request.socket?.remoteAddress ||
+						"unknown";
+				}
+
+				const deviceInfo = {
+					...input.deviceInfo,
+					ipAddress,
+				};
+				
+				console.log('Executing login with deviceInfo:', deviceInfo);
+				const result = await loginUseCase.execute({ ...input, deviceInfo });
+				console.log('Login successful:', result);
+				return result;
+			} catch (error) {
+				console.error('Login error:', error);
+				throw error;
 			}
-
-			const deviceInfo = {
-				...input.deviceInfo,
-				ipAddress,
-			};
-			return await loginUseCase.execute({ ...input, deviceInfo });
 		},
 
 		verifyEmail: async (

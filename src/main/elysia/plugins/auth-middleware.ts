@@ -8,15 +8,21 @@ export function requireAuth(context: any) {
 }
 
 export async function getUserFromRequest(request: Request) {
+	console.log('getUserFromRequest called');
+	console.log('Request headers:', Object.fromEntries(request.headers.entries()));
+	
 	const token = request.headers.get("x-access-token");
 
 	if (!token) {
+		console.log('No token found, returning null user');
 		return { user: null };
 	}
 
 	try {
+		console.log('Verifying token:', token);
 		const verifyTokenUseCase = makeVerifyTokenUseCase();
 		const result = await verifyTokenUseCase.execute({ token });
+		console.log('Token verification successful:', result);
 		return {
 			user: {
 				id: result.userId,
@@ -25,7 +31,8 @@ export async function getUserFromRequest(request: Request) {
 				role: result.role,
 			},
 		};
-	} catch {
+	} catch (error) {
+		console.log('Token verification failed:', error);
 		return { user: null };
 	}
 }
