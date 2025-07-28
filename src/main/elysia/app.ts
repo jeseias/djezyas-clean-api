@@ -10,11 +10,10 @@ import { routes } from "./routes";
 import { protectedDocs } from "./swagger/swagger-config";
 
 export const app = new Elysia()
-
   .use(cors({
     origin: ['https://djezyas.com'],
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: '*',
     methods: ['GET', 'POST', 'OPTIONS'],
   }))
 
