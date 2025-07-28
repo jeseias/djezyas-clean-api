@@ -13,8 +13,8 @@ export const app = new Elysia()
   .use(cors({
     // origin: ['https://djezyas.com', 'https://www.djezyas.com', 'http://localhost:3000'],
     credentials: true,
-    // allowedHeaders: '*',
-    // methods: '*',
+    allowedHeaders: '*',
+    methods: '*',
   }))
   .use(protectedDocs)
   .use(
