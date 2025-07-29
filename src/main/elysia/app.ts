@@ -1,4 +1,3 @@
-import { cors } from "@elysiajs/cors";
 import { yoga } from "@elysiajs/graphql-yoga";
 import { Elysia } from "elysia";
 import { GraphQLError } from "graphql";
@@ -10,25 +9,19 @@ import { routes } from "./routes";
 import { protectedDocs } from "./swagger/swagger-config";
 
 export const app = new Elysia()
-  .use(cors({
-    origin: [
+  .derive(({ request, set }) => {
+    // Manual CORS handling to avoid duplication
+    const origin = request.headers.get('origin');
+    const allowedOrigins = [
       'https://djezyas.com',
       'https://www.djezyas.com',
       'http://localhost:3000',
-    ],
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token', 'Accept', 'Origin', 'X-Requested-With'], 
-    methods: ['GET', 'POST', 'OPTIONS'],
-    exposeHeaders: ['Content-Type', 'Authorization', 'x-access-token'],
-    maxAge: 86400, // Cache preflight for 24 hours
-  }))
-  .derive(({ request, set }) => {
-    // Log CORS-related headers for debugging
-    const origin = request.headers.get('origin');
-    console.log('CORS Debug - Request origin:', origin);
+    ];
     
-    // Ensure CORS headers are set
-    if (origin && ['https://djezyas.com', 'https://www.djezyas.com', 'http://localhost:3000'].includes(origin)) {
+    console.log('CORS Debug - Request origin:', origin);
+    console.log('CORS Debug - Origin allowed:', allowedOrigins.includes(origin || ''));
+    
+    if (origin && allowedOrigins.includes(origin)) {
       set.headers['Access-Control-Allow-Origin'] = origin;
       set.headers['Access-Control-Allow-Credentials'] = 'true';
       set.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS';
@@ -37,7 +30,11 @@ export const app = new Elysia()
       set.headers['Access-Control-Max-Age'] = '86400';
     }
     
-    console.log('CORS Debug - CORS headers set for origin:', origin);
+    // Handle preflight requests
+    if (request.method === 'OPTIONS') {
+      set.status = 204;
+      return;
+    }
   })
   .use(protectedDocs)
   .use(
