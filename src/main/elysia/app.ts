@@ -10,14 +10,14 @@ import { routes } from "./routes";
 import { protectedDocs } from "./swagger/swagger-config";
 
 export const app = new Elysia()
-  .use(cors({
-    origin: ['https://djezyas.com', 'https://www.djezyas.com', 'https://www.djezyas.com/'],
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token', 'Accept', 'Origin', 'X-Requested-With'], 
-    methods: ['GET', 'POST', 'OPTIONS'],
-    exposeHeaders: ['Content-Type', 'Authorization', 'x-access-token'],
-    maxAge: 86400, // Cache preflight for 24 hours
-  }))
+  // .use(cors({
+  //   origin: ['https://djezyas.com', 'https://www.djezyas.com', 'https://www.djezyas.com/'],
+  //   credentials: true,
+  //   allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token', 'Accept', 'Origin', 'X-Requested-With'], 
+  //   methods: ['GET', 'POST', 'OPTIONS'],
+  //   exposeHeaders: ['Content-Type', 'Authorization', 'x-access-token'],
+  //   maxAge: 86400, // Cache preflight for 24 hours
+  // }))
   .use(protectedDocs)
   .use(
     yoga({
