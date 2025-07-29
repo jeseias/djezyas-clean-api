@@ -23,8 +23,6 @@ const productCategorySchema = new Schema<ProductCategoryDocument>(
 		slug: {
 			type: String,
 			required: true,
-			trim: true,
-			lowercase: true,
 		},
 		description: {
 			type: String,

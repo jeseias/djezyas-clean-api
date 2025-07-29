@@ -16,7 +16,11 @@ export class Slug {
 			throw new Error("Invalid slug format");
 		}
 
-		return new Slug(normalized);
+		const randomDigits = Math.floor(100000 + Math.random() * 900000);
+		
+		const uniqueSlug = `${normalized}-${randomDigits}`;
+
+		return new Slug(uniqueSlug);
 	}
 
 	static fromValue(value: string): Slug {
