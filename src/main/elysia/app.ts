@@ -11,7 +11,21 @@ import { protectedDocs } from "./swagger/swagger-config";
 
 export const app = new Elysia()
   .use(cors({
-    origin: ['https://djezyas.com', 'https://www.djezyas.com', 'https://www.djezyas.com/', 'http://localhost:3000'],
+    origin: (request: Request) => {
+      const origin = request.headers.get('origin');
+      const allowedOrigins = new Set([
+        'https://djezyas.com',
+        'https://www.djezyas.com',
+        'http://localhost:3000',
+      ]);
+    
+      if (!origin || allowedOrigins.has(origin)) {
+        return true;
+      } else {
+        console.warn('Blocked CORS origin:', origin);
+        return false;
+      }
+    },
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token', 'Accept', 'Origin', 'X-Requested-With'], 
     methods: ['GET', 'POST', 'OPTIONS'],
