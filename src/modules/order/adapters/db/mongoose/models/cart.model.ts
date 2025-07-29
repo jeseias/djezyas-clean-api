@@ -41,6 +41,4 @@ const cartSchema = new Schema<Cart.Model>(
 	},
 );
 
-cartSchema.index({ userId: 1 });
-
 export const CartModel = models.Cart || model<Cart.Model>("Cart", cartSchema);
