@@ -131,6 +131,7 @@ export class MongooseProductTypeRepository implements ProductTypeRepository {
 			createdById: doc.createdById,
 			createdAt: doc.createdAt,
 			updatedAt: doc.updatedAt,
+			productCategoryId: doc.productCategoryId,
 		};
 	}
 }

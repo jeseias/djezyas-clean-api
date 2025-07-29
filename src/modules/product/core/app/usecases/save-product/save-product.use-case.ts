@@ -16,8 +16,7 @@ export namespace SaveProduct {
 		id?: string;
 		name: string;
 		description?: string;
-		categoryId: string;
-		productTypeId: string;
+		productTypeId: string; 
 		status?: Product.Status;
 		organizationId: string;
 		createdById: string;
@@ -60,8 +59,10 @@ export class SaveProductUseCase {
 		await this.isOrganizationValid.execute(params.organizationId);
 		await this.isMember.execute(params.createdById, params.organizationId);
 
-		await this.validateProductCategory(params.categoryId);
-		await this.validateProductType(params.productTypeId, params.organizationId);
+		const { categoryId } = await this.validateProductTypeAndCategory(
+			params.productTypeId,
+			params.organizationId,
+		);
 
 		let existingProduct: Product.Props | null = null;
 
@@ -75,26 +76,14 @@ export class SaveProductUseCase {
 		if (existingProduct) {
 			return await this.updateProduct(existingProduct, params);
 		} else {
-			return await this.createProduct(params);
+			return await this.createProduct(params, categoryId);
 		}
 	}
 
-	private async validateProductCategory(categoryId: string): Promise<void> {
-		const categoryModel =
-			await this.productCategoryRepository.findById(categoryId);
-		if (!categoryModel) {
-			throw new AppError(
-				"Product category must exist",
-				400,
-				ErrorCode.ENTITY_NOT_FOUND,
-			);
-		}
-	}
-
-	private async validateProductType(
+	private async validateProductTypeAndCategory(
 		productTypeId: string,
 		organizationId: string,
-	): Promise<void> {
+	): Promise<{ categoryId: string; productType: any }> {
 		const productTypeModel =
 			await this.productTypeRepository.findById(productTypeId);
 		if (!productTypeModel) {
@@ -104,6 +93,7 @@ export class SaveProductUseCase {
 				ErrorCode.ENTITY_NOT_FOUND,
 			);
 		}
+
 		if (productTypeModel.organizationId !== organizationId) {
 			throw new AppError(
 				"Product type must belong to the organization",
@@ -111,6 +101,22 @@ export class SaveProductUseCase {
 				ErrorCode.ENTITY_NOT_FOUND,
 			);
 		}
+
+		const categoryId = productTypeModel.productCategoryId;
+    
+    console.log({ categoryId, productTypeModel })
+
+		const categoryModel =
+			await this.productCategoryRepository.findById(categoryId);
+		if (!categoryModel) {
+			throw new AppError(
+				"Product category must exist",
+				400,
+				ErrorCode.ENTITY_NOT_FOUND,
+			);
+		}
+
+		return { categoryId, productType: productTypeModel };
 	}
 
 	private async validateExistingProduct(
@@ -149,11 +155,12 @@ export class SaveProductUseCase {
 
 	private async createProduct(
 		params: SaveProduct.Params,
+		categoryId: string,
 	): Promise<Product.Props> {
 		const tempProduct = Product.Entity.create({
 			name: params.name,
 			description: params.description,
-			categoryId: params.categoryId,
+			categoryId: categoryId, 
 			productTypeId: params.productTypeId,
 			status: params.status,
 			organizationId: params.organizationId,
@@ -211,3 +218,4 @@ export class SaveProductUseCase {
 		return price.getSnapshot();
 	}
 }
+

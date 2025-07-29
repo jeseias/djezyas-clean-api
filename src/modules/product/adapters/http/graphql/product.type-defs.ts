@@ -157,7 +157,6 @@ export const productTypeDefs = `#graphql
     id: String
     name: String!
     description: String
-    categoryId: String!
     productTypeId: String!
     status: ProductStatus
     imageUrl: String
