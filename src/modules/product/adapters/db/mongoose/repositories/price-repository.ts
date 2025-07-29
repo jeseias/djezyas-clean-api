@@ -1,6 +1,6 @@
 import { Price } from "@/src/modules/product/core/domain/entities";
 import type { PriceRepository } from "@/src/modules/product/core/ports/outbound/price-repository";
-import { type PriceDocument, PriceModel } from "../price-model";
+import { type PriceDocument, PriceModel } from "../models/price.model";
 
 export class MongoosePriceRepository implements PriceRepository {
 	async create(price: Price.Model): Promise<Price.Model> {

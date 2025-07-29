@@ -73,7 +73,6 @@ priceSchema.index({ status: 1 });
 priceSchema.index({ type: 1 });
 priceSchema.index({ createdAt: -1 });
 
-// Compound indexes for common queries
 priceSchema.index({ productId: 1, currencyId: 1, status: 1 });
 priceSchema.index({ productId: 1, currencyId: 1, type: 1 });
 priceSchema.index({ productId: 1, status: 1 });

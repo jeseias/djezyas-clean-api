@@ -75,12 +75,6 @@ export const productResolvers = {
 				.execute({ ...input, userId });
 		}),
 
-		createProductType: makeResolver(async ({ input }, { userId }) => {
-			return productUseCasesFactory
-				.createProductType()
-				.execute({ ...input, userId });
-		}),
-
 		updatePriceAmount: makeResolver(async ({ input }, { userId }) => {
 			return productUseCasesFactory
 				.updatePriceAmount()

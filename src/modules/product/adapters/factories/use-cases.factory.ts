@@ -71,6 +71,7 @@ export class ProductUseCasesFactory {
 			this.productTypeRepository,
 			this.userRepository,
 			this.organizationRepository,
+      this.productCategoryRepository
 		);
 	}
 

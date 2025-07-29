@@ -23,20 +23,20 @@ export {
 export {
 	type PriceDocument,
 	PriceModel,
-} from "../../../../product/adapters/db/mongoose/price-model";
-export {
-	type ProductCategoryDocument,
-	ProductCategoryModel,
-} from "../../../../product/adapters/db/mongoose/product-category-model";
+} from "../../../../product/adapters/db/mongoose/models/price.model";
 // Product module models
 export {
 	type ProductDocument,
 	ProductModel,
-} from "../../../../product/adapters/db/mongoose/product-model";
+} from "../../../../product/adapters/db/mongoose/models/product.model";
+export {
+	type ProductCategoryDocument,
+	ProductCategoryModel,
+} from "../../../../product/adapters/db/mongoose/models/product-category.model";
 export {
 	type ProductTypeDocument,
 	ProductTypeModel,
-} from "../../../../product/adapters/db/mongoose/product-type-model";
+} from "../../../../product/adapters/db/mongoose/models/product-type.model";
 export {
 	type SessionDocument,
 	SessionModel,

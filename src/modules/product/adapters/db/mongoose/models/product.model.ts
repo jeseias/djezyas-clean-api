@@ -1,5 +1,5 @@
 import mongoose, { type Document, Schema } from "mongoose";
-import type { Price } from "../../../core/domain/entities";
+import type { Price } from "../../../../core/domain/entities";
 
 export interface ProductDocument extends Document {
 	id: string;

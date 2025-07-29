@@ -3,7 +3,7 @@ import type { ProductTypeRepository } from "@/src/modules/product/core/ports/out
 import {
 	type ProductTypeDocument,
 	ProductTypeModel,
-} from "../product-type-model";
+} from "../models/product-type.model";
 
 export class MongooseProductTypeRepository implements ProductTypeRepository {
 	async create(productType: ProductType.Props): Promise<ProductType.Props> {

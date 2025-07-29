@@ -35,8 +35,21 @@ export namespace ProductCategory {
 			return new Entity(productCategory);
 		}
 
-		static fromModel(model: Model): Entity {
-			return new Entity(model);
+		static fromModel(model: Model): Entity;
+		static fromModel(props: Props): Entity;
+		static fromModel(input: Model | Props): Entity {
+			if ("slug" in input && typeof input.slug === "object") {
+				// Input is already a Model
+				return new Entity(input as Model);
+			} else {
+				// Input is Props, convert to Model
+				const props = input as Props;
+				const model: Model = {
+					...props,
+					slug: Slug.create(props.slug),
+				};
+				return new Entity(model);
+			}
 		}
 
 		get id(): Id {

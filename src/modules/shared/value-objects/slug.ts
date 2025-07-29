@@ -16,9 +16,13 @@ export class Slug {
 			throw new Error("Invalid slug format");
 		}
 
-		const randomDigits = Math.floor(100000 + Math.random() * 900000);
-		
-		const uniqueSlug = `${normalized}-${randomDigits}`;
+		const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+		let randomString = "";
+		for (let i = 0; i < 6; i++) {
+			randomString += chars.charAt(Math.floor(Math.random() * chars.length));
+		}
+
+		const uniqueSlug = `${normalized}-${randomString}`;
 
 		return new Slug(uniqueSlug);
 	}

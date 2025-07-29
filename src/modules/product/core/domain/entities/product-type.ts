@@ -7,6 +7,7 @@ export namespace ProductType {
 		slug: string;
 		description?: string;
 		organizationId: Id;
+		productCategoryId: Id;
 		createdById: Id;
 		createdAt: Date;
 		updatedAt: Date;
@@ -19,6 +20,7 @@ export namespace ProductType {
 		name: string;
 		description?: string;
 		organizationId: Id;
+		productCategoryId: Id;
 		createdById: Id;
 	};
 
@@ -33,6 +35,7 @@ export namespace ProductType {
 				slug: Slug.create(params.name),
 				description: params.description,
 				organizationId: params.organizationId,
+				productCategoryId: params.productCategoryId,
 				createdById: params.createdById,
 				createdAt: now,
 				updatedAt: now,
@@ -62,6 +65,9 @@ export namespace ProductType {
 		get organizationId(): Id {
 			return this.props.organizationId;
 		}
+		get productCategoryId(): Id {
+			return this.props.productCategoryId;
+		}
 		get createdById(): Id {
 			return this.props.createdById;
 		}
@@ -80,6 +86,11 @@ export namespace ProductType {
 
 		updateDescription(description: string): void {
 			this.props.description = description;
+			this.props.updatedAt = new Date();
+		}
+
+		updateProductCategory(productCategoryId: Id): void {
+			this.props.productCategoryId = productCategoryId;
 			this.props.updatedAt = new Date();
 		}
 

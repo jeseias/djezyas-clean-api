@@ -6,6 +6,7 @@ export interface ProductTypeDocument extends Document {
 	slug: string;
 	description?: string;
 	organizationId: string;
+	productCategoryId: string;
 	createdById: string;
 	createdAt: Date;
 	updatedAt: Date;
@@ -31,6 +32,10 @@ const productTypeSchema = new Schema<ProductTypeDocument>(
 		description: {
 			type: String,
 			trim: true,
+		},
+		productCategoryId: {
+			type: String,
+			required: true,
 		},
 		organizationId: {
 			type: String,

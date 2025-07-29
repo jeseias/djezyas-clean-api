@@ -41,9 +41,9 @@ export const userResolvers = {
 			{ input }: { input: Login.Params },
 			context: any,
 		) => {
-			console.log('Login mutation called with input:', input);
-			console.log('Context:', context);
-			
+			console.log("Login mutation called with input:", input);
+			console.log("Context:", context);
+
 			try {
 				const loginUseCase = makeLoginUseCase();
 
@@ -60,13 +60,13 @@ export const userResolvers = {
 					...input.deviceInfo,
 					ipAddress,
 				};
-				
-				console.log('Executing login with deviceInfo:', deviceInfo);
+
+				console.log("Executing login with deviceInfo:", deviceInfo);
 				const result = await loginUseCase.execute({ ...input, deviceInfo });
-				console.log('Login successful:', result);
+				console.log("Login successful:", result);
 				return result;
 			} catch (error) {
-				console.error('Login error:', error);
+				console.error("Login error:", error);
 				throw error;
 			}
 		},

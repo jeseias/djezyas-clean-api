@@ -4,6 +4,7 @@ import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import { User } from "@/src/modules/user/core/domain/entities";
 import type { UserRepository } from "@/src/modules/user/core/ports/outbound/user-repository";
 import { ProductType } from "../../../domain/entities";
+import type { ProductCategoryRepository } from "../../../ports/outbound/product-category-repository";
 import type { ProductTypeRepository } from "../../../ports/outbound/product-type-repository";
 
 export namespace SaveProductType {
@@ -12,6 +13,7 @@ export namespace SaveProductType {
 		name: string;
 		description?: string;
 		organizationId: string;
+		productCategoryId: string;
 		userId: string;
 	};
 
@@ -23,6 +25,7 @@ export class SaveProductTypeUseCase {
 		private readonly productTypeRepository: ProductTypeRepository,
 		private readonly userRepository: UserRepository,
 		private readonly organizationRepository: OrganizationRepository,
+		private readonly productCategoryRepository: ProductCategoryRepository,
 	) {}
 
 	async execute(
@@ -30,6 +33,7 @@ export class SaveProductTypeUseCase {
 	): Promise<SaveProductType.Result> {
 		await this.validateUser(params.userId);
 		await this.validateOrganization(params.organizationId);
+		await this.validateProductCategory(params.productCategoryId);
 
 		if (params.id) {
 			return this.updateExistingProductType({ ...params, id: params.id });
@@ -57,6 +61,7 @@ export class SaveProductTypeUseCase {
 			name: params.name,
 			description: params.description,
 			organizationId: params.organizationId,
+			productCategoryId: params.productCategoryId,
 			createdById: params.userId,
 		});
 
@@ -98,6 +103,9 @@ export class SaveProductTypeUseCase {
 		}
 		if (params.description !== undefined) {
 			existingProductType.updateDescription(params.description);
+		}
+		if (params.productCategoryId) {
+			existingProductType.updateProductCategory(params.productCategoryId);
 		}
 
 		const updatedProductType = existingProductType.toJSON();
@@ -153,6 +161,20 @@ export class SaveProductTypeUseCase {
 				"Organization must be active",
 				400,
 				ErrorCode.ORGANIZATION_NOT_ACTIVE,
+			);
+		}
+	}
+
+	private async validateProductCategory(
+		productCategoryId: string,
+	): Promise<void> {
+		const productCategoryProps =
+			await this.productCategoryRepository.findById(productCategoryId);
+		if (!productCategoryProps) {
+			throw new AppError(
+				"Product category must exist",
+				400,
+				ErrorCode.ENTITY_NOT_FOUND,
 			);
 		}
 	}

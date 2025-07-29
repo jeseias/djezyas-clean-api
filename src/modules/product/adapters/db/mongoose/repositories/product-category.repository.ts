@@ -3,7 +3,7 @@ import type { ProductCategoryRepository } from "@/src/modules/product/core/ports
 import {
 	type ProductCategoryDocument,
 	ProductCategoryModel,
-} from "../product-category-model";
+} from "../models/product-category.model";
 
 export class MongooseProductCategoryRepository
 	implements ProductCategoryRepository
