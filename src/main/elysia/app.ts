@@ -22,6 +22,23 @@ export const app = new Elysia()
     exposeHeaders: ['Content-Type', 'Authorization', 'x-access-token'],
     maxAge: 86400, // Cache preflight for 24 hours
   }))
+  .derive(({ request, set }) => {
+    // Log CORS-related headers for debugging
+    const origin = request.headers.get('origin');
+    console.log('CORS Debug - Request origin:', origin);
+    
+    // Ensure CORS headers are set
+    if (origin && ['https://djezyas.com', 'https://www.djezyas.com', 'http://localhost:3000'].includes(origin)) {
+      set.headers['Access-Control-Allow-Origin'] = origin;
+      set.headers['Access-Control-Allow-Credentials'] = 'true';
+      set.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS';
+      set.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, x-access-token, Accept, Origin, X-Requested-With';
+      set.headers['Access-Control-Expose-Headers'] = 'Content-Type, Authorization, x-access-token';
+      set.headers['Access-Control-Max-Age'] = '86400';
+    }
+    
+    console.log('CORS Debug - CORS headers set for origin:', origin);
+  })
   .use(protectedDocs)
   .use(
     yoga({
