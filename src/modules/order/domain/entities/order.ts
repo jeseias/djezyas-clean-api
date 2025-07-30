@@ -32,6 +32,8 @@ export namespace Order {
 		totalAmount: number;
 		status: Status;
 		paymentIntentId?: string;
+		transactionId?: string;
+		paidAt?: Date;
 		meta?: Record<string, any>;
 		createdAt: Date;
 		updatedAt: Date;
@@ -51,6 +53,7 @@ export namespace Order {
 			price?: Price.Model;
 		}[];
 		paymentIntentId?: string;
+		transactionId?: string;
 		meta?: Record<string, any>;
 	};
 
@@ -85,6 +88,7 @@ export namespace Order {
 				totalAmount,
 				status: Status.PENDING,
 				paymentIntentId: params.paymentIntentId,
+				transactionId: params.transactionId,
 				meta: params.meta ?? {},
 				createdAt: now,
 				updatedAt: now,
@@ -97,8 +101,13 @@ export namespace Order {
 			return new Entity({ ...model });
 		}
 
-		markAsPaid(): void {
-			this.updateStatus(Status.PAID);
+		markAsPaid(transactionId?: string): void {
+			this.props.status = Status.PAID;
+			this.props.paidAt = new Date();
+			this.props.updatedAt = new Date();
+			if (transactionId) {
+				this.props.transactionId = transactionId;
+			}
 		}
 
 		cancel(): void {
