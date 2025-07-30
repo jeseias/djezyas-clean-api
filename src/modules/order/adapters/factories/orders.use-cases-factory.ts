@@ -9,6 +9,7 @@ import type { ProductRepository } from "@/src/modules/product/core/ports/outboun
 import { isUserValidService } from "@/src/modules/user/adapters/factories/service.factory";
 import type { IsUserValidService } from "@/src/modules/user/core/app/services";
 import { CreateOrdersFromCartUseCase } from "../../app/use-cases/orders/create-orders-from-cart/create-orders-from-cart.use-case";
+import { ExpireOrderUseCase } from "../../app/use-cases/orders/expire-order/expire-order.use-case";
 import { MarkOrderAsPaidUseCase } from "../../app/use-cases/orders/mark-order-as-paid/mark-order-as-paid.use-case";
 import type {
 	CartRepository,
@@ -42,6 +43,13 @@ export class OrderUseCasesFactory {
 
 	markOrderAsPaid(): MarkOrderAsPaidUseCase {
 		return new MarkOrderAsPaidUseCase(
+			this.orderRepository,
+			this.isUserValidService,
+		);
+	}
+
+	expireOrder(): ExpireOrderUseCase {
+		return new ExpireOrderUseCase(
 			this.orderRepository,
 			this.isUserValidService,
 		);

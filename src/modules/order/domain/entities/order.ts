@@ -34,6 +34,7 @@ export namespace Order {
 		paymentIntentId?: string;
 		transactionId?: string;
 		paidAt?: Date;
+		expiredAt?: Date;
 		meta?: Record<string, any>;
 		createdAt: Date;
 		updatedAt: Date;
@@ -115,7 +116,9 @@ export namespace Order {
 		}
 
 		expire(): void {
-			this.updateStatus(Status.EXPIRED);
+			this.props.status = Status.EXPIRED;
+			this.props.expiredAt = new Date();
+			this.props.updatedAt = new Date();
 		}
 
 		private updateStatus(status: Status): void {
