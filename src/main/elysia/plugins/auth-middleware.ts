@@ -24,7 +24,7 @@ export async function getUserFromRequest(request: Request) {
 	try {
 		console.log("Verifying token:", token);
 		const verifyTokenUseCase = makeVerifyTokenUseCase();
-		const result = await verifyTokenUseCase.execute({ token });
+		const result = await verifyTokenUseCase.execute({ token: token });
 		console.log("Token verification successful:", result);
 		return {
 			user: {
