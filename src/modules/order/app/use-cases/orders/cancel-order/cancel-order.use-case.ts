@@ -77,4 +77,4 @@ export class CancelOrderUseCase {
 			order: updatedOrder,
 		};
 	}
-} 
+}

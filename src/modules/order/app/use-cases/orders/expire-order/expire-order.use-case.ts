@@ -76,4 +76,4 @@ export class ExpireOrderUseCase {
 			order: updatedOrder,
 		};
 	}
-} 
+}
