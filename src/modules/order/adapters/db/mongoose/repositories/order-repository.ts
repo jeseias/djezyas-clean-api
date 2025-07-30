@@ -228,4 +228,9 @@ export class MongooseOrderRepository implements OrderRepository {
 			totalItems,
 		};
 	}
+
+	async findAllByTransactionId(transactionId: string): Promise<Order.Model[]> {
+		const docs = await OrderModel.find({ transactionId });
+		return docs.map((doc) => doc.toJSON());
+	}
 }

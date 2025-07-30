@@ -40,4 +40,7 @@ export type OrderRepository = Pick<
 		items: Order.Model[];
 		totalItems: number;
 	}>;
+	findAllByTransactionId: (
+		transactionId: string,
+	) => Promise<Order.Model[]>;
 };

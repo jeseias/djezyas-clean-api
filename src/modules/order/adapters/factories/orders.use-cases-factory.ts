@@ -23,6 +23,7 @@ import { GetOrderByIdUseCase } from "../../app/use-cases/orders/get-order-by-id/
 import { GetOrdersByOrganizationUseCase } from "../../app/use-cases/orders/get-orders-by-organization/get-orders-by-organization.use-case";
 import { GetOrdersByUserUseCase } from "../../app/use-cases/orders/get-orders-by-user/get-orders-by-user.use-case";
 import { MarkOrderAsPaidUseCase } from "../../app/use-cases/orders/mark-order-as-paid/mark-order-as-paid.use-case";
+import { MarkOrdersAsPaidByTransactionIdUseCase } from "../../app/use-cases/orders/mark-orders-as-paid-by-transaction-id/mark-orders-as-paid-by-transaction-id.use-case";
 import type {
 	CartRepository,
 	OrderRepository,
@@ -63,6 +64,10 @@ export class OrderUseCasesFactory {
 			this.orderRepository,
 			this.isUserValidService,
 		);
+	}
+
+	markOrdersAsPaidByTransactionId(): MarkOrdersAsPaidByTransactionIdUseCase {
+		return new MarkOrdersAsPaidByTransactionIdUseCase(this.orderRepository);
 	}
 
 	cancelOrder(): CancelOrderUseCase {
