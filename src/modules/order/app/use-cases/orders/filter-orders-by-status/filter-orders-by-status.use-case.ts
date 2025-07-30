@@ -1,5 +1,8 @@
 import type { Order } from "@/src/modules/order/domain/entities";
-import type { OrderFilters, OrderRepository } from "@/src/modules/order/domain/repositories";
+import type {
+	OrderFilters,
+	OrderRepository,
+} from "@/src/modules/order/domain/repositories";
 import type {
 	IsOrganizationMemberService,
 	IsOrganizationValidService,
@@ -14,6 +17,8 @@ export namespace FilterOrdersByStatus {
 		status?: Order.Status[];
 		fromDate?: Date;
 		toDate?: Date;
+		page?: number;
+		limit?: number;
 	};
 
 	export type Result = {
@@ -30,7 +35,9 @@ export class FilterOrdersByStatusUseCase {
 		private readonly isOrganizationMemberService: IsOrganizationMemberService,
 	) {}
 
-	async execute(params: FilterOrdersByStatus.Params): Promise<FilterOrdersByStatus.Result> {
+	async execute(
+		params: FilterOrdersByStatus.Params,
+	): Promise<FilterOrdersByStatus.Result> {
 		if (!params.organizationId) {
 			throw new AppError(
 				"Organization ID is required",
@@ -49,7 +56,8 @@ export class FilterOrdersByStatusUseCase {
 		);
 
 		const filters: OrderFilters.Filters = {
-			limit: 100,
+			limit: params.limit ?? 100,
+			offset: params.page ? (params.page - 1) * (params.limit ?? 100) : 0,
 			sortBy: "createdAt",
 			sortOrder: "desc",
 		};
@@ -83,4 +91,4 @@ export class FilterOrdersByStatusUseCase {
 			totalItems: filteredOrders.length,
 		};
 	}
-} 
+}
