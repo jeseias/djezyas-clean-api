@@ -1,6 +1,6 @@
-import { AppError, ErrorCode } from "@/src/modules/shared/errors";
-import type { OrderRepository } from "@/src/modules/order/domain/repositories/order-repository";
 import { Order } from "@/src/modules/order/domain/entities/order";
+import type { OrderRepository } from "@/src/modules/order/domain/repositories/order-repository";
+import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 
 export namespace MarkOrdersAsPaidByTransactionId {
 	export type Params = {
@@ -63,4 +63,4 @@ export class MarkOrdersAsPaidByTransactionIdUseCase {
 			orders: updatedOrders,
 		};
 	}
-} 
+}
