@@ -18,7 +18,10 @@ export namespace GetOrdersByOrganization {
 	export type Params = {
 		userId: string;
 		organizationId: string;
-		filters?: OrderFilters.Filters;
+		filters?: Omit<OrderFilters.Filters, "offset"> & {
+			page?: number;
+			limit?: number;
+		};
 		groupBy?: Grouping;
 	};
 
@@ -53,12 +56,19 @@ export class GetOrdersByOrganizationUseCase {
 			params.organizationId,
 		);
 
+		// Build filters with defaults and convert page to offset
 		const filters: OrderFilters.Filters = {
-			limit: 100,
+			limit: params.filters?.limit ?? 100,
+			offset: params.filters?.page
+				? (params.filters.page - 1) * (params.filters.limit ?? 100)
+				: 0,
 			sortBy: "createdAt",
 			sortOrder: "desc",
 			...params.filters,
 		};
+
+		// Remove page from filters as it's converted to offset
+		delete (filters as any).page;
 
 		const result = await this.orderRepository.findAllByOrganizationId(
 			params.organizationId,
