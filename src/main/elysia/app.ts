@@ -17,12 +17,6 @@ export const app = new Elysia()
 			"http://localhost:3000",
 		];
 
-		console.log("CORS Debug - Request origin:", origin);
-		console.log(
-			"CORS Debug - Origin allowed:",
-			allowedOrigins.includes(origin || ""),
-		);
-
 		if (origin && allowedOrigins.includes(origin)) {
 			set.headers["Access-Control-Allow-Origin"] = origin;
 			set.headers["Access-Control-Allow-Credentials"] = "true";

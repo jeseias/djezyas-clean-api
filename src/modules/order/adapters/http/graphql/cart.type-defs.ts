@@ -42,7 +42,7 @@ export const cartTypeDefs = `#graphql
   }
 
   input AddToCartInput {
-    productId: String!
+    productSlug: String!
     quantity: Int!
   }
 

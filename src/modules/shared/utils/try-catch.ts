@@ -44,6 +44,7 @@ export function tryCatchSync<T>(
 	try {
 		return operation();
 	} catch (error) {
+		console.log(error);
 		// If it's already an AppError, re-throw it
 		if (error instanceof AppError) {
 			throw error;

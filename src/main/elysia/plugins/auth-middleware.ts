@@ -8,12 +8,6 @@ export function requireAuth(context: any) {
 }
 
 export async function getUserFromRequest(request: Request) {
-	console.log("getUserFromRequest called");
-	console.log(
-		"Request headers:",
-		Object.fromEntries(request.headers.entries()),
-	);
-
 	const token = request.headers.get("x-access-token");
 
 	if (!token) {
@@ -22,10 +16,8 @@ export async function getUserFromRequest(request: Request) {
 	}
 
 	try {
-		console.log("Verifying token:", token);
 		const verifyTokenUseCase = makeVerifyTokenUseCase();
 		const result = await verifyTokenUseCase.execute({ token: token });
-		console.log("Token verification successful:", result);
 		return {
 			user: {
 				id: result.userId,

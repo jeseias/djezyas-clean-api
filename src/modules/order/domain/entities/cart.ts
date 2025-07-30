@@ -23,7 +23,7 @@ export namespace Cart {
 	export type Model = {
 		id: Id;
 		userId: Id;
-		items: Item[];
+		items: Array<Item>;
 		createdAt: Date;
 		updatedAt: Date;
 	};
@@ -81,30 +81,51 @@ export namespace Cart {
 			return this.props.items.reduce((sum, item) => sum + item.quantity, 0);
 		}
 
-		addItem(productId: Id, quantity: number): void {
-			const existing = this.props.items.find(
+		addItem(productId: Id, quantity: number): Cart.Entity {
+			const existingIndex = this.props.items.findIndex(
 				(item) => item.productId === productId,
 			);
-			if (existing) {
-				existing.quantity += quantity;
+
+			let newItems: Item[];
+			if (existingIndex !== -1) {
+				newItems = [...this.props.items];
+				newItems[existingIndex] = {
+					...newItems[existingIndex],
+					quantity: newItems[existingIndex].quantity + quantity,
+				};
 			} else {
-				this.props.items.push({ productId, quantity });
+				newItems = [...this.props.items, { productId, quantity }];
 			}
-			this.props.updatedAt = new Date();
+
+			return new Cart.Entity({
+				id: this.props.id,
+				userId: this.props.userId,
+				items: newItems,
+				createdAt: this.props.createdAt,
+				updatedAt: new Date(),
+			});
 		}
 
 		updateItem(productId: Id, quantity: number): void {
-			const item = this.props.items.find(
-				(item) => item.productId === productId,
+			const productIdStr = productId.toString();
+			const existingIndex = this.props.items.findIndex(
+				(item) => item.productId === productIdStr,
 			);
-			if (!item) throw new Error("Item not found in cart");
-			item.quantity = quantity;
+			if (existingIndex === -1) throw new Error("Item not found in cart");
+
+			const updatedItems = [...this.props.items];
+			updatedItems[existingIndex] = {
+				...updatedItems[existingIndex],
+				quantity,
+			};
+			this.props.items = updatedItems;
 			this.props.updatedAt = new Date();
 		}
 
 		removeItem(productId: Id): void {
+			const productIdStr = productId.toString();
 			this.props.items = this.props.items.filter(
-				(item) => item.productId !== productId,
+				(item) => item.productId !== productIdStr,
 			);
 			this.props.updatedAt = new Date();
 		}

@@ -1,5 +1,6 @@
 import { Product } from "@/src/modules/product/core/domain/entities";
 import type { ProductRepository } from "@/src/modules/product/core/ports/outbound/product-repository";
+import { tryCatchSync } from "@/src/modules/shared";
 import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import type { Id } from "@/src/modules/shared/value-objects";
 import { Cart } from "../../../../domain/entities";
@@ -8,7 +9,7 @@ import type { CartRepository } from "../../../../domain/repositories/cart-reposi
 export namespace AddToCart {
 	export type Params = {
 		userId: string;
-		productId: string;
+		productSlug: string;
 		quantity: number;
 	};
 
@@ -48,7 +49,7 @@ export class AddToCartUseCase {
 					items: [],
 				});
 
-		const product = await this.productRepository.findById(params.productId);
+		const product = await this.productRepository.findBySlug(params.productSlug);
 
 		if (!product || !product.default_price) {
 			throw new AppError(
@@ -66,10 +67,15 @@ export class AddToCartUseCase {
 			);
 		}
 
-		cartEntity.addItem(params.productId, params.quantity);
+		const updatedCartEntity = tryCatchSync(
+			() => cartEntity.addItem(product.id, params.quantity),
+			"Failed to add item to cart",
+			ErrorCode.INVALID_OPERATION,
+			400,
+		);
 
 		const updatedCart = await this.cartRepository.save(
-			cartEntity.getSnapshot(),
+			updatedCartEntity.getSnapshot(),
 		);
 
 		return {
