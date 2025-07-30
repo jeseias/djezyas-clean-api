@@ -52,6 +52,13 @@ export class MongoosePriceRepository implements PriceRepository {
 		});
 	}
 
+	async findManyByProductIds(productIds: string[]): Promise<Price.Model[]> {
+		const docs = await PriceModel.find({ productId: { $in: productIds } });
+		return docs.map((doc) => {
+			return this.toEntity(doc.toJSON());
+		});
+	}
+
 	private toEntity(json: PriceDocument): Price.Model {
 		return Price.Entity.fromModel({
 			id: json.id,

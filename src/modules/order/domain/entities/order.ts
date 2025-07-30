@@ -15,13 +15,14 @@ export namespace Order {
 	export type Item = {
 		priceId: Id;
 		productId: Id;
-		product?: Product.Model;
-		price?: Price.Model;
+		organizationId: Id;
 		name: string;
 		quantity: number;
 		unitAmount: number;
 		subtotal: number;
-		organizationId: Id;
+
+		product?: Product.Model;
+		price?: Price.Model;
 	};
 
 	export type Model = {
@@ -42,10 +43,10 @@ export namespace Order {
 		items: {
 			priceId: Id;
 			productId: Id;
+			organizationId: Id;
 			name: string;
 			quantity: number;
 			unitAmount: number;
-			organizationId: Id;
 			product?: Product.Model;
 			price?: Price.Model;
 		}[];
@@ -54,29 +55,30 @@ export namespace Order {
 	};
 
 	export class Entity {
-		private constructor(private readonly props: Model) {}
+		private readonly props: Model;
+
+		private constructor(model: Model) {
+			this.props = model;
+		}
 
 		static create(params: CreateParams): Entity {
 			const now = new Date();
 
-			const items = params.items.map((item) => {
-				const subtotal = item.quantity * item.unitAmount;
-				return {
-					priceId: item.priceId,
-					productId: item.productId,
-					product: item.product,
-					price: item.price,
-					name: item.name,
-					quantity: item.quantity,
-					unitAmount: item.unitAmount,
-					subtotal,
-					organizationId: item.organizationId,
-				};
-			});
+			const items: Item[] = params.items.map((item) => ({
+				priceId: item.priceId,
+				productId: item.productId,
+				organizationId: item.organizationId,
+				name: item.name,
+				quantity: item.quantity,
+				unitAmount: item.unitAmount,
+				subtotal: item.quantity * item.unitAmount,
+				product: item.product,
+				price: item.price,
+			}));
 
-			const totalAmount = items.reduce((sum, item) => sum + item.subtotal, 0);
+			const totalAmount = items.reduce((sum, i) => sum + i.subtotal, 0);
 
-			const order: Model = {
+			const model: Model = {
 				id: params.id ?? id(),
 				userId: params.userId,
 				items,
@@ -88,25 +90,27 @@ export namespace Order {
 				updatedAt: now,
 			};
 
-			return new Entity(order);
-		}
-
-		static fromModel(model: Model): Entity {
 			return new Entity(model);
 		}
 
+		static fromModel(model: Model): Entity {
+			return new Entity({ ...model });
+		}
+
 		markAsPaid(): void {
-			this.props.status = Status.PAID;
-			this.props.updatedAt = new Date();
+			this.updateStatus(Status.PAID);
 		}
 
 		cancel(): void {
-			this.props.status = Status.CANCELLED;
-			this.props.updatedAt = new Date();
+			this.updateStatus(Status.CANCELLED);
 		}
 
 		expire(): void {
-			this.props.status = Status.EXPIRED;
+			this.updateStatus(Status.EXPIRED);
+		}
+
+		private updateStatus(status: Status): void {
+			this.props.status = status;
 			this.props.updatedAt = new Date();
 		}
 
@@ -119,11 +123,16 @@ export namespace Order {
 		}
 
 		getSnapshot(): Model {
-			return { ...this.props };
+			// Deep clone to avoid mutation from outside
+			return JSON.parse(JSON.stringify(this.props));
 		}
 
 		getOrganizationIds(): Id[] {
 			return [...new Set(this.props.items.map((i) => i.organizationId))];
+		}
+
+		getItemsByOrganizationId(orgId: Id): Item[] {
+			return this.props.items.filter((i) => i.organizationId === orgId);
 		}
 	}
 }

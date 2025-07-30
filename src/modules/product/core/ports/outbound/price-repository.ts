@@ -10,4 +10,5 @@ export type PriceRepository = Pick<
 		productId: string,
 		currencyId: string,
 	): Promise<Price.Model[]>;
+	findManyByProductIds(productIds: string[]): Promise<Price.Model[]>;
 };
