@@ -1,3 +1,4 @@
+import { tryCatchSync } from "@/src/modules/shared";
 import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import type { Id } from "@/src/modules/shared/value-objects";
 import { Cart } from "../../../../domain/entities";
@@ -39,10 +40,15 @@ export class RemoveItemFromCartUseCase {
 			);
 		}
 
-		cartEntity.removeItem(params.productId as Id);
+		const updatedCartEntity = tryCatchSync(
+			() => cartEntity.removeItem(params.productId as Id),
+			"Failed to remove item from cart",
+			ErrorCode.INVALID_OPERATION,
+			400,
+		);
 
 		const updatedCart = await this.cartRepository.save(
-			cartEntity.getSnapshot(),
+			updatedCartEntity.getSnapshot(),
 		);
 
 		return {

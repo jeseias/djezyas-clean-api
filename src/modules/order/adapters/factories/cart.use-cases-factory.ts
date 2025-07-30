@@ -4,8 +4,8 @@ import {
 	AddToCartUseCase,
 	ClearCartUseCase,
 	GetCartUseCase,
+	ReduceItemQuantityUseCase,
 	RemoveItemFromCartUseCase,
-	UpdateItemQuantityUseCase,
 	ValidateCartUseCase,
 } from "../../app/use-cases/cart";
 import type { CartRepository } from "../../domain/repositories/cart-repository";
@@ -33,8 +33,8 @@ export class CartUseCasesFactory {
 		return new RemoveItemFromCartUseCase(this.cartRepository);
 	}
 
-	updateItemQuantity() {
-		return new UpdateItemQuantityUseCase(this.cartRepository);
+	reduceItemQuantity() {
+		return new ReduceItemQuantityUseCase(this.cartRepository);
 	}
 
 	validateCart() {

@@ -31,8 +31,8 @@ export const cartResolvers = {
 			const useCase = cartUseCasesFactory.addToCart();
 			return useCase.execute({ userId, ...input });
 		}),
-		updateItemQuantity: makeResolver(async ({ input }, { userId }) => {
-			const useCase = cartUseCasesFactory.updateItemQuantity();
+		reduceItemQuantity: makeResolver(async ({ input }, { userId }) => {
+			const useCase = cartUseCasesFactory.reduceItemQuantity();
 			return useCase.execute({ userId, ...input });
 		}),
 		removeItem: makeResolver(async ({ input }, { userId }) => {

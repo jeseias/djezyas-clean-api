@@ -14,7 +14,7 @@ export const cartTypeDefs = `#graphql
 
   type CartProductPrice {
     currency: String!
-    unitAmount: Int!
+    unitAmount: Float!
   }
 
   type Cart {
@@ -46,9 +46,8 @@ export const cartTypeDefs = `#graphql
     quantity: Int!
   }
 
-  input UpdateItemQuantityInput {
+  input ReduceItemQuantityInput {
     productId: String!
-    quantity: Int!
   }
 
   input RemoveItemInput {
@@ -60,9 +59,10 @@ export const cartTypeDefs = `#graphql
     itemCount: Int!
   }
 
-  type UpdateItemQuantityResponse {
+  type ReduceItemQuantityResponse {
     id: String!
     itemCount: Int!
+    itemRemoved: Boolean!
   }
 
   type RemoveItemResponse {
@@ -82,7 +82,7 @@ export const cartTypeDefs = `#graphql
 
   type Mutation {
     addToCart(input: AddToCartInput!): AddToCartResponse!
-    updateItemQuantity(input: UpdateItemQuantityInput!): UpdateItemQuantityResponse!
+    reduceItemQuantity(input: ReduceItemQuantityInput!): ReduceItemQuantityResponse!
     removeItem(input: RemoveItemInput!): RemoveItemResponse!
     clearCart: ClearCartResponse!
   }

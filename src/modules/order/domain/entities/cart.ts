@@ -106,7 +106,7 @@ export namespace Cart {
 			});
 		}
 
-		updateItem(productId: Id, quantity: number): void {
+		updateItem(productId: Id, quantity: number): Cart.Entity {
 			const productIdStr = productId.toString();
 			const existingIndex = this.props.items.findIndex(
 				(item) => item.productId === productIdStr,
@@ -118,21 +118,39 @@ export namespace Cart {
 				...updatedItems[existingIndex],
 				quantity,
 			};
-			this.props.items = updatedItems;
-			this.props.updatedAt = new Date();
+
+			return new Cart.Entity({
+				id: this.props.id,
+				userId: this.props.userId,
+				items: updatedItems,
+				createdAt: this.props.createdAt,
+				updatedAt: new Date(),
+			});
 		}
 
-		removeItem(productId: Id): void {
+		removeItem(productId: Id): Cart.Entity {
 			const productIdStr = productId.toString();
-			this.props.items = this.props.items.filter(
+			const filteredItems = this.props.items.filter(
 				(item) => item.productId !== productIdStr,
 			);
-			this.props.updatedAt = new Date();
+
+			return new Cart.Entity({
+				id: this.props.id,
+				userId: this.props.userId,
+				items: filteredItems,
+				createdAt: this.props.createdAt,
+				updatedAt: new Date(),
+			});
 		}
 
-		clear(): void {
-			this.props.items = [];
-			this.props.updatedAt = new Date();
+		clear(): Cart.Entity {
+			return new Cart.Entity({
+				id: this.props.id,
+				userId: this.props.userId,
+				items: [],
+				createdAt: this.props.createdAt,
+				updatedAt: new Date(),
+			});
 		}
 
 		getSnapshot(): Model {
