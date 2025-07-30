@@ -10,7 +10,6 @@ import type {
 import type { OrganizationRepository } from "@/src/modules/organization/core/ports/outbound/organization-repository";
 import { AddPriceUseCase } from "@/src/modules/product/core/app/usecases/add-price/add-price.use-case";
 import { CreateProductCategoryUseCase } from "@/src/modules/product/core/app/usecases/create-product-category/create-product-category.use-case";
-import { CreateProductTypeUseCase } from "@/src/modules/product/core/app/usecases/create-product-type/create-product-type.use-case";
 import { GetProductByIdUseCase } from "@/src/modules/product/core/app/usecases/get-product-by-id/get-product-by-id.use-case";
 import { ListB2CProductsUseCase } from "@/src/modules/product/core/app/usecases/list-b2c-products/list-b2c-products.use-case";
 import { ListProductTypesUseCase } from "@/src/modules/product/core/app/usecases/list-product-types/list-product-types.use-case";
@@ -71,16 +70,7 @@ export class ProductUseCasesFactory {
 			this.productTypeRepository,
 			this.userRepository,
 			this.organizationRepository,
-      this.productCategoryRepository
-		);
-	}
-
-	createProductType() {
-		return new CreateProductTypeUseCase(
-			this.productTypeRepository,
-			this.isUserValidService,
-			this.isOrganizationValidService,
-			this.isOrganizationMemberService,
+			this.productCategoryRepository,
 		);
 	}
 

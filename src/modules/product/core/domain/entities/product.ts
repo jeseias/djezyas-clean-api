@@ -1,3 +1,4 @@
+import type { Organization } from "@/src/modules/organization/core/domain/entities";
 import {
 	type Id,
 	id,
@@ -24,6 +25,7 @@ export namespace Product {
 		productTypeId: Id;
 		status: Status;
 		organizationId: Id;
+		store?: Organization.Store;
 		createdById: Id;
 		imageUrl?: Url | string;
 		sku?: string;
@@ -57,6 +59,7 @@ export namespace Product {
 		description?: string;
 		imageUrl?: string;
 		weight?: number;
+		store: Organization.Store;
 		dimensions?: {
 			length: number;
 			width: number;
@@ -198,6 +201,9 @@ export namespace Product {
 
 		get default_price(): Props["default_price"] | undefined {
 			return this.props.default_price;
+		}
+		get store(): Organization.Store | undefined {
+			return this.props.store;
 		}
 
 		updateDefaultPrice(price: {

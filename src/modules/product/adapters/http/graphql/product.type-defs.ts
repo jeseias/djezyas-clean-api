@@ -53,6 +53,7 @@ export const productTypeDefs = `#graphql
     imageUrl: String
     weight: Float
     price: B2CProductPrice
+    store: Store!
     dimensions: ProductDimensions
     category: B2CCategory!
     productType: B2CProductType!

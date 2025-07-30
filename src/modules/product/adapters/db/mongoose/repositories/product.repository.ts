@@ -294,6 +294,14 @@ export class MongooseProductRepository implements ProductRepository {
 					as: "productType",
 				},
 			},
+			{
+				$lookup: {
+					from: "organizations",
+					localField: "organizationId",
+					foreignField: "id",
+					as: "organization",
+				},
+			},
 		];
 
 		if (minPrice !== undefined || maxPrice !== undefined || currency) {
@@ -394,6 +402,7 @@ export class MongooseProductRepository implements ProductRepository {
 	private toB2CProduct(doc: any): Product.B2CProduct {
 		const category = doc.category?.[0] || {};
 		const productType = doc.productType?.[0] || {};
+		const organization = doc.organization?.[0] || {};
 
 		const prices = doc.prices || [];
 		const activePrice =
@@ -406,6 +415,12 @@ export class MongooseProductRepository implements ProductRepository {
 			imageUrl: doc.imageUrl,
 			weight: doc.weight,
 			dimensions: doc.dimensions,
+			store: {
+				slug: organization.slug || "",
+				name: organization.name || "",
+				logoUrl: organization.logoUrl,
+				createdAt: organization.createdAt || new Date(),
+			},
 			category: {
 				slug: category.slug || "",
 				name: category.name || "",

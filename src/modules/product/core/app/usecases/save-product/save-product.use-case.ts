@@ -16,7 +16,7 @@ export namespace SaveProduct {
 		id?: string;
 		name: string;
 		description?: string;
-		productTypeId: string; 
+		productTypeId: string;
 		status?: Product.Status;
 		organizationId: string;
 		createdById: string;
@@ -103,8 +103,8 @@ export class SaveProductUseCase {
 		}
 
 		const categoryId = productTypeModel.productCategoryId;
-    
-    console.log({ categoryId, productTypeModel })
+
+		console.log({ categoryId, productTypeModel });
 
 		const categoryModel =
 			await this.productCategoryRepository.findById(categoryId);
@@ -160,7 +160,7 @@ export class SaveProductUseCase {
 		const tempProduct = Product.Entity.create({
 			name: params.name,
 			description: params.description,
-			categoryId: categoryId, 
+			categoryId: categoryId,
 			productTypeId: params.productTypeId,
 			status: params.status,
 			organizationId: params.organizationId,
@@ -218,4 +218,3 @@ export class SaveProductUseCase {
 		return price.getSnapshot();
 	}
 }
-
