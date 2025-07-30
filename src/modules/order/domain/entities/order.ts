@@ -35,6 +35,7 @@ export namespace Order {
 		transactionId?: string;
 		paidAt?: Date;
 		expiredAt?: Date;
+		cancelledAt?: Date;
 		meta?: Record<string, any>;
 		createdAt: Date;
 		updatedAt: Date;
@@ -111,8 +112,16 @@ export namespace Order {
 			}
 		}
 
-		cancel(): void {
-			this.updateStatus(Status.CANCELLED);
+		cancel(reason?: string): void {
+			this.props.status = Status.CANCELLED;
+			this.props.cancelledAt = new Date();
+			this.props.updatedAt = new Date();
+			if (reason) {
+				this.props.meta = {
+					...this.props.meta,
+					cancelReason: reason,
+				};
+			}
 		}
 
 		expire(): void {
