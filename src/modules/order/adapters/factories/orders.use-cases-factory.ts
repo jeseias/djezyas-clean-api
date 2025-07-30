@@ -1,5 +1,11 @@
-import { isOrganizationValidService } from "@/src/modules/organization/adapters/factories";
-import type { IsOrganizationValidService } from "@/src/modules/organization/core/app/services";
+import {
+	isOrganizationMemberService,
+	isOrganizationValidService,
+} from "@/src/modules/organization/adapters/factories";
+import type {
+	IsOrganizationMemberService,
+	IsOrganizationValidService,
+} from "@/src/modules/organization/core/app/services";
 import {
 	priceMongooseRepository,
 	productMongooseRepository,
@@ -11,6 +17,7 @@ import type { IsUserValidService } from "@/src/modules/user/core/app/services";
 import { CancelOrderUseCase } from "../../app/use-cases/orders/cancel-order/cancel-order.use-case";
 import { CreateOrdersFromCartUseCase } from "../../app/use-cases/orders/create-orders-from-cart/create-orders-from-cart.use-case";
 import { ExpireOrderUseCase } from "../../app/use-cases/orders/expire-order/expire-order.use-case";
+import { GetOrdersByOrganizationUseCase } from "../../app/use-cases/orders/get-orders-by-organization/get-orders-by-organization.use-case";
 import { GetOrdersByUserUseCase } from "../../app/use-cases/orders/get-orders-by-user/get-orders-by-user.use-case";
 import { MarkOrderAsPaidUseCase } from "../../app/use-cases/orders/mark-order-as-paid/mark-order-as-paid.use-case";
 import type {
@@ -30,6 +37,7 @@ export class OrderUseCasesFactory {
 		private readonly priceRepository: PriceRepository,
 		private readonly isUserValidService: IsUserValidService,
 		private readonly isOrganizationValidService: IsOrganizationValidService,
+		private readonly isOrganizationMemberService: IsOrganizationMemberService,
 	) {}
 
 	createOrdersFromCart(): CreateOrdersFromCartUseCase {
@@ -64,6 +72,15 @@ export class OrderUseCasesFactory {
 		);
 	}
 
+	getOrdersByOrganization(): GetOrdersByOrganizationUseCase {
+		return new GetOrdersByOrganizationUseCase(
+			this.orderRepository,
+			this.isUserValidService,
+			this.isOrganizationValidService,
+			this.isOrganizationMemberService,
+		);
+	}
+
 	getOrdersByUser(): GetOrdersByUserUseCase {
 		return new GetOrdersByUserUseCase(
 			this.orderRepository,
@@ -79,4 +96,5 @@ export const orderUseCasesFactory = new OrderUseCasesFactory(
 	priceMongooseRepository,
 	isUserValidService,
 	isOrganizationValidService,
+	isOrganizationMemberService,
 );
