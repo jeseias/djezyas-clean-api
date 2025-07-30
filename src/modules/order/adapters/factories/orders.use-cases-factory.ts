@@ -17,6 +17,7 @@ import type { IsUserValidService } from "@/src/modules/user/core/app/services";
 import { CancelOrderUseCase } from "../../app/use-cases/orders/cancel-order/cancel-order.use-case";
 import { CreateOrdersFromCartUseCase } from "../../app/use-cases/orders/create-orders-from-cart/create-orders-from-cart.use-case";
 import { ExpireOrderUseCase } from "../../app/use-cases/orders/expire-order/expire-order.use-case";
+import { FilterOrdersByStatusUseCase } from "../../app/use-cases/orders/filter-orders-by-status/filter-orders-by-status.use-case";
 import { GetOrderByIdUseCase } from "../../app/use-cases/orders/get-order-by-id/get-order-by-id.use-case";
 import { GetOrdersByOrganizationUseCase } from "../../app/use-cases/orders/get-orders-by-organization/get-orders-by-organization.use-case";
 import { GetOrdersByUserUseCase } from "../../app/use-cases/orders/get-orders-by-user/get-orders-by-user.use-case";
@@ -63,6 +64,15 @@ export class OrderUseCasesFactory {
 		return new CancelOrderUseCase(
 			this.orderRepository,
 			this.isUserValidService,
+		);
+	}
+
+	filterOrdersByStatus(): FilterOrdersByStatusUseCase {
+		return new FilterOrdersByStatusUseCase(
+			this.orderRepository,
+			this.isUserValidService,
+			this.isOrganizationValidService,
+			this.isOrganizationMemberService,
 		);
 	}
 
