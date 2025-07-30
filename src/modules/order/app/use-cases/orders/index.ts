@@ -8,3 +8,4 @@ export * from "./get-orders-by-organization";
 export * from "./get-orders-by-user";
 export * from "./mark-order-as-paid";
 export * from "./mark-orders-as-paid-by-transaction-id";
+export * from "./split-cart-into-orders";

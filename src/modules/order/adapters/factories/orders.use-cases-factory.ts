@@ -24,6 +24,7 @@ import { GetOrdersByOrganizationUseCase } from "../../app/use-cases/orders/get-o
 import { GetOrdersByUserUseCase } from "../../app/use-cases/orders/get-orders-by-user/get-orders-by-user.use-case";
 import { MarkOrderAsPaidUseCase } from "../../app/use-cases/orders/mark-order-as-paid/mark-order-as-paid.use-case";
 import { MarkOrdersAsPaidByTransactionIdUseCase } from "../../app/use-cases/orders/mark-orders-as-paid-by-transaction-id/mark-orders-as-paid-by-transaction-id.use-case";
+import { SplitCartIntoOrdersUseCase } from "../../app/use-cases/orders/split-cart-into-orders/split-cart-into-orders.use-case";
 import type {
 	CartRepository,
 	OrderRepository,
@@ -46,6 +47,10 @@ export class OrderUseCasesFactory {
 
 	calculateOrderTotals(): CalculateOrderTotalsUseCase {
 		return new CalculateOrderTotalsUseCase();
+	}
+
+	splitCartIntoOrders(): SplitCartIntoOrdersUseCase {
+		return new SplitCartIntoOrdersUseCase();
 	}
 
 	createOrdersFromCart(): CreateOrdersFromCartUseCase {
