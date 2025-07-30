@@ -61,6 +61,7 @@ export class OrderUseCasesFactory {
 			this.priceRepository,
 			this.isUserValidService,
 			this.isOrganizationValidService,
+			this.splitCartIntoOrders(),
 		);
 	}
 

@@ -1,4 +1,4 @@
-import { type Cart, Order } from "@/src/modules/order/domain/entities";
+import { Order } from "@/src/modules/order/domain/entities";
 import type {
 	CartRepository,
 	OrderRepository,
@@ -10,6 +10,7 @@ import type { ProductRepository } from "@/src/modules/product/core/ports/outboun
 import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import type { Id } from "@/src/modules/shared/value-objects";
 import type { IsUserValidService } from "@/src/modules/user/core/app/services";
+import type { SplitCartIntoOrdersUseCase } from "../split-cart-into-orders/split-cart-into-orders.use-case";
 
 export namespace CreateOrdersFromCart {
 	export type Params = {
@@ -31,6 +32,7 @@ export class CreateOrdersFromCartUseCase {
 		private readonly priceRepository: PriceRepository,
 		private readonly isUserValidService: IsUserValidService,
 		private readonly isOrganizationValidService: IsOrganizationValidService,
+		private readonly splitCartIntoOrdersUseCase: SplitCartIntoOrdersUseCase,
 	) {}
 
 	async execute(
@@ -70,33 +72,19 @@ export class CreateOrdersFromCartUseCase {
 			);
 		}
 
-		const productsMap = new Map(
-			products.map((product) => [product.id, product]),
-		);
+		const splitResult = await this.splitCartIntoOrdersUseCase.execute({
+			cartItems,
+			products,
+		});
 
-		const itemsByOrganization = new Map<string, Cart.Item[]>();
-
-		for (const cartItem of cartItems) {
-			const product = productsMap.get(cartItem.productId);
-			if (!product) {
-				throw new AppError(
-					`Product not found: ${cartItem.productId}`,
-					404,
-					ErrorCode.ENTITY_NOT_FOUND,
-				);
-			}
-
-			const organizationId = product.organizationId;
-			if (!itemsByOrganization.has(organizationId)) {
-				itemsByOrganization.set(organizationId, []);
-			}
-			itemsByOrganization.get(organizationId)!.push(cartItem);
-		}
-
-		const organizationIds = Array.from(itemsByOrganization.keys());
+		const organizationIds = Object.keys(splitResult.ordersByOrganization);
 		for (const organizationId of organizationIds) {
 			await this.isOrganizationValidService.execute(organizationId);
 		}
+
+		const productsMap = new Map(
+			products.map((product) => [product.id, product]),
+		);
 
 		const allProductIds = Array.from(productsMap.keys());
 		const allPrices =
@@ -111,7 +99,7 @@ export class CreateOrdersFromCartUseCase {
 
 		const createdOrders: Order.Model[] = [];
 
-		for (const [organizationId, cartItems] of itemsByOrganization) {
+		for (const [organizationId, cartItems] of Object.entries(splitResult.ordersByOrganization)) {
 			const orderItems: Order.Item[] = [];
 
 			for (const cartItem of cartItems) {

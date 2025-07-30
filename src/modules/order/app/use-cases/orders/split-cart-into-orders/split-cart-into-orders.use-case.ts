@@ -5,7 +5,7 @@ import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 export namespace SplitCartIntoOrders {
 	export type Params = {
 		cartItems: Cart.Item[];
-		products: Product.Model[];
+		products: Product.Props[];
 	};
 
 	export type Result = {
@@ -33,7 +33,7 @@ export class SplitCartIntoOrdersUseCase {
 			);
 		}
 
-		const productsMap = new Map<string, Product.Model>();
+		const productsMap = new Map<string, Product.Props>();
 		for (const product of params.products) {
 			if (productsMap.has(product.id)) {
 				throw new AppError(
@@ -74,7 +74,7 @@ export class SplitCartIntoOrdersUseCase {
 		}
 
 		return {
-      ordersByOrganization: Object.fromEntries(ordersByOrganization),
+			ordersByOrganization: Object.fromEntries(ordersByOrganization),
 		};
 	}
 }
