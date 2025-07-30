@@ -26,7 +26,6 @@ export class MarkOrdersAsPaidByTransactionIdUseCase {
 			);
 		}
 
-		// Fetch all orders associated with the transaction ID
 		const orders = await this.orderRepository.findAllByTransactionId(
 			params.transactionId,
 		);
@@ -41,16 +40,12 @@ export class MarkOrdersAsPaidByTransactionIdUseCase {
 
 		const updatedOrders: Order.Model[] = [];
 
-		// Process each order
 		for (const orderModel of orders) {
 			const orderEntity = Order.Entity.fromModel(orderModel);
 
-			// Only update orders that are pending
 			if (orderEntity.isPending()) {
-				// Mark the order as paid
 				orderEntity.markAsPaid(params.transactionId);
 
-				// Save the updated order
 				const updatedOrder = await this.orderRepository.update(
 					orderEntity.getSnapshot(),
 				);
