@@ -11,6 +11,8 @@ export namespace PaymentIntent {
 
 	export enum Provider {
 		MULTICAIXA_EXPRESS = "multicaixa_express",
+		STRIPE = "stripe",
+		AFRIMONEY = "afrimoney",
 	}
 
 	export interface Metadata {
@@ -25,6 +27,7 @@ export namespace PaymentIntent {
 		amount: number;
 		provider: Provider;
 		status?: Status;
+		transactionId?: string;
 		expiresAt?: Date;
 		createdAt?: Date;
 		updatedAt?: Date;

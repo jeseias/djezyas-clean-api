@@ -26,6 +26,7 @@ export type OrderRepository = Pick<
 	Repository<Order.Model>,
 	"findById" | "create" | "update" | "delete"
 > & {
+	findManyByIds: (ids: string[]) => Promise<Order.Model[]>;
 	findAllByUserId: (
 		userId: Id,
 		filters: OrderFilters.Filters,

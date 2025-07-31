@@ -39,6 +39,11 @@ export class MongooseOrderRepository implements OrderRepository {
 		return doc.toJSON();
 	}
 
+	async findManyByIds(ids: string[]): Promise<Order.Model[]> {
+		const docs = await OrderModel.find({ id: { $in: ids } });
+		return docs.map((doc) => doc.toJSON());
+	}
+
 	async findAllByUserId(
 		userId: string,
 		filters: OrderFilters.Filters,
