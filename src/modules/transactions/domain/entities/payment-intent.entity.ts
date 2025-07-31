@@ -64,6 +64,10 @@ export namespace PaymentIntent {
 			});
 		}
 
+		static fromModel(model: PaymentIntent.Model): Entity {
+			return new Entity(model);
+		}
+
 		getSnapshot(): PaymentIntent.Model {
 			return this.props;
 		}

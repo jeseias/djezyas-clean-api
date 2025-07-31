@@ -6,6 +6,7 @@ export interface PaymentIntentRepository {
 	findByTransactionId(
 		transactionId: string,
 	): Promise<PaymentIntent.Model | null>;
+	findByReference(reference: string): Promise<PaymentIntent.Model[]>;
 	findManyByOrderIds(orderIds: Id[]): Promise<PaymentIntent.Model[]>;
 	create(data: PaymentIntent.Model): Promise<PaymentIntent.Model>;
 	update(data: PaymentIntent.Model): Promise<PaymentIntent.Model>;
