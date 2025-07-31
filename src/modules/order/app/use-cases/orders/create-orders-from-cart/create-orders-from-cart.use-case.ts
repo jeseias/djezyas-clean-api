@@ -99,7 +99,9 @@ export class CreateOrdersFromCartUseCase {
 
 		const createdOrders: Order.Model[] = [];
 
-		for (const [organizationId, cartItems] of Object.entries(splitResult.ordersByOrganization)) {
+		for (const [organizationId, cartItems] of Object.entries(
+			splitResult.ordersByOrganization,
+		)) {
 			const orderItems: Order.Item[] = [];
 
 			for (const cartItem of cartItems) {
