@@ -10,23 +10,18 @@ export namespace CreatePaymentIntent {
 		orderIds: string[];
 		provider: PaymentIntent.Provider;
 		metadata?: Record<string, any>;
-		// Provider-specific extra data
 		providerExtraData?: {
-			// Afrimoney specific data
 			afrimoney?: {
 				phoneNumber: string;
 				email?: string;
 			};
-			// Stripe specific data
 			stripe?: {
 				currency?: string;
 				paymentMethodId?: string;
 			};
-			// Multicaixa Express specific data
 			multicaixa_express?: {
 				reference?: string;
 			};
-			// Add more providers as needed
 			[key: string]: Record<string, any> | undefined;
 		};
 	};
