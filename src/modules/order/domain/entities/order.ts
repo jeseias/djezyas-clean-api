@@ -2,8 +2,8 @@ import type {
 	Price,
 	Product,
 } from "@/src/modules/product/core/domain/entities";
-import { type Id, id } from "@/src/modules/shared/value-objects";
 import { AppError, ErrorCode } from "@/src/modules/shared/errors";
+import { type Id, id } from "@/src/modules/shared/value-objects";
 
 export namespace Order {
 	export enum Status {
@@ -70,21 +70,26 @@ export namespace Order {
 		static create(params: CreateParams): Entity {
 			const now = new Date();
 
-			const itemOrganizationIds = new Set(params.items.map(item => item.organizationId));
+			const itemOrganizationIds = new Set(
+				params.items.map((item) => item.organizationId),
+			);
 			if (itemOrganizationIds.size > 1) {
 				throw new AppError(
 					"All items must belong to the same organization",
 					400,
-					ErrorCode.INVALID_INPUT
+					ErrorCode.INVALID_INPUT,
 				);
 			}
 
 			const firstItemOrganizationId = params.items[0]?.organizationId;
-			if (firstItemOrganizationId && firstItemOrganizationId !== params.organizationId) {
+			if (
+				firstItemOrganizationId &&
+				firstItemOrganizationId !== params.organizationId
+			) {
 				throw new AppError(
 					"All items must belong to the same organization",
 					400,
-					ErrorCode.INVALID_INPUT
+					ErrorCode.INVALID_INPUT,
 				);
 			}
 

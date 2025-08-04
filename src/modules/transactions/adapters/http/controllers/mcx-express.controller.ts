@@ -39,7 +39,7 @@ export class McxExpressController extends Controller<
 	constructor(
 		private readonly processMcxExpressPaymentUseCase: ProcessMcxExpressPaymentUseCase,
 	) {
-		super(); 
+		super();
 	}
 
 	async execute(
