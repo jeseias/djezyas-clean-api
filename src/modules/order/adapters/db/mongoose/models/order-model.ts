@@ -8,16 +8,21 @@ export interface OrderDocument extends Document {
 	items: {
 		productId: string;
 		priceId: string;
+		organizationId: string;
 		name: string;
 		quantity: number;
 		unitAmount: number;
 		subtotal: number;
-		organizationId: string;
 		product?: any;
 		price?: any;
 	}[];
 	totalAmount: number;
 	status: Order.Status;
+	paymentIntentId?: string;
+	transactionId?: string;
+	paidAt?: Date;
+	expiredAt?: Date;
+	cancelledAt?: Date;
 	meta?: Record<string, any>;
 	createdAt: Date;
 	updatedAt: Date;
@@ -50,16 +55,6 @@ const orderItemSchema = new Schema({
 		type: Number,
 		required: true,
 		min: 0,
-	},
-	organizationId: {
-		type: String,
-		required: true,
-	},
-	product: {
-		type: Schema.Types.Mixed,
-	},
-	price: {
-		type: Schema.Types.Mixed,
 	},
 });
 
@@ -95,6 +90,21 @@ const orderSchema = new Schema<OrderDocument>(
 			enum: Object.values(Order.Status),
 			default: Order.Status.PENDING,
 		},
+		paymentIntentId: {
+			type: String,
+		},
+		transactionId: {
+			type: String,
+		},
+		paidAt: {
+			type: Date,
+		},
+		expiredAt: {
+			type: Date,
+		},
+		cancelledAt: {
+			type: Date,
+		},
 		meta: {
 			type: Schema.Types.Mixed,
 			default: {},
@@ -124,5 +134,7 @@ orderSchema.index({ userId: 1 });
 orderSchema.index({ organizationId: 1 });
 orderSchema.index({ status: 1 });
 orderSchema.index({ createdAt: 1 });
+orderSchema.index({ transactionId: 1 });
+orderSchema.index({ paymentIntentId: 1 });
 
 export const OrderModel = mongoose.model<OrderDocument>("Order", orderSchema);

@@ -3,6 +3,7 @@ import type {
 	Product,
 } from "@/src/modules/product/core/domain/entities";
 import { type Id, id } from "@/src/modules/shared/value-objects";
+import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 
 export namespace Order {
 	export enum Status {
@@ -15,12 +16,10 @@ export namespace Order {
 	export type Item = {
 		priceId: Id;
 		productId: Id;
-		organizationId: Id;
 		name: string;
 		quantity: number;
 		unitAmount: number;
 		subtotal: number;
-
 		product?: Product.Model;
 		price?: Price.Model;
 	};
@@ -28,6 +27,7 @@ export namespace Order {
 	export type Model = {
 		id: Id;
 		userId: Id;
+		organizationId: Id;
 		items: Item[];
 		totalAmount: number;
 		status: Status;
@@ -44,6 +44,7 @@ export namespace Order {
 	export type CreateParams = {
 		id?: Id;
 		userId: Id;
+		organizationId: Id;
 		items: {
 			priceId: Id;
 			productId: Id;
@@ -69,6 +70,24 @@ export namespace Order {
 		static create(params: CreateParams): Entity {
 			const now = new Date();
 
+			const itemOrganizationIds = new Set(params.items.map(item => item.organizationId));
+			if (itemOrganizationIds.size > 1) {
+				throw new AppError(
+					"All items must belong to the same organization",
+					400,
+					ErrorCode.INVALID_INPUT
+				);
+			}
+
+			const firstItemOrganizationId = params.items[0]?.organizationId;
+			if (firstItemOrganizationId && firstItemOrganizationId !== params.organizationId) {
+				throw new AppError(
+					"All items must belong to the same organization",
+					400,
+					ErrorCode.INVALID_INPUT
+				);
+			}
+
 			const items: Item[] = params.items.map((item) => ({
 				priceId: item.priceId,
 				productId: item.productId,
@@ -86,6 +105,7 @@ export namespace Order {
 			const model: Model = {
 				id: params.id ?? id(),
 				userId: params.userId,
+				organizationId: params.organizationId,
 				items,
 				totalAmount,
 				status: Status.PENDING,
@@ -103,19 +123,21 @@ export namespace Order {
 			return new Entity({ ...model });
 		}
 
+		get organizationId(): Id {
+			return this.props.organizationId;
+		}
+
 		markAsPaid(transactionId?: string): void {
-			this.props.status = Status.PAID;
+			this.updateStatus(Status.PAID);
 			this.props.paidAt = new Date();
-			this.props.updatedAt = new Date();
 			if (transactionId) {
 				this.props.transactionId = transactionId;
 			}
 		}
 
 		cancel(reason?: string): void {
-			this.props.status = Status.CANCELLED;
+			this.updateStatus(Status.CANCELLED);
 			this.props.cancelledAt = new Date();
-			this.props.updatedAt = new Date();
 			if (reason) {
 				this.props.meta = {
 					...this.props.meta,
@@ -125,9 +147,8 @@ export namespace Order {
 		}
 
 		expire(): void {
-			this.props.status = Status.EXPIRED;
+			this.updateStatus(Status.EXPIRED);
 			this.props.expiredAt = new Date();
-			this.props.updatedAt = new Date();
 		}
 
 		private updateStatus(status: Status): void {
@@ -143,17 +164,17 @@ export namespace Order {
 			return this.props.status === Status.PAID;
 		}
 
+		isCancelled(): boolean {
+			return this.props.status === Status.CANCELLED;
+		}
+
+		isExpired(): boolean {
+			return this.props.status === Status.EXPIRED;
+		}
+
 		getSnapshot(): Model {
 			// Deep clone to avoid mutation from outside
 			return JSON.parse(JSON.stringify(this.props));
-		}
-
-		getOrganizationIds(): Id[] {
-			return [...new Set(this.props.items.map((i) => i.organizationId))];
-		}
-
-		getItemsByOrganizationId(orgId: Id): Item[] {
-			return this.props.items.filter((i) => i.organizationId === orgId);
 		}
 	}
 }
