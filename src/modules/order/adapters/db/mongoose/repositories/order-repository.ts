@@ -4,7 +4,7 @@ import type {
 	OrderFilters,
 	OrderRepository,
 } from "@/src/modules/order/domain/repositories/order-repository";
-import { OrderModel, type OrderDocument } from "../models/order-model";
+import { type OrderDocument, OrderModel } from "../models/order-model";
 
 export class MongooseOrderRepository implements OrderRepository {
 	private getPopulateOptions() {
@@ -12,12 +12,14 @@ export class MongooseOrderRepository implements OrderRepository {
 			{
 				path: "items.product",
 				model: "Product",
-				select: "id name slug description imageUrl sku barcode weight dimensions default_price_id status organizationId createdById meta createdAt updatedAt",
+				select:
+					"id name slug description imageUrl sku barcode weight dimensions default_price_id status organizationId createdById meta createdAt updatedAt",
 			},
 			{
 				path: "items.price",
 				model: "Price",
-				select: "id productId currency unitAmount type status validFrom validUntil createdAt updatedAt",
+				select:
+					"id productId currency unitAmount type status validFrom validUntil createdAt updatedAt",
 			},
 		];
 	}
@@ -93,7 +95,7 @@ export class MongooseOrderRepository implements OrderRepository {
 		const doc = await OrderModel.findOneAndUpdate(
 			{ id: data.id },
 			this.mapToDocumentModel(data as Order.Model),
-			{ new: true }
+			{ new: true },
 		).populate(this.getPopulateOptions());
 
 		if (!doc) {
@@ -108,14 +110,18 @@ export class MongooseOrderRepository implements OrderRepository {
 	}
 
 	async findById(id: string): Promise<Order.Model | null> {
-		const doc = await OrderModel.findOne({ id }).populate(this.getPopulateOptions());
+		const doc = await OrderModel.findOne({ id }).populate(
+			this.getPopulateOptions(),
+		);
 		if (!doc) return null;
 
 		return this.mapToDomainModel(doc);
 	}
 
 	async findManyByIds(ids: string[]): Promise<Order.Model[]> {
-		const docs = await OrderModel.find({ id: { $in: ids } }).populate(this.getPopulateOptions());
+		const docs = await OrderModel.find({ id: { $in: ids } }).populate(
+			this.getPopulateOptions(),
+		);
 		return docs.map((doc) => this.mapToDomainModel(doc));
 	}
 
@@ -193,7 +199,9 @@ export class MongooseOrderRepository implements OrderRepository {
 		const sort: Record<string, 1 | -1> = {};
 		sort[sortBy] = sortOrder === "asc" ? 1 : -1;
 
-		let queryBuilder = OrderModel.find(query).populate(this.getPopulateOptions()).sort(sort);
+		let queryBuilder = OrderModel.find(query)
+			.populate(this.getPopulateOptions())
+			.sort(sort);
 
 		if (offset) {
 			queryBuilder = queryBuilder.skip(offset);
@@ -289,7 +297,9 @@ export class MongooseOrderRepository implements OrderRepository {
 		const sort: Record<string, 1 | -1> = {};
 		sort[sortBy] = sortOrder === "asc" ? 1 : -1;
 
-		let queryBuilder = OrderModel.find(query).populate(this.getPopulateOptions()).sort(sort);
+		let queryBuilder = OrderModel.find(query)
+			.populate(this.getPopulateOptions())
+			.sort(sort);
 
 		if (offset) {
 			queryBuilder = queryBuilder.skip(offset);
@@ -310,7 +320,9 @@ export class MongooseOrderRepository implements OrderRepository {
 	}
 
 	async findAllByTransactionId(transactionId: string): Promise<Order.Model[]> {
-		const docs = await OrderModel.find({ transactionId }).populate(this.getPopulateOptions());
+		const docs = await OrderModel.find({ transactionId }).populate(
+			this.getPopulateOptions(),
+		);
 		return docs.map((doc) => this.mapToDomainModel(doc));
 	}
 }
