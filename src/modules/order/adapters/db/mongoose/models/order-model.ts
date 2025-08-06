@@ -8,7 +8,6 @@ export interface OrderDocument extends Document {
 	items: {
 		productId: string;
 		priceId: string;
-		organizationId: string;
 		name: string;
 		quantity: number;
 		unitAmount: number;
@@ -21,6 +20,8 @@ export interface OrderDocument extends Document {
 	paymentIntentId?: string;
 	transactionId?: string;
 	paidAt?: Date;
+	inDeliveryAt?: Date;
+	clientConfirmedDeliveryAt?: Date;
 	expiredAt?: Date;
 	cancelledAt?: Date;
 	meta?: Record<string, any>;
@@ -32,10 +33,12 @@ const orderItemSchema = new Schema({
 	productId: {
 		type: String,
 		required: true,
+		ref: "Product",
 	},
 	priceId: {
 		type: String,
 		required: true,
+		ref: "Price",
 	},
 	name: {
 		type: String,
@@ -55,6 +58,14 @@ const orderItemSchema = new Schema({
 		type: Number,
 		required: true,
 		min: 0,
+	},
+	product: {
+		type: Schema.Types.ObjectId,
+		ref: "Product",
+	},
+	price: {
+		type: Schema.Types.ObjectId,
+		ref: "Price",
 	},
 });
 
@@ -97,6 +108,12 @@ const orderSchema = new Schema<OrderDocument>(
 			type: String,
 		},
 		paidAt: {
+			type: Date,
+		},
+		inDeliveryAt: {
+			type: Date,
+		},
+		clientConfirmedDeliveryAt: {
 			type: Date,
 		},
 		expiredAt: {

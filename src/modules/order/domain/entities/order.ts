@@ -2,7 +2,6 @@ import type {
 	Price,
 	Product,
 } from "@/src/modules/product/core/domain/entities";
-import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import { type Id, id } from "@/src/modules/shared/value-objects";
 
 export namespace Order {
@@ -11,6 +10,8 @@ export namespace Order {
 		PAID = "paid",
 		CANCELLED = "cancelled",
 		EXPIRED = "expired",
+		IN_DELIVERY = "in_delivery",
+		CLIENT_CONFIRMED_DELIVERY = "client_confirmed_delivery",
 	}
 
 	export type Item = {
@@ -20,9 +21,11 @@ export namespace Order {
 		quantity: number;
 		unitAmount: number;
 		subtotal: number;
-		product?: Product.Model;
-		price?: Price.Model;
+		product: Product.Model;
+		price: Price.Model;
 	};
+
+	export type CreateOrderItemParams = Omit<Item, "product" | "price">;
 
 	export type Model = {
 		id: Id;
@@ -34,6 +37,8 @@ export namespace Order {
 		paymentIntentId?: string;
 		transactionId?: string;
 		paidAt?: Date;
+		inDeliveryAt?: Date;
+		clientConfirmedDeliveryAt?: Date;
 		expiredAt?: Date;
 		cancelledAt?: Date;
 		meta?: Record<string, any>;
@@ -45,19 +50,23 @@ export namespace Order {
 		id?: Id;
 		userId: Id;
 		organizationId: Id;
-		items: {
-			priceId: Id;
-			productId: Id;
-			organizationId: Id;
-			name: string;
-			quantity: number;
-			unitAmount: number;
-			product?: Product.Model;
-			price?: Price.Model;
-		}[];
+		items: Array<CreateOrderItemParams>;
 		paymentIntentId?: string;
 		transactionId?: string;
 		meta?: Record<string, any>;
+	};
+
+	export const createOrderItem = (item: CreateOrderItemParams): Item => {
+		return {
+			priceId: item.priceId,
+			productId: item.productId,
+			name: item.name,
+			quantity: item.quantity,
+			price: {} as Price.Model,
+			product: {} as Product.Model,
+			unitAmount: item.unitAmount,
+			subtotal: item.quantity * item.unitAmount,
+		};
 	};
 
 	export class Entity {
@@ -70,39 +79,15 @@ export namespace Order {
 		static create(params: CreateParams): Entity {
 			const now = new Date();
 
-			const itemOrganizationIds = new Set(
-				params.items.map((item) => item.organizationId),
-			);
-			if (itemOrganizationIds.size > 1) {
-				throw new AppError(
-					"All items must belong to the same organization",
-					400,
-					ErrorCode.INVALID_INPUT,
-				);
-			}
-
-			const firstItemOrganizationId = params.items[0]?.organizationId;
-			if (
-				firstItemOrganizationId &&
-				firstItemOrganizationId !== params.organizationId
-			) {
-				throw new AppError(
-					"All items must belong to the same organization",
-					400,
-					ErrorCode.INVALID_INPUT,
-				);
-			}
-
 			const items: Item[] = params.items.map((item) => ({
 				priceId: item.priceId,
 				productId: item.productId,
-				organizationId: item.organizationId,
 				name: item.name,
 				quantity: item.quantity,
 				unitAmount: item.unitAmount,
 				subtotal: item.quantity * item.unitAmount,
-				product: item.product,
-				price: item.price,
+				product: {} as Product.Model,
+				price: {} as Price.Model,
 			}));
 
 			const totalAmount = items.reduce((sum, i) => sum + i.subtotal, 0);
@@ -156,6 +141,16 @@ export namespace Order {
 			this.props.expiredAt = new Date();
 		}
 
+		markAsInDelivery(): void {
+			this.updateStatus(Status.IN_DELIVERY);
+			this.props.inDeliveryAt = new Date();
+		}
+
+		markAsClientConfirmedDelivery(): void {
+			this.updateStatus(Status.CLIENT_CONFIRMED_DELIVERY);
+			this.props.clientConfirmedDeliveryAt = new Date();
+		}
+
 		private updateStatus(status: Status): void {
 			this.props.status = status;
 			this.props.updatedAt = new Date();
@@ -175,6 +170,14 @@ export namespace Order {
 
 		isExpired(): boolean {
 			return this.props.status === Status.EXPIRED;
+		}
+
+		isInDelivery(): boolean {
+			return this.props.status === Status.IN_DELIVERY;
+		}
+
+		isClientConfirmedDelivery(): boolean {
+			return this.props.status === Status.CLIENT_CONFIRMED_DELIVERY;
 		}
 
 		getSnapshot(): Model {

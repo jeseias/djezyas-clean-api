@@ -1,16 +1,18 @@
 export const orderTypeDefs = `#graphql
   # Order Status Enum
   enum OrderStatus {
-    PENDING
-    PAID
-    CANCELLED
-    EXPIRED
+    pending
+    paid
+    in_delivery
+    client_confirmed_delivery
+    cancelled
+    expired
   }
 
   # Order Grouping Enum
   enum OrderGrouping {
-    DATE
-    STATUS
+    date
+    status
   }
 
   # Order Item Type
@@ -36,6 +38,8 @@ export const orderTypeDefs = `#graphql
     paymentIntentId: String
     transactionId: String
     paidAt: DateTime
+    inDeliveryAt: DateTime
+    clientConfirmedDeliveryAt: DateTime
     expiredAt: DateTime
     cancelledAt: DateTime
     meta: JSON
@@ -43,12 +47,7 @@ export const orderTypeDefs = `#graphql
     updatedAt: DateTime!
   }
 
-  # Cart Item Type
-  type CartItem {
-    productId: String!
-    quantity: Int!
-    product: Product
-  }
+
 
   # Calculate Order Totals Input
   input CalculateOrderTotalsItemInput {

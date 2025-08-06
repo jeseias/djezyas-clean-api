@@ -105,7 +105,16 @@ export class CreateOrdersFromCartUseCase {
 			const orderItems: Order.Item[] = [];
 
 			for (const cartItem of cartItems) {
-				const product = productsMap.get(cartItem.productId)!;
+				const product = productsMap.get(cartItem.productId);
+
+				if (!product) {
+					throw new AppError(
+						`Product not found: ${cartItem.productId}`,
+						404,
+						ErrorCode.ENTITY_NOT_FOUND,
+					);
+				}
+
 				const activePrice = activePricesMap.get(product.id);
 
 				if (!activePrice) {
@@ -116,21 +125,21 @@ export class CreateOrdersFromCartUseCase {
 					);
 				}
 
-				const orderItem: Order.Item = {
+				const orderItem = Order.createOrderItem({
 					priceId: activePrice.id,
 					productId: product.id,
-					organizationId: organizationId as Id,
 					name: product.name,
 					quantity: cartItem.quantity,
 					unitAmount: activePrice.unitAmount,
 					subtotal: cartItem.quantity * activePrice.unitAmount,
-				};
+				});
 
 				orderItems.push(orderItem);
 			}
 
 			const orderEntity = Order.Entity.create({
 				userId: params.userId as Id,
+				organizationId: organizationId as Id,
 				items: orderItems,
 				meta: params.meta,
 			});

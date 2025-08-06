@@ -67,10 +67,7 @@ export class GetOrderByIdUseCase {
 				);
 			}
 
-			const orderOrganizationIds = order.items.map(
-				(item) => item.organizationId,
-			);
-			if (!orderOrganizationIds.includes(params.organizationId)) {
+			if (order.organizationId !== params.organizationId) {
 				throw new AppError(
 					`Order does not belong to organization: ${params.orderId}`,
 					403,

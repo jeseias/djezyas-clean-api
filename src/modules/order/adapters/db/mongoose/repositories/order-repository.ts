@@ -4,12 +4,85 @@ import type {
 	OrderFilters,
 	OrderRepository,
 } from "@/src/modules/order/domain/repositories/order-repository";
-import { OrderModel } from "../models/order-model";
+import { OrderModel, type OrderDocument } from "../models/order-model";
 
 export class MongooseOrderRepository implements OrderRepository {
+	private getPopulateOptions() {
+		return [
+			{
+				path: "items.product",
+				model: "Product",
+				select: "id name slug description imageUrl sku barcode weight dimensions default_price_id status organizationId createdById meta createdAt updatedAt",
+			},
+			{
+				path: "items.price",
+				model: "Price",
+				select: "id productId currency unitAmount type status validFrom validUntil createdAt updatedAt",
+			},
+		];
+	}
+
+	private mapToDomainModel(doc: OrderDocument): Order.Model {
+		return {
+			id: doc.id,
+			userId: doc.userId,
+			organizationId: doc.organizationId,
+			items: doc.items.map((item) => ({
+				productId: item.productId,
+				priceId: item.priceId,
+				name: item.name,
+				quantity: item.quantity,
+				unitAmount: item.unitAmount,
+				subtotal: item.subtotal,
+				product: item.product || ({} as any),
+				price: item.price || ({} as any),
+			})),
+			totalAmount: doc.totalAmount,
+			status: doc.status,
+			paymentIntentId: doc.paymentIntentId,
+			transactionId: doc.transactionId,
+			paidAt: doc.paidAt,
+			inDeliveryAt: doc.inDeliveryAt,
+			clientConfirmedDeliveryAt: doc.clientConfirmedDeliveryAt,
+			expiredAt: doc.expiredAt,
+			cancelledAt: doc.cancelledAt,
+			meta: doc.meta,
+			createdAt: doc.createdAt,
+			updatedAt: doc.updatedAt,
+		};
+	}
+
+	private mapToDocumentModel(order: Order.Model): Partial<OrderDocument> {
+		return {
+			id: order.id,
+			userId: order.userId,
+			organizationId: order.organizationId,
+			items: order.items.map((item) => ({
+				productId: item.productId,
+				priceId: item.priceId,
+				name: item.name,
+				quantity: item.quantity,
+				unitAmount: item.unitAmount,
+				subtotal: item.subtotal,
+				product: item.product,
+				price: item.price,
+			})),
+			totalAmount: order.totalAmount,
+			status: order.status,
+			paymentIntentId: order.paymentIntentId,
+			transactionId: order.transactionId,
+			paidAt: order.paidAt,
+			inDeliveryAt: order.inDeliveryAt,
+			clientConfirmedDeliveryAt: order.clientConfirmedDeliveryAt,
+			expiredAt: order.expiredAt,
+			cancelledAt: order.cancelledAt,
+			meta: order.meta,
+		};
+	}
+
 	async create(order: Order.Model): Promise<Order.Model> {
-		const doc = await OrderModel.create(order);
-		return doc.toJSON();
+		const doc = await OrderModel.create(this.mapToDocumentModel(order));
+		return this.mapToDomainModel(doc);
 	}
 
 	async update(data: Partial<Order.Model>): Promise<Order.Model> {
@@ -17,15 +90,17 @@ export class MongooseOrderRepository implements OrderRepository {
 			throw new Error("ID is required for update");
 		}
 
-		const doc = await OrderModel.findOneAndUpdate({ id: data.id }, data, {
-			new: true,
-		});
+		const doc = await OrderModel.findOneAndUpdate(
+			{ id: data.id },
+			this.mapToDocumentModel(data as Order.Model),
+			{ new: true }
+		).populate(this.getPopulateOptions());
 
 		if (!doc) {
 			throw new Error("Order not found");
 		}
 
-		return doc.toJSON();
+		return this.mapToDomainModel(doc);
 	}
 
 	async delete(id: string): Promise<void> {
@@ -33,15 +108,15 @@ export class MongooseOrderRepository implements OrderRepository {
 	}
 
 	async findById(id: string): Promise<Order.Model | null> {
-		const doc = await OrderModel.findOne({ id });
+		const doc = await OrderModel.findOne({ id }).populate(this.getPopulateOptions());
 		if (!doc) return null;
 
-		return doc.toJSON();
+		return this.mapToDomainModel(doc);
 	}
 
 	async findManyByIds(ids: string[]): Promise<Order.Model[]> {
-		const docs = await OrderModel.find({ id: { $in: ids } });
-		return docs.map((doc) => doc.toJSON());
+		const docs = await OrderModel.find({ id: { $in: ids } }).populate(this.getPopulateOptions());
+		return docs.map((doc) => this.mapToDomainModel(doc));
 	}
 
 	async findAllByUserId(
@@ -64,7 +139,7 @@ export class MongooseOrderRepository implements OrderRepository {
 			sortOrder = "desc",
 		} = filters;
 
-		const query: FilterQuery<Order.Model> = { userId };
+		const query: FilterQuery<OrderDocument> = { userId };
 
 		if (status) {
 			query.status = status;
@@ -118,7 +193,7 @@ export class MongooseOrderRepository implements OrderRepository {
 		const sort: Record<string, 1 | -1> = {};
 		sort[sortBy] = sortOrder === "asc" ? 1 : -1;
 
-		let queryBuilder = OrderModel.find(query).sort(sort);
+		let queryBuilder = OrderModel.find(query).populate(this.getPopulateOptions()).sort(sort);
 
 		if (offset) {
 			queryBuilder = queryBuilder.skip(offset);
@@ -130,7 +205,7 @@ export class MongooseOrderRepository implements OrderRepository {
 		const docs = await queryBuilder.exec();
 		const totalItems = await OrderModel.countDocuments(query);
 
-		const items = docs.map((doc) => doc.toJSON());
+		const items = docs.map((doc) => this.mapToDomainModel(doc));
 
 		return {
 			items,
@@ -158,8 +233,8 @@ export class MongooseOrderRepository implements OrderRepository {
 			sortOrder = "desc",
 		} = filters;
 
-		const query: FilterQuery<Order.Model> = {
-			"items.organizationId": organizationId,
+		const query: FilterQuery<OrderDocument> = {
+			organizationId: organizationId,
 		};
 
 		if (status) {
@@ -214,7 +289,7 @@ export class MongooseOrderRepository implements OrderRepository {
 		const sort: Record<string, 1 | -1> = {};
 		sort[sortBy] = sortOrder === "asc" ? 1 : -1;
 
-		let queryBuilder = OrderModel.find(query).sort(sort);
+		let queryBuilder = OrderModel.find(query).populate(this.getPopulateOptions()).sort(sort);
 
 		if (offset) {
 			queryBuilder = queryBuilder.skip(offset);
@@ -226,7 +301,7 @@ export class MongooseOrderRepository implements OrderRepository {
 		const docs = await queryBuilder.exec();
 		const totalItems = await OrderModel.countDocuments(query);
 
-		const items = docs.map((doc) => doc.toJSON());
+		const items = docs.map((doc) => this.mapToDomainModel(doc));
 
 		return {
 			items,
@@ -235,7 +310,7 @@ export class MongooseOrderRepository implements OrderRepository {
 	}
 
 	async findAllByTransactionId(transactionId: string): Promise<Order.Model[]> {
-		const docs = await OrderModel.find({ transactionId });
-		return docs.map((doc) => doc.toJSON());
+		const docs = await OrderModel.find({ transactionId }).populate(this.getPopulateOptions());
+		return docs.map((doc) => this.mapToDomainModel(doc));
 	}
 }

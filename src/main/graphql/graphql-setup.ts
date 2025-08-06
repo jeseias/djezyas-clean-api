@@ -16,7 +16,7 @@ export const appTypeDefs = print(
 		userTypeDefs,
 		organizationTypeDefs,
 		productTypeDefs,
-		// orderTypeDefs,
+		orderTypeDefs,
 		cartTypeDefs,
 	]),
 );
@@ -26,14 +26,14 @@ export const appResolvers = {
 		...userResolvers.Query,
 		...organizationResolvers.Query,
 		...productResolvers.Query,
-		// ...orderResolvers.Query,
+		...orderResolvers.Query,
 		...cartResolvers.Query,
 	},
 	Mutation: {
 		...userResolvers.Mutation,
 		...organizationResolvers.Mutation,
 		...productResolvers.Mutation,
-		// ...orderResolvers.Mutation,
+		...orderResolvers.Mutation,
 		...cartResolvers.Mutation,
 	},
 };
