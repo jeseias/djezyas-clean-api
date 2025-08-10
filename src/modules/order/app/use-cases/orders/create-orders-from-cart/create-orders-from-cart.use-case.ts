@@ -4,7 +4,8 @@ import type {
 	OrderRepository,
 } from "@/src/modules/order/domain/repositories";
 import type { IsOrganizationValidService } from "@/src/modules/organization/core/app/services";
-import type { Price } from "@/src/modules/product/core/domain/entities";
+import { Price } from "@/src/modules/product/core/domain/entities";
+
 import type { PriceRepository } from "@/src/modules/product/core/ports/outbound/price-repository";
 import type { ProductRepository } from "@/src/modules/product/core/ports/outbound/product-repository";
 import { AppError, ErrorCode } from "@/src/modules/shared/errors";
@@ -64,6 +65,7 @@ export class CreateOrdersFromCartUseCase {
 
 		const products = await this.productRepository.findManyByIds(productIds);
 
+
 		if (products.length !== productIds.length) {
 			throw new AppError(
 				"Some products not found",
@@ -82,26 +84,18 @@ export class CreateOrdersFromCartUseCase {
 			await this.isOrganizationValidService.execute(organizationId);
 		}
 
+
+
 		const productsMap = new Map(
 			products.map((product) => [product.id, product]),
 		);
-
-		const allProductIds = Array.from(productsMap.keys());
-		const allPrices =
-			await this.priceRepository.findManyByProductIds(allProductIds);
-
-		const activePricesMap = new Map<Id, Price.Model>();
-		for (const price of allPrices) {
-			if (price.status === "active") {
-				activePricesMap.set(price.productId, price);
-			}
-		}
 
 		const createdOrders: Order.Model[] = [];
 
 		for (const [organizationId, cartItems] of Object.entries(
 			splitResult.ordersByOrganization,
 		)) {
+
 			const orderItems: Order.Item[] = [];
 
 			for (const cartItem of cartItems) {
@@ -115,7 +109,7 @@ export class CreateOrdersFromCartUseCase {
 					);
 				}
 
-				const activePrice = activePricesMap.get(product.id);
+				const activePrice = product.default_price
 
 				if (!activePrice) {
 					throw new AppError(
@@ -132,6 +126,8 @@ export class CreateOrdersFromCartUseCase {
 					quantity: cartItem.quantity,
 					unitAmount: activePrice.unitAmount,
 					subtotal: cartItem.quantity * activePrice.unitAmount,
+          product,
+          price: Price.Entity.fromModel(activePrice as any).getSnapshot(),
 				});
 
 				orderItems.push(orderItem);
@@ -143,8 +139,9 @@ export class CreateOrdersFromCartUseCase {
 				items: orderItems,
 				meta: params.meta,
 			});
-
+      
 			const orderModel = orderEntity.getSnapshot();
+      console.log('==>+=>==> I GOT TILL HERE', orderModel)
 			const createdOrder = await this.orderRepository.create(orderModel);
 			createdOrders.push(createdOrder);
 		}

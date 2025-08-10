@@ -21,11 +21,11 @@ export namespace Order {
 		quantity: number;
 		unitAmount: number;
 		subtotal: number;
-		product: Product.Model;
+		product: Product.Props;
 		price: Price.Model;
 	};
 
-	export type CreateOrderItemParams = Omit<Item, "product" | "price">;
+	export type CreateOrderItemParams = Item;
 
 	export type Model = {
 		id: Id;
@@ -62,8 +62,8 @@ export namespace Order {
 			productId: item.productId,
 			name: item.name,
 			quantity: item.quantity,
-			price: {} as Price.Model,
-			product: {} as Product.Model,
+			price: item.price,
+			product: item.product,
 			unitAmount: item.unitAmount,
 			subtotal: item.quantity * item.unitAmount,
 		};
@@ -86,8 +86,8 @@ export namespace Order {
 				quantity: item.quantity,
 				unitAmount: item.unitAmount,
 				subtotal: item.quantity * item.unitAmount,
-				product: {} as Product.Model,
-				price: {} as Price.Model,
+				product: item.product,
+				price: item.price,
 			}));
 
 			const totalAmount = items.reduce((sum, i) => sum + i.subtotal, 0);
@@ -181,8 +181,24 @@ export namespace Order {
 		}
 
 		getSnapshot(): Model {
-			// Deep clone to avoid mutation from outside
-			return JSON.parse(JSON.stringify(this.props));
+			return {
+        id: this.props.id,
+        userId: this.props.userId,
+        organizationId: this.props.organizationId,
+        items: this.props.items,
+        totalAmount: this.props.totalAmount,
+        status: this.props.status,
+        paymentIntentId: this.props.paymentIntentId,
+        transactionId: this.props.transactionId,
+        paidAt: this.props.paidAt,
+        inDeliveryAt: this.props.inDeliveryAt,
+        clientConfirmedDeliveryAt: this.props.clientConfirmedDeliveryAt,
+        expiredAt: this.props.expiredAt,
+        cancelledAt: this.props.cancelledAt,
+        meta: this.props.meta,
+        createdAt: this.props.createdAt,
+        updatedAt: this.props.updatedAt,
+      }
 		}
 	}
 }
