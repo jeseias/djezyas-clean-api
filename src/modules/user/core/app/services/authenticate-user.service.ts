@@ -55,11 +55,13 @@ export class AuthenticateUser {
 			);
 		}
 
-		const accessToken = await this.generateAccessToken(user);
-		const refreshToken = await this.generateRefreshToken(user);
+		const isMobileDevice = deviceInfo.deviceType === "mobile";
+		
+		const accessToken = await this.generateAccessToken(user, isMobileDevice);
+		const refreshToken = await this.generateRefreshToken(user, isMobileDevice);
 
-		const accessTokenExpiresAt = this.calculateAccessTokenExpiration();
-		const refreshTokenExpiresAt = this.calculateRefreshTokenExpiration();
+		const accessTokenExpiresAt = this.calculateAccessTokenExpiration(isMobileDevice);
+		const refreshTokenExpiresAt = this.calculateRefreshTokenExpiration(isMobileDevice);
 
 		const session = Session.Entity.create({
 			userId: user.id,
@@ -78,13 +80,13 @@ export class AuthenticateUser {
 			tokens: {
 				accessToken,
 				refreshToken,
-				accessTokenExpiresIn: "15m",
-				refreshTokenExpiresIn: "7d",
+				accessTokenExpiresIn: isMobileDevice ? "30d" : "15m",
+				refreshTokenExpiresIn: isMobileDevice ? "45d" : "7d",
 			},
 		};
 	}
 
-	private async generateAccessToken(user: User.Entity): Promise<string> {
+	private async generateAccessToken(user: User.Entity, isMobileDevice: boolean): Promise<string> {
 		const payload = {
 			sub: user.id,
 			email: user.email,
@@ -93,27 +95,37 @@ export class AuthenticateUser {
 			type: "access",
 		};
 
-		return this.tokenManager.generateToken(payload, "15m");
+		const expiration = isMobileDevice ? "30d" : "15m";
+		return this.tokenManager.generateToken(payload, expiration);
 	}
 
-	private async generateRefreshToken(user: User.Entity): Promise<string> {
+	private async generateRefreshToken(user: User.Entity, isMobileDevice: boolean): Promise<string> {
 		const payload = {
 			sub: user.id,
 			type: "refresh",
 		};
 
-		return this.tokenManager.generateToken(payload, "7d");
+		const expiration = isMobileDevice ? "45d" : "7d";
+		return this.tokenManager.generateToken(payload, expiration);
 	}
 
-	private calculateAccessTokenExpiration(): Date {
+	private calculateAccessTokenExpiration(isMobileDevice: boolean): Date {
 		const expiration = new Date();
-		expiration.setMinutes(expiration.getMinutes() + 15);
+		if (isMobileDevice) {
+			expiration.setDate(expiration.getDate() + 30);
+		} else {
+			expiration.setMinutes(expiration.getMinutes() + 15);
+		}
 		return expiration;
 	}
 
-	private calculateRefreshTokenExpiration(): Date {
+	private calculateRefreshTokenExpiration(isMobileDevice: boolean): Date {
 		const expiration = new Date();
-		expiration.setDate(expiration.getDate() + 7);
+		if (isMobileDevice) {
+			expiration.setDate(expiration.getDate() + 45);
+		} else {
+			expiration.setDate(expiration.getDate() + 7);
+		}
 		return expiration;
 	}
 }
