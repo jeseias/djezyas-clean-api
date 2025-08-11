@@ -182,23 +182,23 @@ export namespace Order {
 
 		getSnapshot(): Model {
 			return {
-        id: this.props.id,
-        userId: this.props.userId,
-        organizationId: this.props.organizationId,
-        items: this.props.items,
-        totalAmount: this.props.totalAmount,
-        status: this.props.status,
-        paymentIntentId: this.props.paymentIntentId,
-        transactionId: this.props.transactionId,
-        paidAt: this.props.paidAt,
-        inDeliveryAt: this.props.inDeliveryAt,
-        clientConfirmedDeliveryAt: this.props.clientConfirmedDeliveryAt,
-        expiredAt: this.props.expiredAt,
-        cancelledAt: this.props.cancelledAt,
-        meta: this.props.meta,
-        createdAt: this.props.createdAt,
-        updatedAt: this.props.updatedAt,
-      }
+				id: this.props.id,
+				userId: this.props.userId,
+				organizationId: this.props.organizationId,
+				items: this.props.items,
+				totalAmount: this.props.totalAmount,
+				status: this.props.status,
+				paymentIntentId: this.props.paymentIntentId,
+				transactionId: this.props.transactionId,
+				paidAt: this.props.paidAt,
+				inDeliveryAt: this.props.inDeliveryAt,
+				clientConfirmedDeliveryAt: this.props.clientConfirmedDeliveryAt,
+				expiredAt: this.props.expiredAt,
+				cancelledAt: this.props.cancelledAt,
+				meta: this.props.meta,
+				createdAt: this.props.createdAt,
+				updatedAt: this.props.updatedAt,
+			};
 		}
 	}
 }

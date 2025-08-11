@@ -1,6 +1,10 @@
 import { getUserFromRequest } from "./auth-middleware";
 
-export const createGraphQLContext = async ({ request }: { request: Request }) => {
+export const createGraphQLContext = async ({
+	request,
+}: {
+	request: Request;
+}) => {
 	console.log("GraphQL request received:", {
 		method: request.method,
 		url: request.url,

@@ -1,8 +1,6 @@
 import { AppError, ErrorCode } from "@/src/modules/shared/errors";
-import { Logger } from "../config/logger";
 import { withUser } from "../elysia/plugins";
 
-// Debug utility to trace error origins
 export const debugResolver = <T extends (...args: any[]) => Promise<any>>(
 	fn: T,
 	resolverName: string,
@@ -43,23 +41,23 @@ export const handleResolver = <T extends (...args: any[]) => Promise<any>>(
 		} catch (error) {
 			const err = error instanceof Error ? error : new Error("Unknown error");
 
-			// Enhanced error logging with context
-			Logger.error(`[GraphQL Error]: ${err.message}`, {
-				error: {
-					name: err.name,
-					message: err.message,
-					stack: err.stack,
-				},
-				context: {
-					functionName: fn.name || "anonymous",
-					args:
-						args.length > 0
-							? `Arguments count: ${args.length}`
-							: "No arguments",
-					argsTypes: args.map((arg) => typeof arg),
-					timestamp: new Date().toISOString(),
-				},
-			});
+			// // Enhanced error logging with context
+			// Logger.error(`[GraphQL Error]: ${err.message}`, {
+			// 	error: {
+			// 		name: err.name,
+			// 		message: err.message,
+			// 		stack: err.stack,
+			// 	},
+			// 	context: {
+			// 		functionName: fn.name || "anonymous",
+			// 		args:
+			// 			args.length > 0
+			// 				? `Arguments count: ${args.length}`
+			// 				: "No arguments",
+			// 		argsTypes: args.map((arg) => typeof arg),
+			// 		timestamp: new Date().toISOString(),
+			// 	},
+			// });
 
 			// If it's a GraphQL error, re-throw it as is
 			if (error && typeof error === "object" && "extensions" in error) {

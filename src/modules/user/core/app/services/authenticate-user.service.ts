@@ -56,12 +56,14 @@ export class AuthenticateUser {
 		}
 
 		const isMobileDevice = deviceInfo.deviceType === "mobile";
-		
+
 		const accessToken = await this.generateAccessToken(user, isMobileDevice);
 		const refreshToken = await this.generateRefreshToken(user, isMobileDevice);
 
-		const accessTokenExpiresAt = this.calculateAccessTokenExpiration(isMobileDevice);
-		const refreshTokenExpiresAt = this.calculateRefreshTokenExpiration(isMobileDevice);
+		const accessTokenExpiresAt =
+			this.calculateAccessTokenExpiration(isMobileDevice);
+		const refreshTokenExpiresAt =
+			this.calculateRefreshTokenExpiration(isMobileDevice);
 
 		const session = Session.Entity.create({
 			userId: user.id,
@@ -86,7 +88,10 @@ export class AuthenticateUser {
 		};
 	}
 
-	private async generateAccessToken(user: User.Entity, isMobileDevice: boolean): Promise<string> {
+	private async generateAccessToken(
+		user: User.Entity,
+		isMobileDevice: boolean,
+	): Promise<string> {
 		const payload = {
 			sub: user.id,
 			email: user.email,
@@ -99,7 +104,10 @@ export class AuthenticateUser {
 		return this.tokenManager.generateToken(payload, expiration);
 	}
 
-	private async generateRefreshToken(user: User.Entity, isMobileDevice: boolean): Promise<string> {
+	private async generateRefreshToken(
+		user: User.Entity,
+		isMobileDevice: boolean,
+	): Promise<string> {
 		const payload = {
 			sub: user.id,
 			type: "refresh",
