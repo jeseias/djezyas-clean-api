@@ -6,7 +6,6 @@ import type {
 import type { IsOrganizationValidService } from "@/src/modules/organization/core/app/services";
 import { Price } from "@/src/modules/product/core/domain/entities";
 
-import type { PriceRepository } from "@/src/modules/product/core/ports/outbound/price-repository";
 import type { ProductRepository } from "@/src/modules/product/core/ports/outbound/product-repository";
 import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import type { Id } from "@/src/modules/shared/value-objects";
@@ -30,7 +29,6 @@ export class CreateOrdersFromCartUseCase {
 		private readonly orderRepository: OrderRepository,
 		private readonly cartRepository: CartRepository,
 		private readonly productRepository: ProductRepository,
-		private readonly priceRepository: PriceRepository,
 		private readonly isUserValidService: IsUserValidService,
 		private readonly isOrganizationValidService: IsOrganizationValidService,
 		private readonly splitCartIntoOrdersUseCase: SplitCartIntoOrdersUseCase,

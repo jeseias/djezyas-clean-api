@@ -59,14 +59,6 @@ const orderItemSchema = new Schema({
 		required: true,
 		min: 0,
 	},
-	product: {
-		type: Schema.Types.ObjectId,
-		ref: "Product",
-	},
-	price: {
-		type: Schema.Types.ObjectId,
-		ref: "Price",
-	},
 });
 
 const orderSchema = new Schema<OrderDocument>(
@@ -85,11 +77,6 @@ const orderSchema = new Schema<OrderDocument>(
 		},
 		items: {
 			type: [orderItemSchema],
-			required: true,
-			validate: {
-				validator: (items: any[]) => items && items.length > 0,
-				message: "Order must have at least one item",
-			},
 		},
 		totalAmount: {
 			type: Number,
@@ -98,8 +85,6 @@ const orderSchema = new Schema<OrderDocument>(
 		},
 		status: {
 			type: String,
-			enum: Object.values(Order.Status),
-			default: Order.Status.PENDING,
 		},
 		paymentIntentId: {
 			type: String,

@@ -7,10 +7,8 @@ import type {
 	IsOrganizationValidService,
 } from "@/src/modules/organization/core/app/services";
 import {
-	priceMongooseRepository,
 	productMongooseRepository,
 } from "@/src/modules/product/adapters/factories/repository.factory";
-import type { PriceRepository } from "@/src/modules/product/core/ports/outbound/price-repository";
 import type { ProductRepository } from "@/src/modules/product/core/ports/outbound/product-repository";
 import { isUserValidService } from "@/src/modules/user/adapters/factories/service.factory";
 import type { IsUserValidService } from "@/src/modules/user/core/app/services";
@@ -39,7 +37,6 @@ export class OrderUseCasesFactory {
 		private readonly orderRepository: OrderRepository,
 		private readonly cartRepository: CartRepository,
 		private readonly productRepository: ProductRepository,
-		private readonly priceRepository: PriceRepository,
 		private readonly isUserValidService: IsUserValidService,
 		private readonly isOrganizationValidService: IsOrganizationValidService,
 		private readonly isOrganizationMemberService: IsOrganizationMemberService,
@@ -58,7 +55,6 @@ export class OrderUseCasesFactory {
 			this.orderRepository,
 			this.cartRepository,
 			this.productRepository,
-			this.priceRepository,
 			this.isUserValidService,
 			this.isOrganizationValidService,
 			this.splitCartIntoOrders(),
@@ -129,7 +125,6 @@ export const orderUseCasesFactory = new OrderUseCasesFactory(
 	orderMongooseRepository,
 	cartMongooseRepository,
 	productMongooseRepository,
-	priceMongooseRepository,
 	isUserValidService,
 	isOrganizationValidService,
 	isOrganizationMemberService,
