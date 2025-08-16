@@ -1,5 +1,6 @@
 import mongoose, { type Document, Schema } from "mongoose";
 import { Order } from "../../../../domain/entities/order";
+import type { Organization } from "@/src/modules/organization/core/domain/entities";
 
 export interface OrderDocument extends Document {
 	id: string;
@@ -12,8 +13,6 @@ export interface OrderDocument extends Document {
 		quantity: number;
 		unitAmount: number;
 		subtotal: number;
-		product?: any;
-		price?: any;
 	}[];
 	totalAmount: number;
 	status: Order.Status;
@@ -27,6 +26,7 @@ export interface OrderDocument extends Document {
 	meta?: Record<string, any>;
 	createdAt: Date;
 	updatedAt: Date;
+  organization: Organization.Model
 }
 
 const orderItemSchema = new Schema({

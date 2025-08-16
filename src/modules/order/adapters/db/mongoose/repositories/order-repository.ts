@@ -7,19 +7,83 @@ import type {
 import { type OrderDocument, OrderModel } from "../models/order-model";
 
 export class MongooseOrderRepository implements OrderRepository {
-	private getPopulateOptions() {
+	private getLookupPipeline() {
 		return [
+			// Unwind items first to work with each item individually
 			{
-				path: "items.product",
-				model: "Product",
-				select:
-					"id name slug description imageUrl sku barcode weight dimensions default_price_id status organizationId createdById meta createdAt updatedAt",
+				$unwind: {
+					path: "$items",
+					preserveNullAndEmptyArrays: true,
+				},
 			},
+			// Lookup products for each item
 			{
-				path: "items.price",
-				model: "Price",
-				select:
-					"id productId currency unitAmount type status validFrom validUntil createdAt updatedAt",
+				$lookup: {
+					from: "products",
+					localField: "items.productId",
+					foreignField: "id",
+					as: "items.product",
+				},
+			},
+      // Lookup for organization
+      {
+        $lookup: {
+          from: "organizations",
+          localField: "organizationId",
+          foreignField: "id",
+          as: "organization",
+        }
+      },
+			// Lookup prices for each item
+			{
+				$lookup: {
+					from: "prices",
+					localField: "items.priceId",
+					foreignField: "id",
+					as: "items.price",
+				},
+			},
+			// Get the first (and only) product and price for each item
+			{
+				$addFields: {
+					"items.product": { $arrayElemAt: ["$items.product", 0] },
+					"items.price": { $arrayElemAt: ["$items.price", 0] },
+          "organization": { $arrayElemAt: ["$organization", 0] },
+				},
+			},
+			// Group back by order, preserving all item fields
+			{
+				$group: {
+					_id: "$_id",
+					id: { $first: "$id" },
+					userId: { $first: "$userId" },
+					organizationId: { $first: "$organizationId" },
+					organization: { $first: "$organization" },
+					items: {
+						$push: {
+							productId: "$items.productId",
+							priceId: "$items.priceId",
+							name: "$items.name",
+							quantity: "$items.quantity",
+							unitAmount: "$items.unitAmount",
+							subtotal: "$items.subtotal",
+							product: "$items.product",
+							price: "$items.price",
+						},
+					},
+					totalAmount: { $first: "$totalAmount" },
+					status: { $first: "$status" },
+					paymentIntentId: { $first: "$paymentIntentId" },
+					transactionId: { $first: "$transactionId" },
+					paidAt: { $first: "$paidAt" },
+					inDeliveryAt: { $first: "$inDeliveryAt" },
+					clientConfirmedDeliveryAt: { $first: "$clientConfirmedDeliveryAt" },
+					expiredAt: { $first: "$expiredAt" },
+					cancelledAt: { $first: "$cancelledAt" },
+					meta: { $first: "$meta" },
+					createdAt: { $first: "$createdAt" },
+					updatedAt: { $first: "$updatedAt" },
+				},
 			},
 		];
 	}
@@ -29,6 +93,7 @@ export class MongooseOrderRepository implements OrderRepository {
 			id: doc.id,
 			userId: doc.userId,
 			organizationId: doc.organizationId,
+      organization: doc.organization as any,
 			items: doc.items.map((item) => ({
 				productId: item.productId,
 				priceId: item.priceId,
@@ -36,8 +101,8 @@ export class MongooseOrderRepository implements OrderRepository {
 				quantity: item.quantity,
 				unitAmount: item.unitAmount,
 				subtotal: item.subtotal,
-				product: item.product || undefined,
-				price: item.price || undefined,
+				product: (item as any).product || null,
+				price: (item as any).price || null,
 			})),
 			totalAmount: doc.totalAmount,
 			status: doc.status,
@@ -66,8 +131,6 @@ export class MongooseOrderRepository implements OrderRepository {
 				quantity: item.quantity,
 				unitAmount: item.unitAmount,
 				subtotal: item.subtotal,
-				product: item.productId,
-				price: item.priceId,
 			})),
 			totalAmount: order.totalAmount,
 			status: order.status,
@@ -96,7 +159,7 @@ export class MongooseOrderRepository implements OrderRepository {
 			{ id: data.id },
 			this.mapToDocumentModel(data as Order.Model),
 			{ new: true },
-		).populate(this.getPopulateOptions());
+		);
 
 		if (!doc) {
 			throw new Error("Order not found");
@@ -110,19 +173,21 @@ export class MongooseOrderRepository implements OrderRepository {
 	}
 
 	async findById(id: string): Promise<Order.Model | null> {
-		const doc = await OrderModel.findOne({ id }).populate(
-			this.getPopulateOptions(),
-		);
+		const [doc] = await OrderModel.aggregate([
+			{ $match: { id } },
+			...this.getLookupPipeline(),
+		]);
 		if (!doc) return null;
 
-		return this.mapToDomainModel(doc);
+		return this.mapToDomainModel(doc as OrderDocument);
 	}
 
 	async findManyByIds(ids: string[]): Promise<Order.Model[]> {
-		const docs = await OrderModel.find({ id: { $in: ids } }).populate(
-			this.getPopulateOptions(),
-		);
-		return docs.map((doc) => this.mapToDomainModel(doc));
+		const docs = await OrderModel.aggregate([
+			{ $match: { id: { $in: ids } } },
+			...this.getLookupPipeline(),
+		]);
+		return docs.map((doc) => this.mapToDomainModel(doc as OrderDocument));
 	}
 
 	async findAllByUserId(
@@ -196,24 +261,29 @@ export class MongooseOrderRepository implements OrderRepository {
 			query.updatedAt = updatedAtFilter;
 		}
 
-		const sort: Record<string, 1 | -1> = {};
+				const sort: Record<string, 1 | -1> = {};
 		sort[sortBy] = sortOrder === "asc" ? 1 : -1;
 
-		let queryBuilder = OrderModel.find(query)
-			.populate(this.getPopulateOptions())
-			.sort(sort);
+		// Build aggregation pipeline with lookups
+		const pipeline: any[] = [
+			{ $match: query },
+			...this.getLookupPipeline(),
+			{ $sort: sort },
+		];
 
 		if (offset) {
-			queryBuilder = queryBuilder.skip(offset);
+			pipeline.push({ $skip: offset });
 		}
 		if (limit) {
-			queryBuilder = queryBuilder.limit(limit);
+			pipeline.push({ $limit: limit });
 		}
 
-		const docs = await queryBuilder.exec();
+		const docs = await OrderModel.aggregate(pipeline);
 		const totalItems = await OrderModel.countDocuments(query);
 
-		const items = docs.map((doc) => this.mapToDomainModel(doc));
+		console.log('==>+=> My Orders with Products and Prices', docs);
+
+		const items = docs.map((doc) => this.mapToDomainModel(doc as OrderDocument));
 
 		return {
 			items,
@@ -297,21 +367,24 @@ export class MongooseOrderRepository implements OrderRepository {
 		const sort: Record<string, 1 | -1> = {};
 		sort[sortBy] = sortOrder === "asc" ? 1 : -1;
 
-		let queryBuilder = OrderModel.find(query)
-			.populate(this.getPopulateOptions())
-			.sort(sort);
+		// Build aggregation pipeline with lookups
+		const pipeline: any[] = [
+			{ $match: query },
+			...this.getLookupPipeline(),
+			{ $sort: sort },
+		];
 
 		if (offset) {
-			queryBuilder = queryBuilder.skip(offset);
+			pipeline.push({ $skip: offset });
 		}
 		if (limit) {
-			queryBuilder = queryBuilder.limit(limit);
+			pipeline.push({ $limit: limit });
 		}
 
-		const docs = await queryBuilder.exec();
+		const docs = await OrderModel.aggregate(pipeline);
 		const totalItems = await OrderModel.countDocuments(query);
 
-		const items = docs.map((doc) => this.mapToDomainModel(doc));
+		const items = docs.map((doc) => this.mapToDomainModel(doc as OrderDocument));
 
 		return {
 			items,
@@ -320,9 +393,10 @@ export class MongooseOrderRepository implements OrderRepository {
 	}
 
 	async findAllByTransactionId(transactionId: string): Promise<Order.Model[]> {
-		const docs = await OrderModel.find({ transactionId }).populate(
-			this.getPopulateOptions(),
-		);
-		return docs.map((doc) => this.mapToDomainModel(doc));
+		const docs = await OrderModel.aggregate([
+			{ $match: { transactionId } },
+			...this.getLookupPipeline(),
+		]);
+		return docs.map((doc) => this.mapToDomainModel(doc as OrderDocument));
 	}
 }

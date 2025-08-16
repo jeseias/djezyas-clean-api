@@ -1,3 +1,4 @@
+import type { Organization } from "@/src/modules/organization/core/domain/entities";
 import type {
 	Price,
 	Product,
@@ -31,6 +32,7 @@ export namespace Order {
 		id: Id;
 		userId: Id;
 		organizationId: Id;
+    organization: Organization.Model
 		items: Item[];
 		totalAmount: number;
 		status: Status;
@@ -96,6 +98,7 @@ export namespace Order {
 				id: params.id ?? id(),
 				userId: params.userId,
 				organizationId: params.organizationId,
+				organization: null as any,
 				items,
 				totalAmount,
 				status: Status.PENDING,
@@ -185,6 +188,7 @@ export namespace Order {
 				id: this.props.id,
 				userId: this.props.userId,
 				organizationId: this.props.organizationId,
+        organization: this.props.organization,
 				items: this.props.items,
 				totalAmount: this.props.totalAmount,
 				status: this.props.status,

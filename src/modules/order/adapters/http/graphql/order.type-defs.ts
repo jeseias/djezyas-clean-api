@@ -15,6 +15,27 @@ export const orderTypeDefs = `#graphql
     status
   }
 
+  type OrderItemPrice {
+    id: String! 
+    currency: String!
+    unitAmount: Float!
+  }
+
+  type OrderItemProduct {
+    id: String!
+    imageUrl: String! 
+    name: String!
+    slug: String!
+    description: String!
+  }
+
+  type OrderOrganization {
+    id: String!
+    name: String!
+    slug: String!
+    logoUrl: String
+  }
+
   # Order Item Type
   type OrderItem {
     priceId: String!
@@ -23,8 +44,8 @@ export const orderTypeDefs = `#graphql
     quantity: Int!
     unitAmount: Float!
     subtotal: Float!
-    product: Product
-    price: Price
+    product: OrderItemProduct
+    price: OrderItemPrice
   }
 
   # Order Type
@@ -32,6 +53,7 @@ export const orderTypeDefs = `#graphql
     id: String!
     userId: String!
     organizationId: String!
+    organization: OrderOrganization!
     items: [OrderItem!]!
     totalAmount: Float!
     status: OrderStatus!

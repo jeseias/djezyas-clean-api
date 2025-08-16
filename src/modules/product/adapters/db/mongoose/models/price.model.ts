@@ -68,13 +68,13 @@ const priceSchema = new Schema<PriceDocument>(
 
 priceSchema.index({ id: 1 }, { unique: true });
 priceSchema.index({ productId: 1 });
-priceSchema.index({ currencyId: 1 });
+priceSchema.index({ currency: 1 });
 priceSchema.index({ status: 1 });
 priceSchema.index({ type: 1 });
 priceSchema.index({ createdAt: -1 });
 
-priceSchema.index({ productId: 1, currencyId: 1, status: 1 });
-priceSchema.index({ productId: 1, currencyId: 1, type: 1 });
+priceSchema.index({ productId: 1, currency: 1, status: 1 });
+priceSchema.index({ productId: 1, currency: 1, type: 1 });
 priceSchema.index({ productId: 1, status: 1 });
 priceSchema.index({ productId: 1, type: 1 });
 priceSchema.index({ status: 1, validFrom: 1, validUntil: 1 });

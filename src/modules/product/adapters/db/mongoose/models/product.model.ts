@@ -74,7 +74,10 @@ const productSchema = new Schema<ProductDocument>(
 				required: true,
 				ref: "Price",
 			},
-			currency: {},
+			currency: {
+				type: String,
+				required: true,
+			},
 			unitAmount: {
 				type: Number,
 				required: true,
