@@ -30,9 +30,10 @@ export namespace Order {
 
 	export type Model = {
 		id: Id;
+		code: string;
 		userId: Id;
 		organizationId: Id;
-    organization: Organization.Model
+		organization: Organization.Model;
 		items: Item[];
 		totalAmount: number;
 		status: Status;
@@ -71,6 +72,21 @@ export namespace Order {
 		};
 	};
 
+	export const generateOrderCode = (): string => {
+		const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		const randomLetters = letters.charAt(Math.floor(Math.random() * letters.length)) + 
+							 letters.charAt(Math.floor(Math.random() * letters.length));
+		
+		const now = new Date();
+		const year = now.getFullYear().toString().slice(-2);
+		const month = (now.getMonth() + 1).toString().padStart(2, '0');
+		const day = now.getDate().toString().padStart(2, '0');
+		
+		const randomNumbers = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+		
+		return `${randomLetters}-${year}${month}${day}-${randomNumbers}`;
+	};
+
 	export class Entity {
 		private readonly props: Model;
 
@@ -96,6 +112,7 @@ export namespace Order {
 
 			const model: Model = {
 				id: params.id ?? id(),
+				code: generateOrderCode(),
 				userId: params.userId,
 				organizationId: params.organizationId,
 				organization: null as any,
@@ -186,9 +203,10 @@ export namespace Order {
 		getSnapshot(): Model {
 			return {
 				id: this.props.id,
+				code: this.props.code,
 				userId: this.props.userId,
 				organizationId: this.props.organizationId,
-        organization: this.props.organization,
+				organization: this.props.organization,
 				items: this.props.items,
 				totalAmount: this.props.totalAmount,
 				status: this.props.status,

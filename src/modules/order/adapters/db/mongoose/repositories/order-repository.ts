@@ -56,6 +56,7 @@ export class MongooseOrderRepository implements OrderRepository {
 				$group: {
 					_id: "$_id",
 					id: { $first: "$id" },
+					code: { $first: "$code" },
 					userId: { $first: "$userId" },
 					organizationId: { $first: "$organizationId" },
 					organization: { $first: "$organization" },
@@ -91,9 +92,10 @@ export class MongooseOrderRepository implements OrderRepository {
 	private mapToDomainModel(doc: OrderDocument): Order.Model {
 		return {
 			id: doc.id,
+			code: doc.code,
 			userId: doc.userId,
 			organizationId: doc.organizationId,
-      organization: doc.organization as any,
+			organization: doc.organization as any,
 			items: doc.items.map((item) => ({
 				productId: item.productId,
 				priceId: item.priceId,
@@ -122,6 +124,7 @@ export class MongooseOrderRepository implements OrderRepository {
 	private mapToDocumentModel(order: Order.Model): Partial<OrderDocument> {
 		return {
 			id: order.id,
+			code: order.code,
 			userId: order.userId,
 			organizationId: order.organizationId,
 			items: order.items.map((item) => ({

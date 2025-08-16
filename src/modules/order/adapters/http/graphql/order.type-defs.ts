@@ -51,6 +51,7 @@ export const orderTypeDefs = `#graphql
   # Order Type
   type Order {
     id: String!
+    code: String!
     userId: String!
     organizationId: String!
     organization: OrderOrganization!

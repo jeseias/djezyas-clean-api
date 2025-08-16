@@ -4,6 +4,7 @@ import type { Organization } from "@/src/modules/organization/core/domain/entiti
 
 export interface OrderDocument extends Document {
 	id: string;
+	code: string;
 	userId: string;
 	organizationId: string;
 	items: {
@@ -26,7 +27,7 @@ export interface OrderDocument extends Document {
 	meta?: Record<string, any>;
 	createdAt: Date;
 	updatedAt: Date;
-  organization: Organization.Model
+	organization: Organization.Model;
 }
 
 const orderItemSchema = new Schema({
@@ -64,6 +65,10 @@ const orderItemSchema = new Schema({
 const orderSchema = new Schema<OrderDocument>(
 	{
 		id: {
+			type: String,
+			required: true,
+		},
+		code: {
 			type: String,
 			required: true,
 		},
@@ -132,6 +137,7 @@ const orderSchema = new Schema<OrderDocument>(
 );
 
 orderSchema.index({ id: 1 }, { unique: true });
+orderSchema.index({ code: 1 }, { unique: true });
 orderSchema.index({ userId: 1 });
 orderSchema.index({ organizationId: 1 });
 orderSchema.index({ status: 1 });
