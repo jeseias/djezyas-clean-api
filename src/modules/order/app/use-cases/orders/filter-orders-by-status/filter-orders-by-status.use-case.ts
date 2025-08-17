@@ -14,7 +14,7 @@ export namespace FilterOrdersByStatus {
 	export type Params = {
 		userId: string;
 		organizationId: string;
-		status?: Order.Status[];
+		status?: Order.FulfillmentStatus[];
 		fromDate?: Date;
 		toDate?: Date;
 		page?: number;
@@ -82,7 +82,7 @@ export class FilterOrdersByStatusUseCase {
 		let filteredOrders = result.items;
 		if (params.status && params.status.length > 1) {
 			filteredOrders = result.items.filter((order) =>
-				params.status!.includes(order.status),
+				params.status!.includes(order.fulfillmentStatus),
 			);
 		}
 

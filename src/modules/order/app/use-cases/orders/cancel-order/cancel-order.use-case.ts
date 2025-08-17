@@ -59,9 +59,9 @@ export class CancelOrderUseCase {
 			);
 		}
 
-		if (!orderEntity.isPending()) {
+		if (!orderEntity.isNew()) {
 			throw new AppError(
-				`Only pending orders can be cancelled. Current status: ${orderModel.status}`,
+				`Only new orders can be cancelled. Current status: ${orderModel.fulfillmentStatus}`,
 				400,
 				ErrorCode.INVALID_OPERATION,
 			);

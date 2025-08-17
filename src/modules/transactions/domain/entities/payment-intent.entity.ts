@@ -2,12 +2,13 @@ import { now } from "@/src/modules/shared";
 import { type Id, id } from "@/src/modules/shared/value-objects";
 
 export namespace PaymentIntent {
-	export type Status =
-		| "pending"
-		| "succeeded"
-		| "failed"
-		| "expired"
-		| "cancelled";
+	export enum Status {
+		PENDING = "pending",
+		SUCCEEDED = "succeeded",
+		FAILED = "failed",
+		EXPIRED = "expired",
+		CANCELLED = "cancelled",
+	}
 
 	export enum Provider {
 		MULTICAIXA_EXPRESS = "multicaixa_express",
@@ -26,7 +27,7 @@ export namespace PaymentIntent {
 		orderIds: Id[];
 		amount: number;
 		provider: Provider;
-		status?: Status;
+		status: Status;
 		transactionId?: string;
 		expiresAt?: Date;
 		createdAt?: Date;
@@ -56,7 +57,7 @@ export namespace PaymentIntent {
 				orderIds: props.orderIds,
 				amount: props.amount,
 				provider: props.provider,
-				status: props.status ?? "pending",
+				status: props.status ?? Status.PENDING,
 				expiresAt: props.expiresAt,
 				metadata: props.metadata ?? {},
 				createdAt: props.createdAt ?? nowDate,

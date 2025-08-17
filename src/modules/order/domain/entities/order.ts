@@ -189,6 +189,10 @@ export namespace Order {
 			this.props.clientConfirmedDeliveryAt = new Date();
 		}
 
+		isNew(): boolean {
+			return this.props.fulfillmentStatus === FulfillmentStatus.NEW;
+		}
+
 		isPaymentPending(): boolean {
 			return this.props.paymentStatus === PaymentStatus.PENDING;
 		}

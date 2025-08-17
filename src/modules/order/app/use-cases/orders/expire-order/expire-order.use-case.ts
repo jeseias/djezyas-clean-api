@@ -58,9 +58,9 @@ export class ExpireOrderUseCase {
 			);
 		}
 
-		if (!orderEntity.isPending()) {
+		if (!orderEntity.isNew()) {
 			throw new AppError(
-				`Order cannot be expired. Current status: ${orderModel.status}`,
+				`Order cannot be expired. Current status: ${orderModel.fulfillmentStatus}`,
 				400,
 				ErrorCode.INVALID_OPERATION,
 			);

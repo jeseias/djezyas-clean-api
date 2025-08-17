@@ -64,9 +64,9 @@ export class MarkOrderAsPaidUseCase {
 				);
 			}
 
-			if (!orderEntity.isPending()) {
+			if (!orderEntity.isPaymentPending()) {
 				throw new AppError(
-					`Order cannot be marked as paid. Current status: ${orderModel.status}`,
+					`Order cannot be marked as paid. Current status: ${orderModel.fulfillmentStatus}`,
 					400,
 					ErrorCode.INVALID_OPERATION,
 				);

@@ -87,7 +87,7 @@ export class GetOrdersByUserUseCase {
 				const date = new Date(order.createdAt);
 				key = date.toISOString().split("T")[0];
 			} else {
-				key = order.status;
+				key = order.fulfillmentStatus;
 			}
 
 			if (!grouped[key]) {

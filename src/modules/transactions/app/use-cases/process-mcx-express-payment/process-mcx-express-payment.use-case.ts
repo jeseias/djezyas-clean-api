@@ -39,9 +39,9 @@ export class ProcessMcxExpressPaymentUseCase {
 		const paymentIntentEntity = PaymentIntent.Entity.fromModel(paymentIntent);
 
 		if (params.status === "ACCEPTED") {
-			paymentIntentEntity.updateStatus("succeeded");
+			paymentIntentEntity.updateStatus(PaymentIntent.Status.SUCCEEDED);
 		} else if (params.status === "REJECTED") {
-			paymentIntentEntity.updateStatus("failed");
+			paymentIntentEntity.updateStatus(PaymentIntent.Status.FAILED);
 		}
 
 		const updatedPaymentIntent = await this.paymentIntentRepository.update(

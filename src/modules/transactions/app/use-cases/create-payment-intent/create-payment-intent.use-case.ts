@@ -1,5 +1,7 @@
+import { Order } from "@/src/modules/order/domain/entities";
 import type { OrderRepository } from "@/src/modules/order/domain/repositories";
 import { AppError, ErrorCode } from "@/src/modules/shared/errors";
+import type { TokenManager } from "@/src/modules/shared/ports/outbound/token-manager";
 import { PaymentIntent } from "../../../domain/entities";
 import type { PaymentIntentRepository } from "../../../domain/repositories";
 import type { PaymentProviderServiceRegistry } from "../../services/payment-provider-service-registry";
@@ -9,25 +11,10 @@ export namespace CreatePaymentIntent {
 		userId: string;
 		orderIds: string[];
 		provider: PaymentIntent.Provider;
-		metadata?: Record<string, any>;
-		providerExtraData?: {
-			afrimoney?: {
-				phoneNumber: string;
-				email?: string;
-			};
-			stripe?: {
-				currency?: string;
-				paymentMethodId?: string;
-			};
-			multicaixa_express?: {
-				reference?: string;
-			};
-			[key: string]: Record<string, any> | undefined;
-		};
 	};
 
 	export type Result = {
-		intent: PaymentIntent.Model;
+		token: string;
 	};
 }
 
@@ -36,6 +23,7 @@ export class CreatePaymentIntentUseCase {
 		private readonly paymentIntentRepository: PaymentIntentRepository,
 		private readonly orderRepository: OrderRepository,
 		private readonly providerRegistry: PaymentProviderServiceRegistry,
+		private readonly tokenManager: TokenManager,
 	) {}
 
 	async execute(
@@ -80,31 +68,47 @@ export class CreatePaymentIntentUseCase {
 			);
 		}
 
+		if (orders.some((o) => o.paymentStatus !== Order.PaymentStatus.PENDING)) {
+			throw new AppError(
+				"Only fulfilled orders can be paid",
+				400,
+				ErrorCode.INVALID_INPUT,
+			);
+		}
+
 		const paymentService = this.providerRegistry.get(params.provider);
 		const providerResponse = await paymentService.createSession({
 			userId: params.userId,
 			amount: totalAmount,
 			orderIds: params.orderIds,
-			metadata: params.metadata,
-			providerExtraData: params.providerExtraData,
 		});
 
 		const intentEntity = PaymentIntent.Entity.create({
 			userId: params.userId,
 			orderIds: params.orderIds,
 			provider: params.provider,
-			status: "pending",
+			status: PaymentIntent.Status.PENDING,
 			transactionId: providerResponse.transactionId,
 			expiresAt:
 				providerResponse.expiresAt ?? new Date(Date.now() + 5 * 60 * 1000),
-			metadata: params.metadata,
 			amount: totalAmount,
+			metadata: {
+				paymentProviderResponse: providerResponse,
+			},
 		});
 
-		const saved = await this.paymentIntentRepository.create(
-			intentEntity.getSnapshot(),
+		await this.paymentIntentRepository.create(intentEntity.getSnapshot());
+
+		const token = await this.tokenManager.generateToken(
+			{
+				pi: intentEntity.getSnapshot().id,
+				uid: params.userId,
+				ord: params.orderIds,
+				prv: params.provider,
+			},
+			"10m",
 		);
 
-		return { intent: saved };
+		return { token };
 	}
 }

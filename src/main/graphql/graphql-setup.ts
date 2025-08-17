@@ -10,6 +10,7 @@ import { productResolvers } from "@/src/modules/product/adapters/http/graphql/pr
 import { productTypeDefs } from "@/src/modules/product/adapters/http/graphql/product.type-defs";
 import { userResolvers } from "@/src/modules/user/adapters/http/graphql/user.resolver";
 import { userTypeDefs } from "@/src/modules/user/adapters/http/graphql/user.type-defs";
+import { transactionResolvers, transactionTypeDefs } from "@/src/modules/transactions/adapters/http/graphql";
 
 export const appTypeDefs = print(
 	mergeTypeDefs([
@@ -18,6 +19,7 @@ export const appTypeDefs = print(
 		productTypeDefs,
 		orderTypeDefs,
 		cartTypeDefs,
+    transactionTypeDefs
 	]),
 );
 
@@ -35,5 +37,6 @@ export const appResolvers = {
 		...productResolvers.Mutation,
 		...orderResolvers.Mutation,
 		...cartResolvers.Mutation,
+    ...transactionResolvers.Mutation
 	},
 };

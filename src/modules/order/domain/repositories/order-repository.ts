@@ -3,7 +3,7 @@ import type { Id } from "@/src/modules/shared/value-objects";
 import type { Order } from "../entities";
 
 export namespace OrderFilters {
-	export type Status = Order.Status;
+	export type Status = Order.FulfillmentStatus;
 
 	export type Filters = {
 		status?: Status;

@@ -43,7 +43,7 @@ export class MarkOrdersAsPaidByTransactionIdUseCase {
 		for (const orderModel of orders) {
 			const orderEntity = Order.Entity.fromModel(orderModel);
 
-			if (orderEntity.isPending()) {
+			if (orderEntity.isPaymentPending()) {
 				orderEntity.markAsPaid(params.transactionId);
 
 				const updatedOrder = await this.orderRepository.update(

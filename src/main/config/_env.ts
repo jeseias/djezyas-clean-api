@@ -17,6 +17,11 @@ export const envSchema = z.object({
 	IMAGE_KIT_PUBLIC_KEY: z.string(),
 	IMAGE_KIT_PRIVATE_KEY: z.string(),
 	IMAGE_KIT_URL_ENDPOINT: z.string(),
+
+	// EMIS
+	MCX_EXPRESS_REQUEST_TOKEN_URL: z.string(),
+	MCX_EXPRESS_FRAME_TOKEN: z.string(),
+	MCX_EXPRESS_CALLBACK_URL: z.string(),
 });
 
 const _envSchema = envSchema.safeParse(process.env);
