@@ -16,7 +16,9 @@ export interface OrderDocument extends Document {
 		subtotal: number;
 	}[];
 	totalAmount: number;
-	status: Order.Status;
+	fulfillmentStatus: Order.FulfillmentStatus;
+  paymentStatus: Order.PaymentStatus;
+  clientConfirmedIsDelivered: boolean;
 	paymentIntentId?: string;
 	transactionId?: string;
 	paidAt?: Date;
@@ -88,8 +90,14 @@ const orderSchema = new Schema<OrderDocument>(
 			required: true,
 			min: 0,
 		},
-		status: {
+		fulfillmentStatus: {
 			type: String,
+		},
+		paymentStatus: {
+			type: String,
+		},
+		clientConfirmedIsDelivered: {
+			type: Boolean,
 		},
 		paymentIntentId: {
 			type: String,

@@ -6,14 +6,25 @@ import type {
 import { type Id, id } from "@/src/modules/shared/value-objects";
 
 export namespace Order {
-	export enum Status {
-		PENDING = "pending",
-		PAID = "paid",
-		CANCELLED = "cancelled",
-		EXPIRED = "expired",
-		IN_DELIVERY = "in_delivery",
-		CLIENT_CONFIRMED_DELIVERY = "client_confirmed_delivery",
-	}
+  export enum PaymentStatus {
+    PENDING = "pending",
+    PAID = "paid",
+    REFUNDED = "refunded",
+    FAILED = "failed",
+  }
+
+  export enum FulfillmentStatus {
+    NEW = "new",
+    PICKING = "picking",
+    PACKED = "packed",
+    IN_DELIVERY = "in_delivery",
+    DELIVERED = "delivered",
+    CANCELLED = "cancelled",
+    RETURNED = "returned",
+    FAILED_DELIVERY = "failed_delivery",
+    ISSUES = "issues",
+    EXPIRED = "expired",
+  }
 
 	export type Item = {
 		priceId: Id;
@@ -36,10 +47,12 @@ export namespace Order {
 		organization: Organization.Model;
 		items: Item[];
 		totalAmount: number;
-		status: Status;
+    paymentStatus: PaymentStatus;
+    fulfillmentStatus: FulfillmentStatus;
 		paymentIntentId?: string;
 		transactionId?: string;
 		paidAt?: Date;
+    clientConfirmedIsDelivered: boolean
 		inDeliveryAt?: Date;
 		clientConfirmedDeliveryAt?: Date;
 		expiredAt?: Date;
@@ -118,7 +131,9 @@ export namespace Order {
 				organization: null as any,
 				items,
 				totalAmount,
-				status: Status.PENDING,
+        clientConfirmedIsDelivered: false,
+        paymentStatus: PaymentStatus.PENDING,
+        fulfillmentStatus: FulfillmentStatus.NEW,
 				paymentIntentId: params.paymentIntentId,
 				transactionId: params.transactionId,
 				meta: params.meta ?? {},
@@ -138,7 +153,7 @@ export namespace Order {
 		}
 
 		markAsPaid(transactionId?: string): void {
-			this.updateStatus(Status.PAID);
+			this.props.paymentStatus = PaymentStatus.PAID;
 			this.props.paidAt = new Date();
 			if (transactionId) {
 				this.props.transactionId = transactionId;
@@ -146,7 +161,7 @@ export namespace Order {
 		}
 
 		cancel(reason?: string): void {
-			this.updateStatus(Status.CANCELLED);
+			this.props.fulfillmentStatus = FulfillmentStatus.CANCELLED;
 			this.props.cancelledAt = new Date();
 			if (reason) {
 				this.props.meta = {
@@ -157,47 +172,42 @@ export namespace Order {
 		}
 
 		expire(): void {
-			this.updateStatus(Status.EXPIRED);
+			this.props.fulfillmentStatus = FulfillmentStatus.EXPIRED;
 			this.props.expiredAt = new Date();
 		}
 
 		markAsInDelivery(): void {
-			this.updateStatus(Status.IN_DELIVERY);
+			this.props.fulfillmentStatus = FulfillmentStatus.IN_DELIVERY;
 			this.props.inDeliveryAt = new Date();
 		}
 
 		markAsClientConfirmedDelivery(): void {
-			this.updateStatus(Status.CLIENT_CONFIRMED_DELIVERY);
+			this.props.clientConfirmedIsDelivered = true;
 			this.props.clientConfirmedDeliveryAt = new Date();
 		}
 
-		private updateStatus(status: Status): void {
-			this.props.status = status;
-			this.props.updatedAt = new Date();
-		}
-
-		isPending(): boolean {
-			return this.props.status === Status.PENDING;
+		isPaymentPending(): boolean {
+			return this.props.paymentStatus === PaymentStatus.PENDING;
 		}
 
 		isPaid(): boolean {
-			return this.props.status === Status.PAID;
+			return this.props.paymentStatus === PaymentStatus.PAID;
 		}
 
 		isCancelled(): boolean {
-			return this.props.status === Status.CANCELLED;
+			return this.props.fulfillmentStatus === FulfillmentStatus.CANCELLED;
 		}
 
 		isExpired(): boolean {
-			return this.props.status === Status.EXPIRED;
+			return this.props.fulfillmentStatus === FulfillmentStatus.EXPIRED;
 		}
 
 		isInDelivery(): boolean {
-			return this.props.status === Status.IN_DELIVERY;
+			return this.props.fulfillmentStatus === FulfillmentStatus.IN_DELIVERY;
 		}
 
 		isClientConfirmedDelivery(): boolean {
-			return this.props.status === Status.CLIENT_CONFIRMED_DELIVERY;
+			return this.props.clientConfirmedIsDelivered;
 		}
 
 		getSnapshot(): Model {
@@ -209,7 +219,9 @@ export namespace Order {
 				organization: this.props.organization,
 				items: this.props.items,
 				totalAmount: this.props.totalAmount,
-				status: this.props.status,
+        paymentStatus: this.props.paymentStatus,
+        fulfillmentStatus: this.props.fulfillmentStatus,
+        clientConfirmedIsDelivered: this.props.clientConfirmedIsDelivered,
 				paymentIntentId: this.props.paymentIntentId,
 				transactionId: this.props.transactionId,
 				paidAt: this.props.paidAt,

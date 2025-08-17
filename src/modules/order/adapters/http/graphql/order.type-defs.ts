@@ -1,11 +1,22 @@
 export const orderTypeDefs = `#graphql
   # Order Status Enum
-  enum OrderStatus {
+  enum OrderPaymentStatus {
     pending
     paid
+    refunded
+    failed
+  }
+
+  enum OrderFulfillmentStatus {
+    new
+    picking
+    packed
     in_delivery
-    client_confirmed_delivery
+    delivered
     cancelled
+    returned
+    failed_delivery
+    issues
     expired
   }
 
@@ -57,7 +68,9 @@ export const orderTypeDefs = `#graphql
     organization: OrderOrganization!
     items: [OrderItem!]!
     totalAmount: Float!
-    status: OrderStatus!
+    paymentStatus: OrderPaymentStatus!
+    fulfillmentStatus: OrderFulfillmentStatus!
+    clientConfirmedIsDelivered: Boolean!
     paymentIntentId: String
     transactionId: String
     paidAt: DateTime
@@ -139,7 +152,8 @@ export const orderTypeDefs = `#graphql
   input FilterOrdersByStatusInput {
     userId: String!
     organizationId: String!
-    status: [OrderStatus!]
+    fulfillmentStatus: [OrderFulfillmentStatus!]
+    paymentStatus: [OrderPaymentStatus!]
     fromDate: DateTime
     toDate: DateTime
     page: Int
@@ -178,7 +192,8 @@ export const orderTypeDefs = `#graphql
     page: Int
     sortBy: String
     sortOrder: String
-    status: OrderStatus
+    fulfillmentStatus: OrderFulfillmentStatus
+    paymentStatus: OrderPaymentStatus
     createdAfter: DateTime
     createdBefore: DateTime
   }
