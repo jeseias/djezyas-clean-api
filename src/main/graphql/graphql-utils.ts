@@ -1,4 +1,5 @@
 import { AppError, ErrorCode } from "@/src/modules/shared/errors";
+import { GraphQLError } from "graphql";
 import { withUser } from "../elysia/plugins";
 
 export const debugResolver = <T extends (...args: any[]) => Promise<any>>(
@@ -39,34 +40,30 @@ export const handleResolver = <T extends (...args: any[]) => Promise<any>>(
 		try {
 			return await fn(...args);
 		} catch (error) {
-			const err = error instanceof Error ? error : new Error("Unknown error");
-
-			// // Enhanced error logging with context
-			// Logger.error(`[GraphQL Error]: ${err.message}`, {
-			// 	error: {
-			// 		name: err.name,
-			// 		message: err.message,
-			// 		stack: err.stack,
-			// 	},
-			// 	context: {
-			// 		functionName: fn.name || "anonymous",
-			// 		args:
-			// 			args.length > 0
-			// 				? `Arguments count: ${args.length}`
-			// 				: "No arguments",
-			// 		argsTypes: args.map((arg) => typeof arg),
-			// 		timestamp: new Date().toISOString(),
-			// 	},
-			// });
-
-			// If it's a GraphQL error, re-throw it as is
-			if (error && typeof error === "object" && "extensions" in error) {
+			// If it's already a GraphQLError, re-throw it as is
+			if (error instanceof GraphQLError) {
 				throw error;
 			}
 
-			throw err instanceof AppError
-				? err
-				: new AppError(err.message, 500, ErrorCode.INTERNAL_SERVER_ERROR);
+			// If it's an AppError, wrap it in a GraphQLError
+			if (error instanceof AppError) {
+				throw new GraphQLError(error.message, {
+					extensions: {
+						code: error.code,
+						statusCode: error.statusCode,
+					},
+				});
+			}
+
+			// For other errors, create a generic AppError and wrap it
+			const err = error instanceof Error ? error : new Error("Unknown error");
+			const appError = new AppError(err.message, 500, ErrorCode.INTERNAL_SERVER_ERROR);
+			throw new GraphQLError(appError.message, {
+				extensions: {
+					code: appError.code,
+					statusCode: appError.statusCode,
+				},
+			});
 		}
 	}) as T;
 };

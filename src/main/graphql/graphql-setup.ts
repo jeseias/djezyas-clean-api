@@ -30,6 +30,7 @@ export const appResolvers = {
 		...productResolvers.Query,
 		...orderResolvers.Query,
 		...cartResolvers.Query,
+    ...transactionResolvers.Query
 	},
 	Mutation: {
 		...userResolvers.Mutation,

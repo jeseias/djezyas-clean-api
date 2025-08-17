@@ -15,6 +15,7 @@ export namespace GetCheckoutSession {
 		provider: PaymentIntent.Provider;
 		totalAmount: number;
 		orders: Order.Model[];
+		transactionId?: string;
 	};
 }
 
@@ -55,6 +56,7 @@ export class GetCheckoutSessionUseCase {
 			provider: paymentIntent.provider,
 			totalAmount: paymentIntent.amount,
 			orders,
+			transactionId: paymentIntent.transactionId,
 		};
 	}
 }

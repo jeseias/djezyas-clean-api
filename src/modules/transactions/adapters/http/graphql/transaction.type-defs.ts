@@ -33,6 +33,7 @@ export const transactionTypeDefs = `#graphql
     provider: PaymentProvider!
     totalAmount: Float!
     orders: [Order!]!
+    transactionId: String
   }
 
   input CreatePaymentIntentInput {
@@ -45,7 +46,7 @@ export const transactionTypeDefs = `#graphql
   }
 
   type Query {
-    paymentIntent(id: String!): PaymentIntent
+    # paymentIntent(id: String!): PaymentIntent
     checkoutSession(token: String!): CheckoutSession!
   }
 

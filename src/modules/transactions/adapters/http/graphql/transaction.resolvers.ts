@@ -3,11 +3,13 @@ import { transactionUseCasesFactory } from "@/src/modules/transactions/adapters/
 
 export const transactionResolvers = {
 	Query: {
-		checkoutSession: makeResolver(async ({ token }) => {
+		checkoutSession: makeResolver(async (_, { token }) => {
 			const useCase =
 				transactionUseCasesFactory.createGetCheckoutSessionUseCase();
-			return useCase.execute({ token });
-		}),
+			const result = await useCase.execute({ token });
+      console.log({result})
+			return result;
+		}, { requireAuth: false }),
 	},
 	Mutation: {
 		createPaymentIntent: makeResolver(async ({ input }, { userId }) => {

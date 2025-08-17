@@ -45,11 +45,9 @@ const paymentIntentSchema = new Schema<PaymentIntentDocument>(
 		},
 		transactionId: {
 			type: String,
-			index: true,
 		},
 		expiresAt: {
 			type: Date,
-			index: true,
 		},
 		metadata: {
 			type: Schema.Types.Mixed,
@@ -76,7 +74,6 @@ const paymentIntentSchema = new Schema<PaymentIntentDocument>(
 );
 
 // Indexes for better query performance
-paymentIntentSchema.index({ id: 1 }, { unique: true });
 paymentIntentSchema.index({ userId: 1 });
 paymentIntentSchema.index({ orderIds: 1 });
 paymentIntentSchema.index({ status: 1 });
