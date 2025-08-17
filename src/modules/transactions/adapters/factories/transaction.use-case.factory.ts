@@ -5,6 +5,7 @@ import { jwtManager } from "@/src/modules/shared/adapters/factories/service.fact
 import type { TokenManager } from "@/src/modules/shared/ports/outbound/token-manager";
 import type { PaymentProviderServiceRegistry } from "../../app/services/payment-provider-service-registry";
 import { CreatePaymentIntentUseCase } from "../../app/use-cases/create-payment-intent";
+import { GetCheckoutSessionUseCase } from "../../app/use-cases/get-checkout-session";
 import type { PaymentIntentRepository } from "../../domain/repositories";
 import { createPaymentProviderRegistry } from "../payment-providers";
 import { paymentIntentMongooseRepository } from "./repository.factory";
@@ -22,6 +23,14 @@ export class TransactionUseCases {
 			this.paymentIntentRepository,
 			this.orderRepository,
 			this.providerRegistry,
+			this.tokenManager,
+		);
+	}
+
+	createGetCheckoutSessionUseCase(): GetCheckoutSessionUseCase {
+		return new GetCheckoutSessionUseCase(
+			this.paymentIntentRepository,
+			this.orderRepository,
 			this.tokenManager,
 		);
 	}

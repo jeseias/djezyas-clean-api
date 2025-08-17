@@ -26,6 +26,15 @@ export const transactionTypeDefs = `#graphql
     updatedAt: DateTime!
   }
 
+  type CheckoutSession {
+    paymentIntentId: String!
+    status: PaymentIntentStatus!
+    expiresAt: DateTime
+    provider: PaymentProvider!
+    totalAmount: Float!
+    orders: [Order!]!
+  }
+
   input CreatePaymentIntentInput {
     orderIds: [String!]!
     provider: PaymentProvider!
@@ -33,6 +42,11 @@ export const transactionTypeDefs = `#graphql
 
   type CreatePaymentIntentResponse {
     token: String!
+  }
+
+  type Query {
+    paymentIntent(id: String!): PaymentIntent
+    checkoutSession(token: String!): CheckoutSession!
   }
 
   type Mutation {
