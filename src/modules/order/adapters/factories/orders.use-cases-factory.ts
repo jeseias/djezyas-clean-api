@@ -6,9 +6,7 @@ import type {
 	IsOrganizationMemberService,
 	IsOrganizationValidService,
 } from "@/src/modules/organization/core/app/services";
-import {
-	productMongooseRepository,
-} from "@/src/modules/product/adapters/factories/repository.factory";
+import { productMongooseRepository } from "@/src/modules/product/adapters/factories/repository.factory";
 import type { ProductRepository } from "@/src/modules/product/core/ports/outbound/product-repository";
 import { isUserValidService } from "@/src/modules/user/adapters/factories/service.factory";
 import type { IsUserValidService } from "@/src/modules/user/core/app/services";

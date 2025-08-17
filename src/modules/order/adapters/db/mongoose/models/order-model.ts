@@ -1,6 +1,6 @@
 import mongoose, { type Document, Schema } from "mongoose";
-import { Order } from "../../../../domain/entities/order";
 import type { Organization } from "@/src/modules/organization/core/domain/entities";
+import type { Order } from "../../../../domain/entities/order";
 
 export interface OrderDocument extends Document {
 	id: string;
@@ -17,8 +17,8 @@ export interface OrderDocument extends Document {
 	}[];
 	totalAmount: number;
 	fulfillmentStatus: Order.FulfillmentStatus;
-  paymentStatus: Order.PaymentStatus;
-  clientConfirmedIsDelivered: boolean;
+	paymentStatus: Order.PaymentStatus;
+	clientConfirmedIsDelivered: boolean;
 	paymentIntentId?: string;
 	transactionId?: string;
 	paidAt?: Date;

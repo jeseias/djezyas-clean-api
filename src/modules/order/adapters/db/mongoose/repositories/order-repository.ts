@@ -25,15 +25,15 @@ export class MongooseOrderRepository implements OrderRepository {
 					as: "items.product",
 				},
 			},
-      // Lookup for organization
-      {
-        $lookup: {
-          from: "organizations",
-          localField: "organizationId",
-          foreignField: "id",
-          as: "organization",
-        }
-      },
+			// Lookup for organization
+			{
+				$lookup: {
+					from: "organizations",
+					localField: "organizationId",
+					foreignField: "id",
+					as: "organization",
+				},
+			},
 			// Lookup prices for each item
 			{
 				$lookup: {
@@ -48,7 +48,7 @@ export class MongooseOrderRepository implements OrderRepository {
 				$addFields: {
 					"items.product": { $arrayElemAt: ["$items.product", 0] },
 					"items.price": { $arrayElemAt: ["$items.price", 0] },
-          "organization": { $arrayElemAt: ["$organization", 0] },
+					organization: { $arrayElemAt: ["$organization", 0] },
 				},
 			},
 			// Group back by order, preserving all item fields
@@ -270,7 +270,7 @@ export class MongooseOrderRepository implements OrderRepository {
 			query.updatedAt = updatedAtFilter;
 		}
 
-				const sort: Record<string, 1 | -1> = {};
+		const sort: Record<string, 1 | -1> = {};
 		sort[sortBy] = sortOrder === "asc" ? 1 : -1;
 
 		// Build aggregation pipeline with lookups
@@ -290,9 +290,11 @@ export class MongooseOrderRepository implements OrderRepository {
 		const docs = await OrderModel.aggregate(pipeline);
 		const totalItems = await OrderModel.countDocuments(query);
 
-		console.log('==>+=> My Orders with Products and Prices', docs);
+		console.log("==>+=> My Orders with Products and Prices", docs);
 
-		const items = docs.map((doc) => this.mapToDomainModel(doc as OrderDocument));
+		const items = docs.map((doc) =>
+			this.mapToDomainModel(doc as OrderDocument),
+		);
 
 		return {
 			items,
@@ -393,7 +395,9 @@ export class MongooseOrderRepository implements OrderRepository {
 		const docs = await OrderModel.aggregate(pipeline);
 		const totalItems = await OrderModel.countDocuments(query);
 
-		const items = docs.map((doc) => this.mapToDomainModel(doc as OrderDocument));
+		const items = docs.map((doc) =>
+			this.mapToDomainModel(doc as OrderDocument),
+		);
 
 		return {
 			items,

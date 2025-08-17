@@ -6,25 +6,25 @@ import type {
 import { type Id, id } from "@/src/modules/shared/value-objects";
 
 export namespace Order {
-  export enum PaymentStatus {
-    PENDING = "pending",
-    PAID = "paid",
-    REFUNDED = "refunded",
-    FAILED = "failed",
-  }
+	export enum PaymentStatus {
+		PENDING = "pending",
+		PAID = "paid",
+		REFUNDED = "refunded",
+		FAILED = "failed",
+	}
 
-  export enum FulfillmentStatus {
-    NEW = "new",
-    PICKING = "picking",
-    PACKED = "packed",
-    IN_DELIVERY = "in_delivery",
-    DELIVERED = "delivered",
-    CANCELLED = "cancelled",
-    RETURNED = "returned",
-    FAILED_DELIVERY = "failed_delivery",
-    ISSUES = "issues",
-    EXPIRED = "expired",
-  }
+	export enum FulfillmentStatus {
+		NEW = "new",
+		PICKING = "picking",
+		PACKED = "packed",
+		IN_DELIVERY = "in_delivery",
+		DELIVERED = "delivered",
+		CANCELLED = "cancelled",
+		RETURNED = "returned",
+		FAILED_DELIVERY = "failed_delivery",
+		ISSUES = "issues",
+		EXPIRED = "expired",
+	}
 
 	export type Item = {
 		priceId: Id;
@@ -47,12 +47,12 @@ export namespace Order {
 		organization: Organization.Model;
 		items: Item[];
 		totalAmount: number;
-    paymentStatus: PaymentStatus;
-    fulfillmentStatus: FulfillmentStatus;
+		paymentStatus: PaymentStatus;
+		fulfillmentStatus: FulfillmentStatus;
 		paymentIntentId?: string;
 		transactionId?: string;
 		paidAt?: Date;
-    clientConfirmedIsDelivered: boolean
+		clientConfirmedIsDelivered: boolean;
 		inDeliveryAt?: Date;
 		clientConfirmedDeliveryAt?: Date;
 		expiredAt?: Date;
@@ -86,17 +86,20 @@ export namespace Order {
 	};
 
 	export const generateOrderCode = (): string => {
-		const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-		const randomLetters = letters.charAt(Math.floor(Math.random() * letters.length)) + 
-							 letters.charAt(Math.floor(Math.random() * letters.length));
-		
+		const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		const randomLetters =
+			letters.charAt(Math.floor(Math.random() * letters.length)) +
+			letters.charAt(Math.floor(Math.random() * letters.length));
+
 		const now = new Date();
 		const year = now.getFullYear().toString().slice(-2);
-		const month = (now.getMonth() + 1).toString().padStart(2, '0');
-		const day = now.getDate().toString().padStart(2, '0');
-		
-		const randomNumbers = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-		
+		const month = (now.getMonth() + 1).toString().padStart(2, "0");
+		const day = now.getDate().toString().padStart(2, "0");
+
+		const randomNumbers = Math.floor(Math.random() * 10000)
+			.toString()
+			.padStart(4, "0");
+
 		return `${randomLetters}-${year}${month}${day}-${randomNumbers}`;
 	};
 
@@ -131,9 +134,9 @@ export namespace Order {
 				organization: null as any,
 				items,
 				totalAmount,
-        clientConfirmedIsDelivered: false,
-        paymentStatus: PaymentStatus.PENDING,
-        fulfillmentStatus: FulfillmentStatus.NEW,
+				clientConfirmedIsDelivered: false,
+				paymentStatus: PaymentStatus.PENDING,
+				fulfillmentStatus: FulfillmentStatus.NEW,
 				paymentIntentId: params.paymentIntentId,
 				transactionId: params.transactionId,
 				meta: params.meta ?? {},
@@ -219,9 +222,9 @@ export namespace Order {
 				organization: this.props.organization,
 				items: this.props.items,
 				totalAmount: this.props.totalAmount,
-        paymentStatus: this.props.paymentStatus,
-        fulfillmentStatus: this.props.fulfillmentStatus,
-        clientConfirmedIsDelivered: this.props.clientConfirmedIsDelivered,
+				paymentStatus: this.props.paymentStatus,
+				fulfillmentStatus: this.props.fulfillmentStatus,
+				clientConfirmedIsDelivered: this.props.clientConfirmedIsDelivered,
 				paymentIntentId: this.props.paymentIntentId,
 				transactionId: this.props.transactionId,
 				paidAt: this.props.paidAt,
