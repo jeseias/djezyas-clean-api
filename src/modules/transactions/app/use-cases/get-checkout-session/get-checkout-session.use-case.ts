@@ -55,8 +55,8 @@ export class GetCheckoutSessionUseCase {
 			expiresAt: paymentIntent.expiresAt,
 			provider: paymentIntent.provider,
 			totalAmount: paymentIntent.amount,
+			transactionId: paymentIntent.metadata?.paymentProviderResponse?.transactionId,
 			orders,
-			transactionId: paymentIntent.transactionId,
 		};
 	}
 }
