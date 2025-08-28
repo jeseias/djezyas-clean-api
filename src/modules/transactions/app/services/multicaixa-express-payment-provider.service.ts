@@ -45,6 +45,7 @@ export class MulticaixaExpressPaymentProviderService
 			transactionId: tokenResponse.id,
 			expiresAt,
 			paymentUrl,
+			reference,
 		};
 	}
 }

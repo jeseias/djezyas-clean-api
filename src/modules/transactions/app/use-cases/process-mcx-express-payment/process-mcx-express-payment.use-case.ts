@@ -50,7 +50,11 @@ export class ProcessMcxExpressPaymentUseCase {
 
 		let ordersUpdated = false;
 
-		if (params.status === "ACCEPTED" && updatedPaymentIntent.transactionIds && updatedPaymentIntent.transactionIds.length > 0) {
+		if (
+			params.status === "ACCEPTED" &&
+			updatedPaymentIntent.transactionIds &&
+			updatedPaymentIntent.transactionIds.length > 0
+		) {
 			try {
 				await this.markOrdersAsPaidByTransactionIdUseCase.execute({
 					transactionId: updatedPaymentIntent.transactionIds[0],
@@ -71,7 +75,7 @@ export class ProcessMcxExpressPaymentUseCase {
 		reference: string,
 	): Promise<PaymentIntent.Model | null> {
 		const paymentIntent =
-			await this.paymentIntentRepository.findByTransactionId(reference);
+			await this.paymentIntentRepository.findByProviderReference(reference);
 
 		if (paymentIntent) {
 			return paymentIntent;

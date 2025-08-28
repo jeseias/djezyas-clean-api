@@ -21,13 +21,19 @@ const McxExpressCallbackSchema = z.object({
 	transactionType: z.string().optional(),
 	orderOrigin: z.string().optional(),
 	currency: z.string().optional(),
-	reference: z.object({
-		id: z.string().min(1, "Reference ID is required"),
-	}).optional(),
-	pointOfSale: z.object({
-		id: z.string(),
-	}).optional(),
-	merchantReferenceNumber: z.string().min(1, "Merchant reference number is required"),
+	reference: z
+		.object({
+			id: z.string().min(1, "Reference ID is required"),
+		})
+		.optional(),
+	pointOfSale: z
+		.object({
+			id: z.string(),
+		})
+		.optional(),
+	merchantReferenceNumber: z
+		.string()
+		.min(1, "Merchant reference number is required"),
 });
 
 export type McxExpressCallbackRequest = z.infer<
@@ -61,10 +67,13 @@ export class McxExpressController extends Controller<
 		request: ControllerRequest<McxExpressCallbackRequest>,
 	): Promise<ControllerResponse<McxExpressCallbackResponse>> {
 		try {
-			console.log("==>==>==> McxExpress callback request:", JSON.stringify(request.body, null, 2));
-			
+			console.log(
+				"==>==>==> McxExpress callback request:",
+				JSON.stringify(request.body, null, 2),
+			);
+
 			const validatedData = McxExpressCallbackSchema.parse(request.body);
-			
+
 			// Use merchantReferenceNumber as the primary reference
 			const reference = validatedData.merchantReferenceNumber;
 

@@ -18,6 +18,7 @@ export namespace PaymentProviderService {
 		transactionId: string;
 		expiresAt?: Date;
 		paymentUrl?: string;
+		reference: string;
 	};
 }
 

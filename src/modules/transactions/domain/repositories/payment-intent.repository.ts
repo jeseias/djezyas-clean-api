@@ -3,6 +3,9 @@ import type { PaymentIntent } from "../entities/payment-intent.entity";
 
 export interface PaymentIntentRepository {
 	findById(id: Id): Promise<PaymentIntent.Model | null>;
+	findByProviderReference(
+		reference: string,
+	): Promise<PaymentIntent.Model | null>;
 	findByTransactionId(
 		transactionId: string,
 	): Promise<PaymentIntent.Model | null>;

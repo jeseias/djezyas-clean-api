@@ -23,6 +23,15 @@ export class MongoosePaymentIntentRepository
 		return paymentIntent && this.mapToDomainModel(paymentIntent);
 	}
 
+	async findByProviderReference(
+		reference: string,
+	): Promise<PaymentIntent.Model | null> {
+		const paymentIntent = await PaymentIntentModel.findOne({
+			providerReference: reference,
+		}).lean();
+		return paymentIntent && this.mapToDomainModel(paymentIntent);
+	}
+
 	async findByReference(reference: string): Promise<PaymentIntent.Model[]> {
 		const paymentIntents = await PaymentIntentModel.find({
 			$or: [{ transactionIds: reference }, { id: reference }],
