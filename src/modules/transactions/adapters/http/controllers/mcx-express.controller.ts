@@ -46,6 +46,7 @@ export class McxExpressController extends Controller<
 		request: ControllerRequest<McxExpressCallbackRequest>,
 	): Promise<ControllerResponse<McxExpressCallbackResponse>> {
 		try {
+      console.log("==>==>==> McxExpress callback request:", request.body);
 			const validatedData = McxExpressCallbackSchema.parse(request.body);
 
 			const result = await this.processMcxExpressPaymentUseCase.execute({
