@@ -5,6 +5,7 @@ import type { TokenManager } from "@/src/modules/shared/ports/outbound/token-man
 import { PaymentIntent } from "../../../domain/entities";
 import type { PaymentIntentRepository } from "../../../domain/repositories";
 import type { PaymentProviderServiceRegistry } from "../../services/payment-provider-service-registry";
+import { generatePaymentReference } from "../../../adapters/payment-providers/multicaixa-express-client";
 
 export namespace CreatePaymentIntent {
 	export type Params = {
@@ -77,10 +78,12 @@ export class CreatePaymentIntentUseCase {
 		}
 
 		const paymentService = this.providerRegistry.get(params.provider);
+    const providerReference = generatePaymentReference(15, "DJEZ");
 		const providerResponse = await paymentService.createSession({
 			userId: params.userId,
 			amount: totalAmount,
 			orderIds: params.orderIds,
+			reference: providerReference,
 		});
 
 		const intentEntity = PaymentIntent.Entity.create({
@@ -88,7 +91,7 @@ export class CreatePaymentIntentUseCase {
 			orderIds: params.orderIds,
 			provider: params.provider,
 			status: PaymentIntent.Status.PENDING,
-			providerReference: providerResponse.reference,
+			providerReference,
 			currency: "AOA",
 			transactionIds: providerResponse.transactionId
 				? [providerResponse.transactionId]

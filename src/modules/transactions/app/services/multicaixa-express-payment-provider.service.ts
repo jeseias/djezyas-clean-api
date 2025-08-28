@@ -1,4 +1,3 @@
-import { generatePaymentReference } from "../../adapters/payment-providers/multicaixa-express-client";
 import type { PaymentProviderService } from "../ports/outbound/payment-provider-service";
 
 namespace MulticaixaExpressRequestPaymentToken {
@@ -29,12 +28,10 @@ export class MulticaixaExpressPaymentProviderService
 	async createSession(
 		params: PaymentProviderService.CreateSessionParams,
 	): Promise<PaymentProviderService.CreateSessionResult> {
-		const reference = generatePaymentReference(15, "DJEZ");
-
 		const tokenResponse =
 			await this.multicaixaExpressClient.requestPaymentToken({
 				amount: params.amount,
-				reference,
+				reference: params.reference,
 			});
 
 		const expiresAt = new Date(Date.now() + tokenResponse.timeToLive);
@@ -45,7 +42,6 @@ export class MulticaixaExpressPaymentProviderService
 			transactionId: tokenResponse.id,
 			expiresAt,
 			paymentUrl,
-			reference,
 		};
 	}
 }
