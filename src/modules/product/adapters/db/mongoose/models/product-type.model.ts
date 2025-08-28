@@ -49,14 +49,14 @@ const productTypeSchema = new Schema<ProductTypeDocument>(
 	{
 		timestamps: true,
 		toJSON: {
-			transform: (doc, ret) => {
+			transform: (_, ret) => {
 				delete ret.__v;
 				delete ret._id;
 				return ret;
 			},
 		},
 		toObject: {
-			transform: (doc, ret) => {
+			transform: (_, ret) => {
 				delete ret.__v;
 				delete ret._id;
 				return ret;

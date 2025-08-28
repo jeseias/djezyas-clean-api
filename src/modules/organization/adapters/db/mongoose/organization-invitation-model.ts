@@ -1,6 +1,5 @@
 import mongoose, { type Document, Schema } from "mongoose";
 import type { OrganizationInvitation } from "../../../core/domain/entities/organization-invitation";
-import { OrganizationModel } from "./organization-model";
 
 export interface OrganizationInvitationDocument extends Document {
 	id: string;
@@ -58,7 +57,7 @@ const organizationInvitationSchema = new Schema<OrganizationInvitationDocument>(
 		timestamps: true,
 		toJSON: {
 			virtuals: true,
-			transform: (doc, ret) => {
+			transform: (_doc, ret) => {
 				delete ret.__v;
 				delete ret._id;
 				return ret;
@@ -66,7 +65,7 @@ const organizationInvitationSchema = new Schema<OrganizationInvitationDocument>(
 		},
 		toObject: {
 			virtuals: true,
-			transform: (doc, ret) => {
+			transform: (_doc, ret) => {
 				delete ret.__v;
 				delete ret._id;
 				return ret;

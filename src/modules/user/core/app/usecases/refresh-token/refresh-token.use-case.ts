@@ -45,7 +45,7 @@ export class RefreshTokenUseCase {
 		let payload: Record<string, unknown>;
 		try {
 			payload = await this.tokenManager.verifyToken(refreshToken);
-		} catch (error) {
+		} catch {
 			throw new AppError(
 				"Invalid or expired refresh token",
 				401,

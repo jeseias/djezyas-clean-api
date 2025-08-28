@@ -39,9 +39,9 @@ export class ProcessMcxExpressPaymentUseCase {
 		const paymentIntentEntity = PaymentIntent.Entity.fromModel(paymentIntent);
 
 		if (params.status === "ACCEPTED") {
-			paymentIntentEntity.updateStatus(PaymentIntent.Status.SUCCEEDED);
+			paymentIntentEntity.markSucceeded();
 		} else if (params.status === "REJECTED") {
-			paymentIntentEntity.updateStatus(PaymentIntent.Status.FAILED);
+			paymentIntentEntity.markFailed();
 		}
 
 		const updatedPaymentIntent = await this.paymentIntentRepository.update(
@@ -50,10 +50,10 @@ export class ProcessMcxExpressPaymentUseCase {
 
 		let ordersUpdated = false;
 
-		if (params.status === "ACCEPTED" && updatedPaymentIntent.transactionId) {
+		if (params.status === "ACCEPTED" && updatedPaymentIntent.transactionIds && updatedPaymentIntent.transactionIds.length > 0) {
 			try {
 				await this.markOrdersAsPaidByTransactionIdUseCase.execute({
-					transactionId: updatedPaymentIntent.transactionId,
+					transactionId: updatedPaymentIntent.transactionIds[0],
 				});
 				ordersUpdated = true;
 			} catch (error) {

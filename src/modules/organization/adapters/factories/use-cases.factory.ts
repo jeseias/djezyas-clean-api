@@ -2,6 +2,7 @@ import { postmarkEmailService } from "@/src/modules/shared/adapters/factories/se
 import type { EmailService } from "@/src/modules/shared/ports/outbound/email-service";
 import { userMongooseRepository } from "@/src/modules/user/adapters/factories/repository.factory";
 import type { UserRepository } from "@/src/modules/user/core/ports/outbound/user-repository";
+import type { IsOrganizationMemberService } from "../../core/app/services";
 import type { OrganizationTemplateService } from "../../core/app/services/template-service";
 import { AcceptInvitationUseCase } from "../../core/app/usecases/accept-invitation/accept-invitation.use-case";
 import { CreateOrganizationUseCase } from "../../core/app/usecases/create-organization/create-organization.use-case";
@@ -10,6 +11,8 @@ import { InviteMemberUseCase } from "../../core/app/usecases/invite-member/invit
 import { LoadMyInvitationsUseCase } from "../../core/app/usecases/load-my-invitations/load-my-invitations.use-case";
 import { LoadMyOrganizationsUseCase } from "../../core/app/usecases/load-my-organizations/load-my-organizations.use-case";
 import { LoadStoresUseCase } from "../../core/app/usecases/load-stores";
+import { UpdateOrganizationUseCase } from "../../core/app/usecases/update-organization/update-organization.use-case";
+import { UpdateOrganizationLogoUseCase } from "../../core/app/usecases/update-organization-logo/update-organization-logo.use-case";
 import type { OrganizationInvitationRepository } from "../../core/ports/outbound/organization-invitation-repository";
 import type { OrganizationMemberRepository } from "../../core/ports/outbound/organization-member-repository";
 import type { OrganizationRepository } from "../../core/ports/outbound/organization-repository";
@@ -18,7 +21,10 @@ import {
 	organizationMemberMongooseRepository,
 	organizationMongooseRepository,
 } from "./repository.factory";
-import { organizationTemplateService } from "./service.factory";
+import {
+	isOrganizationMemberService,
+	organizationTemplateService,
+} from "./service.factory";
 
 export class OrganizationUseCasesFactory {
 	constructor(
@@ -28,6 +34,7 @@ export class OrganizationUseCasesFactory {
 		private readonly userRepository: UserRepository,
 		private readonly emailService: EmailService,
 		private readonly templateService: OrganizationTemplateService,
+		private readonly isMemberOfOrganizationService: IsOrganizationMemberService,
 	) {}
 
 	createOrganization() {
@@ -76,6 +83,20 @@ export class OrganizationUseCasesFactory {
 	loadStores() {
 		return new LoadStoresUseCase(this.organizationRepository);
 	}
+
+	updateOrganizationLogo() {
+		return new UpdateOrganizationLogoUseCase(
+			this.organizationRepository,
+			this.isMemberOfOrganizationService,
+		);
+	}
+
+	updateOrganization() {
+		return new UpdateOrganizationUseCase(
+			this.organizationRepository,
+			this.isMemberOfOrganizationService,
+		);
+	}
 }
 
 export const organizationUseCasesFactory = new OrganizationUseCasesFactory(
@@ -85,4 +106,5 @@ export const organizationUseCasesFactory = new OrganizationUseCasesFactory(
 	userMongooseRepository,
 	postmarkEmailService,
 	organizationTemplateService,
+	isOrganizationMemberService,
 );

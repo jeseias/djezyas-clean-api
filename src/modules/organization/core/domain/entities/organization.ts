@@ -28,6 +28,16 @@ export namespace Organization {
 
 	export type Settings = Partial<Record<SettingKey, unknown>>;
 
+	export type Location = {
+		address: string;
+		city: string;
+		state?: string;
+		country: string;
+		postalCode?: string;
+		latitude: number;
+		longitude: number;
+	};
+
 	export type Props = {
 		id: Id;
 		name: string;
@@ -39,6 +49,7 @@ export namespace Organization {
 		status?: Status;
 		plan: PlanType;
 		logoUrl?: Url | string;
+		location?: Location;
 		settings?: Settings;
 		meta?: Record<string, unknown>;
 	};
@@ -54,6 +65,7 @@ export namespace Organization {
 		status?: Status;
 		plan?: PlanType;
 		logoUrl?: string;
+		location?: Location;
 		settings?: Settings;
 		meta?: Record<string, unknown>;
 	};
@@ -62,6 +74,7 @@ export namespace Organization {
 		slug: string;
 		name: string;
 		logoUrl?: Url;
+		location?: Location;
 		createdAt: Date;
 	};
 
@@ -81,6 +94,7 @@ export namespace Organization {
 				status: params.status ?? Status.ACTIVE,
 				plan: params.plan ?? PlanType.FREE,
 				logoUrl: params.logoUrl ? url(params.logoUrl) : undefined,
+				location: params.location,
 				settings: params.settings ?? {},
 				meta: params.meta ?? {},
 			};
@@ -125,6 +139,9 @@ export namespace Organization {
 		get logoUrl(): Url | string | undefined {
 			return this.props.logoUrl;
 		}
+		get location(): Location | undefined {
+			return this.props.location;
+		}
 		get settings(): Settings | undefined {
 			return this.props.settings;
 		}
@@ -139,6 +156,7 @@ export namespace Organization {
 
 		updateName(name: string): void {
 			this.props.name = name;
+			this.props.slug = Slug.create(name);
 			this.props.updatedAt = new Date();
 		}
 
@@ -154,6 +172,11 @@ export namespace Organization {
 
 		updateLogoUrl(logoUrl: string): void {
 			this.props.logoUrl = url(logoUrl);
+			this.props.updatedAt = new Date();
+		}
+
+		updateLocation(location: Location): void {
+			this.props.location = location;
 			this.props.updatedAt = new Date();
 		}
 
@@ -173,6 +196,7 @@ export namespace Organization {
 					slug: this.slug.toString(),
 					name: this.name,
 					logoUrl: this.logoUrl,
+					location: this.location,
 					createdAt: this.createdAt,
 				};
 			}

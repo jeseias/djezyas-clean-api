@@ -18,14 +18,14 @@ export class MongoosePaymentIntentRepository
 		transactionId: string,
 	): Promise<PaymentIntent.Model | null> {
 		const paymentIntent = await PaymentIntentModel.findOne({
-			transactionId,
+			transactionIds: transactionId,
 		}).lean();
 		return paymentIntent && this.mapToDomainModel(paymentIntent);
 	}
 
 	async findByReference(reference: string): Promise<PaymentIntent.Model[]> {
 		const paymentIntents = await PaymentIntentModel.find({
-			$or: [{ transactionId: reference }, { id: reference }],
+			$or: [{ transactionIds: reference }, { id: reference }],
 		}).lean();
 		return paymentIntents.map(this.mapToDomainModel);
 	}
@@ -87,9 +87,10 @@ export class MongoosePaymentIntentRepository
 			userId: paymentIntentDoc.userId,
 			orderIds: paymentIntentDoc.orderIds,
 			amount: paymentIntentDoc.amount,
+			currency: paymentIntentDoc.currency,
 			provider: paymentIntentDoc.provider,
 			status: paymentIntentDoc.status,
-			transactionId: paymentIntentDoc.transactionId,
+			transactionIds: paymentIntentDoc.transactionIds,
 			expiresAt: paymentIntentDoc.expiresAt,
 			metadata: paymentIntentDoc.metadata || {},
 			createdAt: paymentIntentDoc.createdAt,
@@ -103,9 +104,10 @@ export class MongoosePaymentIntentRepository
 			userId: paymentIntent.userId,
 			orderIds: paymentIntent.orderIds,
 			amount: paymentIntent.amount,
+			currency: paymentIntent.currency,
 			provider: paymentIntent.provider,
 			status: paymentIntent.status,
-			transactionId: paymentIntent.transactionId,
+			transactionIds: paymentIntent.transactionIds,
 			expiresAt: paymentIntent.expiresAt,
 			metadata: paymentIntent.metadata,
 			createdAt: paymentIntent.createdAt,

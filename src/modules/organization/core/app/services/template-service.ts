@@ -7,7 +7,6 @@ export class OrganizationTemplateService extends BaseEmailTemplateService {
 	constructor() {
 		super();
 	}
-
 	async compileOrgInvite(variables: {
 		name: string;
 		email: string;

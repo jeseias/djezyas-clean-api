@@ -6,9 +6,10 @@ export interface PaymentIntentDocument extends Document {
 	userId: string;
 	orderIds: string[];
 	amount: number;
+	currency: string;
 	provider: PaymentIntent.Provider;
 	status: PaymentIntent.Status;
-	transactionId?: string;
+	transactionIds?: string[];
 	expiresAt?: Date;
 	metadata?: PaymentIntent.Metadata;
 	createdAt: Date;
@@ -35,6 +36,10 @@ const paymentIntentSchema = new Schema<PaymentIntentDocument>(
 			required: true,
 			min: 0,
 		},
+		currency: {
+			type: String,
+			required: true,
+		},
 		provider: {
 			type: String,
 			required: true,
@@ -43,8 +48,8 @@ const paymentIntentSchema = new Schema<PaymentIntentDocument>(
 			type: String,
 			required: true,
 		},
-		transactionId: {
-			type: String,
+		transactionIds: {
+			type: [String],
 		},
 		expiresAt: {
 			type: Date,
@@ -57,14 +62,14 @@ const paymentIntentSchema = new Schema<PaymentIntentDocument>(
 	{
 		timestamps: true,
 		toJSON: {
-			transform: (doc, ret) => {
+			transform: (_doc, ret) => {
 				delete ret.__v;
 				delete ret._id;
 				return ret;
 			},
 		},
 		toObject: {
-			transform: (doc, ret) => {
+			transform: (_doc, ret) => {
 				delete ret.__v;
 				delete ret._id;
 				return ret;
@@ -77,7 +82,7 @@ const paymentIntentSchema = new Schema<PaymentIntentDocument>(
 paymentIntentSchema.index({ userId: 1 });
 paymentIntentSchema.index({ orderIds: 1 });
 paymentIntentSchema.index({ status: 1 });
-paymentIntentSchema.index({ transactionId: 1 });
+paymentIntentSchema.index({ transactionIds: 1 });
 paymentIntentSchema.index({ expiresAt: 1 });
 paymentIntentSchema.index({ createdAt: 1 });
 

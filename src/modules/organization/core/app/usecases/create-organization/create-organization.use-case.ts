@@ -11,6 +11,7 @@ export namespace CreateOrganization {
 		name: string;
 		ownerId: string;
 		logoUrl?: string;
+		location?: Organization.Location;
 		settings?: Organization.Settings;
 		meta?: Record<string, unknown>;
 	};
@@ -61,6 +62,8 @@ export class CreateOrganizationUseCase {
 				name: params.name,
 				ownerId: params.ownerId,
 				plan: Organization.PlanType.FREE,
+				logoUrl: params.logoUrl,
+				location: params.location,
 				meta: params.meta,
 				members: [],
 			});

@@ -1,5 +1,5 @@
 import { withUser } from "@/src/main/elysia/plugins";
-import { debugResolver, makeResolver } from "@/src/main/graphql/graphql-utils";
+import { makeResolver } from "@/src/main/graphql/graphql-utils";
 import { organizationUseCasesFactory } from "../../factories/use-cases.factory";
 
 export const organizationResolvers = {
@@ -75,6 +75,24 @@ export const organizationResolvers = {
 			},
 		),
 
+		updateOrganization: withUser(
+			async ({ input }: { input: UpdateOrganizationInput }, { userId }) => {
+				const updateOrganizationUseCase =
+					organizationUseCasesFactory.updateOrganization();
+				const organization = await updateOrganizationUseCase.execute({
+					organizationId: input.organizationId,
+					name: input.name,
+					description: input.description,
+					location: input.location,
+					updatedById: userId,
+				});
+
+				return {
+					organization,
+				};
+			},
+		),
+
 		inviteMember: withUser(async ({ input }: { input: InviteMemberInput }) => {
 			const inviteMemberUseCase = organizationUseCasesFactory.inviteMember();
 			const result = await inviteMemberUseCase.execute({
@@ -108,6 +126,21 @@ interface CreateOrganizationInput {
 	logoUrl?: string;
 	settings?: Record<string, unknown>;
 	meta?: Record<string, unknown>;
+}
+
+interface UpdateOrganizationInput {
+	organizationId: string;
+	name?: string;
+	description?: string;
+	location?: {
+		address: string;
+		city: string;
+		state?: string;
+		country: string;
+		postalCode?: string;
+		latitude: number;
+		longitude: number;
+	};
 }
 
 interface GetOrganizationMembersInput {

@@ -35,7 +35,7 @@ export const authPreRunner: PreRunner<any, any, any, any> = async (
 			username: userData.username,
 			role: userData.role,
 		};
-	} catch (error) {
+	} catch {
 		throw {
 			statusCode: 401,
 			message: "Invalid or expired token",

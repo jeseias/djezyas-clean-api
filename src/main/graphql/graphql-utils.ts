@@ -1,5 +1,5 @@
-import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import { GraphQLError } from "graphql";
+import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import { withUser } from "../elysia/plugins";
 
 export const debugResolver = <T extends (...args: any[]) => Promise<any>>(
@@ -57,7 +57,11 @@ export const handleResolver = <T extends (...args: any[]) => Promise<any>>(
 
 			// For other errors, create a generic AppError and wrap it
 			const err = error instanceof Error ? error : new Error("Unknown error");
-			const appError = new AppError(err.message, 500, ErrorCode.INTERNAL_SERVER_ERROR);
+			const appError = new AppError(
+				err.message,
+				500,
+				ErrorCode.INTERNAL_SERVER_ERROR,
+			);
 			throw new GraphQLError(appError.message, {
 				extensions: {
 					code: appError.code,

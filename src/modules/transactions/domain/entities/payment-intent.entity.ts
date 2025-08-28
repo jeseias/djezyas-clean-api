@@ -26,9 +26,12 @@ export namespace PaymentIntent {
 		userId: Id;
 		orderIds: Id[];
 		amount: number;
+		currency: string;
 		provider: Provider;
 		status: Status;
-		transactionId?: string;
+		transactionIds?: Id[];
+		providerReference?: string;
+		confirmedAt?: Date;
 		expiresAt?: Date;
 		createdAt?: Date;
 		updatedAt?: Date;
@@ -53,11 +56,15 @@ export namespace PaymentIntent {
 			const nowDate = now();
 			return new Entity({
 				id: props.id ?? id(),
+				currency: props.currency,
 				userId: props.userId,
+				providerReference: props.providerReference,
 				orderIds: props.orderIds,
 				amount: props.amount,
 				provider: props.provider,
 				status: props.status ?? Status.PENDING,
+				transactionIds: props.transactionIds,
+				confirmedAt: props.confirmedAt,
 				expiresAt: props.expiresAt,
 				metadata: props.metadata ?? {},
 				createdAt: props.createdAt ?? nowDate,
@@ -76,6 +83,21 @@ export namespace PaymentIntent {
 		updateStatus(status: PaymentIntent.Status) {
 			this.props.status = status;
 			this.props.updatedAt = now();
+		}
+
+		markSucceeded() {
+			this.props.status = Status.SUCCEEDED;
+			this.props.confirmedAt = now();
+		}
+
+		markFailed() {
+			this.props.status = Status.FAILED;
+			this.props.confirmedAt = now();
+		}
+
+		markCancelled() {
+			this.props.status = Status.CANCELLED;
+			this.props.confirmedAt = now();
 		}
 
 		isExpired(): boolean {

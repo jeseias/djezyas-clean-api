@@ -290,8 +290,6 @@ export class MongooseOrderRepository implements OrderRepository {
 		const docs = await OrderModel.aggregate(pipeline);
 		const totalItems = await OrderModel.countDocuments(query);
 
-		console.log("==>+=> My Orders with Products and Prices", docs);
-
 		const items = docs.map((doc) =>
 			this.mapToDomainModel(doc as OrderDocument),
 		);

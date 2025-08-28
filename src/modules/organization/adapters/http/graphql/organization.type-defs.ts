@@ -30,6 +30,16 @@ export const organizationTypeDefs = `#graphql
   }
 
   # Types
+  type OrganizationLocation {
+    address: String!
+    city: String!
+    state: String
+    country: String!
+    postalCode: String
+    latitude: Float!
+    longitude: Float!
+  }
+
   type Organization {
     id: String!
     name: String!
@@ -38,6 +48,7 @@ export const organizationTypeDefs = `#graphql
     status: OrganizationStatus
     plan: OrganizationPlanType
     logoUrl: String
+    location: OrganizationLocation
     settings: JSON
     meta: JSON
     createdAt: String!
@@ -48,6 +59,7 @@ export const organizationTypeDefs = `#graphql
     slug: String!
     name: String!
     logoUrl: String
+    location: OrganizationLocation
     createdAt: DateTime!
   }
 
@@ -56,6 +68,7 @@ export const organizationTypeDefs = `#graphql
     name: String!
     slug: String!
     logoUrl: String
+    location: OrganizationLocation
     plan: OrganizationPlanType
     status: OrganizationStatus
     createdAt: String!
@@ -148,11 +161,33 @@ export const organizationTypeDefs = `#graphql
     message: String!
   }
 
+  type UpdateOrganizationResult {
+    organization: Organization!
+  }
+
+  input OrganizationLocationInput {
+    address: String!
+    city: String!
+    state: String
+    country: String!
+    postalCode: String
+    latitude: Float!
+    longitude: Float!
+  }
+
   input CreateOrganizationInput {
     name: String!
     logoUrl: String
+    location: OrganizationLocationInput
     settings: JSON
     meta: JSON
+  }
+
+  input UpdateOrganizationInput {
+    organizationId: String!
+    name: String
+    description: String
+    location: OrganizationLocationInput
   }
 
   input AcceptInvitationInput {
@@ -191,6 +226,7 @@ export const organizationTypeDefs = `#graphql
 
   type Mutation {
     createOrganization(input: CreateOrganizationInput!): CreateOrganizationResult!
+    updateOrganization(input: UpdateOrganizationInput!): UpdateOrganizationResult!
     inviteMember(input: InviteMemberInput!): InviteMemberResult!
     acceptInvitation(input: AcceptInvitationInput!): AcceptInvitationResult!
   }

@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import { registerAllModels } from "../../modules/shared/adapters/db/mongoose/models";
-import { _env } from "../config/_env";
 
 export interface ServerConfig {
 	port: number;
@@ -166,7 +165,7 @@ export class Server {
 	}
 
 	private logServerInfo(): void {
-		console.log("\n" + "=".repeat(50));
+		console.log("=".repeat(50));
 		console.log("🎉 Server is running successfully!");
 		console.log("=".repeat(50));
 		console.log(`🌐 Server URL: http://localhost:${this.config.port}`);
@@ -182,6 +181,6 @@ export class Server {
 		console.log(
 			`🗄️ Database: ${mongoose.connection.readyState === 1 ? "Connected" : "Disconnected"}`,
 		);
-		console.log("=".repeat(50) + "\n");
+		console.log("=".repeat(50));
 	}
 }

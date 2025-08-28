@@ -88,7 +88,8 @@ export class CreatePaymentIntentUseCase {
 			orderIds: params.orderIds,
 			provider: params.provider,
 			status: PaymentIntent.Status.PENDING,
-			transactionId: providerResponse.transactionId,
+			currency: "AOA",
+			transactionIds: providerResponse.transactionId ? [providerResponse.transactionId] : undefined,
 			expiresAt:
 				providerResponse.expiresAt ?? new Date(Date.now() + 5 * 60 * 1000),
 			amount: totalAmount,

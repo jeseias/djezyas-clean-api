@@ -16,7 +16,7 @@ export type ControllerRequest<
 	Query = unknown,
 	Params = unknown,
 	Headers = unknown,
-	Result = unknown,
+	_Result = unknown,
 > = {
 	body: Body;
 	query: Query;
