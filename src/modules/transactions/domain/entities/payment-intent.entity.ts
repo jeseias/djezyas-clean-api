@@ -30,7 +30,7 @@ export namespace PaymentIntent {
 		provider: Provider;
 		status: Status;
 		transactionIds?: Id[];
-		providerReference?: string;
+		providerReference: string;
 		confirmedAt?: Date;
 		expiresAt?: Date;
 		createdAt?: Date;

@@ -12,6 +12,7 @@ export interface PaymentIntentDocument extends Document {
 	transactionIds?: string[];
 	expiresAt?: Date;
 	metadata?: PaymentIntent.Metadata;
+  providerReference: string
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -41,6 +42,10 @@ const paymentIntentSchema = new Schema<PaymentIntentDocument>(
 			required: true,
 		},
 		provider: {
+			type: String,
+			required: true,
+		},
+		providerReference: {
 			type: String,
 			required: true,
 		},
