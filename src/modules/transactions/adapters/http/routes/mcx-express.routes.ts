@@ -8,7 +8,7 @@ export const createMcxExpressRoutes = (
 ) => {
 	const controller = new McxExpressController(processMcxExpressPaymentUseCase);
 
-	return new Elysia({ prefix: "/api/public/payments/mcx-express" }).post(
+	return new Elysia({ prefix: "/public/payments/mcx-express" }).post(
 		"/callback",
 		elysiaControllerAdapter(controller),
 	);
