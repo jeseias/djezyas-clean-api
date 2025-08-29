@@ -11,6 +11,11 @@ export interface PaymentIntentRepository {
 	): Promise<PaymentIntent.Model | null>;
 	findByReference(reference: string): Promise<PaymentIntent.Model[]>;
 	findManyByOrderIds(orderIds: Id[]): Promise<PaymentIntent.Model[]>;
+	findByUserIdOrderIdsAndProvider(
+		userId: Id,
+		orderIds: Id[],
+		provider: PaymentIntent.Provider,
+	): Promise<PaymentIntent.Model | null>;
 	create(data: PaymentIntent.Model): Promise<PaymentIntent.Model>;
 	update(data: PaymentIntent.Model): Promise<PaymentIntent.Model>;
 	delete(id: Id): Promise<void>;

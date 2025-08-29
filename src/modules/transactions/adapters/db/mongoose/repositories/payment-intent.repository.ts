@@ -46,6 +46,19 @@ export class MongoosePaymentIntentRepository
 		return paymentIntents.map(this.mapToDomainModel);
 	}
 
+	async findByUserIdOrderIdsAndProvider(
+		userId: Id,
+		orderIds: Id[],
+		provider: PaymentIntent.Provider,
+	): Promise<PaymentIntent.Model | null> {
+		const paymentIntent = await PaymentIntentModel.findOne({
+			userId,
+			orderIds: { $all: orderIds },
+			provider,
+		}).lean();
+		return paymentIntent && this.mapToDomainModel(paymentIntent);
+	}
+
 	async create(data: PaymentIntent.Model): Promise<PaymentIntent.Model> {
 		const paymentIntentDoc = new PaymentIntentModel(this.mapToPersist(data));
 		const savedPaymentIntent = await paymentIntentDoc.save();
