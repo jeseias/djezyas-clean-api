@@ -30,14 +30,18 @@ export class CreatePaymentIntentUseCase {
 	async execute(
 		params: CreatePaymentIntent.Params,
 	): Promise<CreatePaymentIntent.Result> {
-		const existingPaymentIntent = await this.paymentIntentRepository.findByUserIdOrderIdsAndProvider(
-			params.userId,
-			params.orderIds,
-			params.provider,
-		);
+		const existingPaymentIntent =
+			await this.paymentIntentRepository.findByUserIdOrderIdsAndProvider(
+				params.userId,
+				params.orderIds,
+				params.provider,
+			);
 
 		if (existingPaymentIntent) {
-			const { token } = await this.generate_payment_token(params, existingPaymentIntent);
+			const { token } = await this.generate_payment_token(
+				params,
+				existingPaymentIntent,
+			);
 			return { token };
 		}
 

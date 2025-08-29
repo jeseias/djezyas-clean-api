@@ -10,8 +10,8 @@ export const orderTypeDefs = `#graphql
 
   enum OrderFulfillmentStatus {
     new
-    picking
-    packed
+    preparing
+    ready_for_dispatch
     in_delivery
     delivered
     cancelled

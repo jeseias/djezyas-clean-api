@@ -16,8 +16,8 @@ export namespace Order {
 
 	export enum FulfillmentStatus {
 		NEW = "new",
-		PICKING = "picking",
-		PACKED = "packed",
+		PREPARING = "preparing",
+		READY_FOR_DISPATCH = "ready_for_dispatch",
 		IN_DELIVERY = "in_delivery",
 		DELIVERED = "delivered",
 		CANCELLED = "cancelled",
@@ -53,6 +53,8 @@ export namespace Order {
 		paymentIntentId?: string;
 		transactionId?: string;
 		paidAt?: Date;
+		cancel_motive?: string;
+		issues?: string[];
 		clientConfirmedIsDelivered: boolean;
 		inDeliveryAt?: Date;
 		clientConfirmedDeliveryAt?: Date;
@@ -164,12 +166,7 @@ export namespace Order {
 		cancel(reason?: string): void {
 			this.props.fulfillmentStatus = FulfillmentStatus.CANCELLED;
 			this.props.cancelledAt = new Date();
-			if (reason) {
-				this.props.meta = {
-					...this.props.meta,
-					cancelReason: reason,
-				};
-			}
+			this.props.cancel_motive = reason;
 		}
 
 		expire(): void {
@@ -190,6 +187,32 @@ export namespace Order {
 		markAsAwaitingPayment(paymentIntentId: string): void {
 			this.props.paymentStatus = PaymentStatus.AWAITING_PAYMENT;
 			this.props.paymentIntentId = paymentIntentId;
+		}
+
+		updateFulfillmentStatus(newStatus: FulfillmentStatus): void {
+			if (!this.isValidFulfillmentStatus(newStatus)) {
+				throw new Error(`Invalid fulfillment status: ${newStatus}`);
+			}
+
+			this.props.fulfillmentStatus = newStatus;
+			this.props.updatedAt = new Date();
+		}
+
+		private isValidFulfillmentStatus(status: FulfillmentStatus): boolean {
+			const validStatuses = [
+				FulfillmentStatus.NEW,
+				FulfillmentStatus.PREPARING,
+				FulfillmentStatus.READY_FOR_DISPATCH,
+				FulfillmentStatus.IN_DELIVERY,
+				FulfillmentStatus.DELIVERED,
+				FulfillmentStatus.CANCELLED,
+				FulfillmentStatus.RETURNED,
+				FulfillmentStatus.FAILED_DELIVERY,
+				FulfillmentStatus.ISSUES,
+				FulfillmentStatus.EXPIRED,
+			];
+
+			return validStatuses.includes(status);
 		}
 
 		isNew(): boolean {
