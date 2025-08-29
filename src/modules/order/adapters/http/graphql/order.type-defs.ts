@@ -255,11 +255,6 @@ export const orderTypeDefs = `#graphql
     organizationId: String!
   }
 
-  # Move Order Result
-  type MoveOrderResult {
-    order: Order!
-  }
-
   # Queries
   type Query {
     calculateOrderTotals(input: CalculateOrderTotalsInput!): CalculateOrderTotalsResult!
@@ -274,7 +269,7 @@ export const orderTypeDefs = `#graphql
     cancelOrder(input: CancelOrderInput!): CancelOrderResult!
     createOrdersFromCart(input: CreateOrdersFromCartInput!): CreateOrdersFromCartResult!
     expireOrder(input: ExpireOrderInput!): ExpireOrderResult!
-    moveOrder(input: MoveOrderInput!): MoveOrderResult!
+    moveOrder(input: MoveOrderInput!): Order!
     splitCartIntoOrders(input: SplitCartIntoOrdersInput!): SplitCartIntoOrdersResult!
   }
 `;
