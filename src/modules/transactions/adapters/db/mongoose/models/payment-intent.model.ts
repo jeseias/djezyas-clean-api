@@ -12,7 +12,7 @@ export interface PaymentIntentDocument extends Document {
 	transactionIds?: string[];
 	expiresAt?: Date;
 	metadata?: PaymentIntent.Metadata;
-  providerReference: string
+	providerReference: string;
 	createdAt: Date;
 	updatedAt: Date;
 }

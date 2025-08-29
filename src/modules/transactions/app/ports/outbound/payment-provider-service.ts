@@ -3,7 +3,7 @@ export namespace PaymentProviderService {
 		userId: string;
 		amount: number;
 		orderIds: string[];
-    reference: string
+		reference: string;
 		metadata?: Record<string, any>;
 	};
 

@@ -2,10 +2,10 @@ import { Order } from "@/src/modules/order/domain/entities";
 import type { OrderRepository } from "@/src/modules/order/domain/repositories";
 import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 import type { TokenManager } from "@/src/modules/shared/ports/outbound/token-manager";
+import { generatePaymentReference } from "../../../adapters/payment-providers/multicaixa-express-client";
 import { PaymentIntent } from "../../../domain/entities";
 import type { PaymentIntentRepository } from "../../../domain/repositories";
 import type { PaymentProviderServiceRegistry } from "../../services/payment-provider-service-registry";
-import { generatePaymentReference } from "../../../adapters/payment-providers/multicaixa-express-client";
 
 export namespace CreatePaymentIntent {
 	export type Params = {
@@ -78,7 +78,7 @@ export class CreatePaymentIntentUseCase {
 		}
 
 		const paymentService = this.providerRegistry.get(params.provider);
-    const providerReference = generatePaymentReference(15, "DJEZ");
+		const providerReference = generatePaymentReference(15, "DJEZ");
 		const providerResponse = await paymentService.createSession({
 			userId: params.userId,
 			amount: totalAmount,
