@@ -403,11 +403,35 @@ export class MongooseOrderRepository implements OrderRepository {
 		};
 	}
 
-	async findAllByTransactionId(transactionId: string): Promise<Order.Model[]> {
+	async findAllByPaymentIntentId(
+		paymentIntentId: string,
+	): Promise<Order.Model[]> {
 		const docs = await OrderModel.aggregate([
-			{ $match: { transactionId } },
+			{ $match: { paymentIntentId } },
 			...this.getLookupPipeline(),
 		]);
 		return docs.map((doc) => this.mapToDomainModel(doc as OrderDocument));
+	}
+
+	async updateMany(orders: Order.Model[]): Promise<Order.Model[]> {
+		// Use bulkWrite to update each order with its specific data
+		const bulkOps = orders.map((order) => ({
+			updateOne: {
+				filter: { id: order.id },
+				update: { $set: this.mapToDocumentModel(order) },
+			},
+		}));
+
+		await OrderModel.bulkWrite(bulkOps);
+
+		// Fetch the updated documents
+		const updatedDocs = await OrderModel.aggregate([
+			{ $match: { id: { $in: orders.map((order) => order.id) } } },
+			...this.getLookupPipeline(),
+		]);
+
+		return updatedDocs.map((doc) =>
+			this.mapToDomainModel(doc as OrderDocument),
+		);
 	}
 }

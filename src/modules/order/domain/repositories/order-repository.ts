@@ -41,5 +41,6 @@ export type OrderRepository = Pick<
 		items: Order.Model[];
 		totalItems: number;
 	}>;
-	findAllByTransactionId: (transactionId: string) => Promise<Order.Model[]>;
+	findAllByPaymentIntentId: (paymentIntentId: string) => Promise<Order.Model[]>;
+	updateMany: (orders: Order.Model[]) => Promise<Order.Model[]>;
 };

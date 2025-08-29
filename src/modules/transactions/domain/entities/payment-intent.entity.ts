@@ -29,7 +29,6 @@ export namespace PaymentIntent {
 		currency: string;
 		provider: Provider;
 		status: Status;
-		transactionIds?: Id[];
 		providerReference: string;
 		confirmedAt?: Date;
 		expiresAt?: Date;
@@ -63,7 +62,6 @@ export namespace PaymentIntent {
 				amount: props.amount,
 				provider: props.provider,
 				status: props.status ?? Status.PENDING,
-				transactionIds: props.transactionIds,
 				confirmedAt: props.confirmedAt,
 				expiresAt: props.expiresAt,
 				metadata: props.metadata ?? {},

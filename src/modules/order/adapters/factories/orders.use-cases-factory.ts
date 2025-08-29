@@ -10,6 +10,7 @@ import { productMongooseRepository } from "@/src/modules/product/adapters/factor
 import type { ProductRepository } from "@/src/modules/product/core/ports/outbound/product-repository";
 import { isUserValidService } from "@/src/modules/user/adapters/factories/service.factory";
 import type { IsUserValidService } from "@/src/modules/user/core/app/services";
+import { MarkOrdersAsPaidByPaymentIntentIdUseCase } from "../../app/use-cases";
 import { CalculateOrderTotalsUseCase } from "../../app/use-cases/orders/calculate-order-totals/calculate-order-totals.use-case";
 import { CancelOrderUseCase } from "../../app/use-cases/orders/cancel-order/cancel-order.use-case";
 import { CreateOrdersFromCartUseCase } from "../../app/use-cases/orders/create-orders-from-cart/create-orders-from-cart.use-case";
@@ -19,7 +20,6 @@ import { GetOrderByIdUseCase } from "../../app/use-cases/orders/get-order-by-id/
 import { GetOrdersByOrganizationUseCase } from "../../app/use-cases/orders/get-orders-by-organization/get-orders-by-organization.use-case";
 import { GetOrdersByUserUseCase } from "../../app/use-cases/orders/get-orders-by-user/get-orders-by-user.use-case";
 import { MarkOrderAsPaidUseCase } from "../../app/use-cases/orders/mark-order-as-paid/mark-order-as-paid.use-case";
-import { MarkOrdersAsPaidByTransactionIdUseCase } from "../../app/use-cases/orders/mark-orders-as-paid-by-transaction-id/mark-orders-as-paid-by-transaction-id.use-case";
 import { SplitCartIntoOrdersUseCase } from "../../app/use-cases/orders/split-cart-into-orders/split-cart-into-orders.use-case";
 import type {
 	CartRepository,
@@ -66,8 +66,8 @@ export class OrderUseCasesFactory {
 		);
 	}
 
-	markOrdersAsPaidByTransactionId(): MarkOrdersAsPaidByTransactionIdUseCase {
-		return new MarkOrdersAsPaidByTransactionIdUseCase(this.orderRepository);
+	markOrdersAsPaidByPaymentIntentId(): MarkOrdersAsPaidByPaymentIntentIdUseCase {
+		return new MarkOrdersAsPaidByPaymentIntentIdUseCase(this.orderRepository);
 	}
 
 	cancelOrder(): CancelOrderUseCase {

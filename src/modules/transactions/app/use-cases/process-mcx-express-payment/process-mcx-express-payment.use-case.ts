@@ -1,4 +1,4 @@
-import type { MarkOrdersAsPaidByTransactionIdUseCase } from "@/src/modules/order/app/use-cases/orders/mark-orders-as-paid-by-transaction-id/mark-orders-as-paid-by-transaction-id.use-case";
+import type { MarkOrdersAsPaidByPaymentIntentIdUseCase } from "@/src/modules/order/app/use-cases/orders/mark-orders-as-paid-by-payment-intent-id/mark-orders-as-paid-by-payment-intent-id.use-case";
 import { PaymentIntent } from "../../../domain/entities";
 import type { PaymentIntentRepository } from "../../../domain/repositories";
 
@@ -19,7 +19,7 @@ export namespace ProcessMcxExpressPayment {
 export class ProcessMcxExpressPaymentUseCase {
 	constructor(
 		private readonly paymentIntentRepository: PaymentIntentRepository,
-		private readonly markOrdersAsPaidByTransactionIdUseCase: MarkOrdersAsPaidByTransactionIdUseCase,
+		private readonly markOrdersAsPaidByPaymentIntentIdUseCase: MarkOrdersAsPaidByPaymentIntentIdUseCase,
 	) {}
 
 	async execute(
@@ -50,14 +50,10 @@ export class ProcessMcxExpressPaymentUseCase {
 
 		let ordersUpdated = false;
 
-		if (
-			params.status === "ACCEPTED" &&
-			updatedPaymentIntent.transactionIds &&
-			updatedPaymentIntent.transactionIds.length > 0
-		) {
+		if (params.status === "ACCEPTED") {
 			try {
-				await this.markOrdersAsPaidByTransactionIdUseCase.execute({
-					transactionId: updatedPaymentIntent.transactionIds[0],
+				await this.markOrdersAsPaidByPaymentIntentIdUseCase.execute({
+					paymentIntentId: updatedPaymentIntent.id,
 				});
 				ordersUpdated = true;
 			} catch (error) {

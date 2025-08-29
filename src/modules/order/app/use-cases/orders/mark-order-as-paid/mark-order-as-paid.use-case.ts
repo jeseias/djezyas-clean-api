@@ -72,7 +72,7 @@ export class MarkOrderAsPaidUseCase {
 				);
 			}
 
-			orderEntity.markAsPaid(params.transactionId);
+			orderEntity.markAsPaid();
 
 			const updatedOrder = await this.orderRepository.update(
 				orderEntity.getSnapshot(),

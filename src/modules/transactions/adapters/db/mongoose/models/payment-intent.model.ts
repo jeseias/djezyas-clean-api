@@ -9,7 +9,6 @@ export interface PaymentIntentDocument extends Document {
 	currency: string;
 	provider: PaymentIntent.Provider;
 	status: PaymentIntent.Status;
-	transactionIds?: string[];
 	expiresAt?: Date;
 	metadata?: PaymentIntent.Metadata;
 	providerReference: string;
@@ -53,9 +52,6 @@ const paymentIntentSchema = new Schema<PaymentIntentDocument>(
 			type: String,
 			required: true,
 		},
-		transactionIds: {
-			type: [String],
-		},
 		expiresAt: {
 			type: Date,
 		},
@@ -87,7 +83,6 @@ const paymentIntentSchema = new Schema<PaymentIntentDocument>(
 paymentIntentSchema.index({ userId: 1 });
 paymentIntentSchema.index({ orderIds: 1 });
 paymentIntentSchema.index({ status: 1 });
-paymentIntentSchema.index({ transactionIds: 1 });
 paymentIntentSchema.index({ expiresAt: 1 });
 paymentIntentSchema.index({ createdAt: 1 });
 

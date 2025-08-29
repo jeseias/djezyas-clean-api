@@ -155,12 +155,13 @@ export namespace Order {
 			return this.props.organizationId;
 		}
 
-		markAsPaid(transactionId?: string): void {
+		markAsPaid(): void {
 			this.props.paymentStatus = PaymentStatus.PAID;
 			this.props.paidAt = new Date();
-			if (transactionId) {
-				this.props.transactionId = transactionId;
-			}
+		}
+
+		add_payment_intent_id(payemntIntentId: string): void {
+			this.props.paymentIntentId = payemntIntentId;
 		}
 
 		cancel(reason?: string): void {

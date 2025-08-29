@@ -30,6 +30,100 @@ export class CreatePaymentIntentUseCase {
 	async execute(
 		params: CreatePaymentIntent.Params,
 	): Promise<CreatePaymentIntent.Result> {
+		const { orders, totalAmount } = await this.validate_orders(params);
+		const { providerResponse, providerReference } =
+			await this.create_payment_session(params, totalAmount);
+		const { intentEntity } = this.create_payment_intent(
+			params,
+			providerResponse,
+			providerReference,
+			totalAmount,
+		);
+		const updatedOrders = this.update_orders_with_payment_intent_id(
+			orders,
+			intentEntity.id,
+		);
+
+		await this.orderRepository.updateMany(updatedOrders);
+		await this.paymentIntentRepository.create(intentEntity);
+
+		const { token } = await this.generate_payment_token(params, intentEntity);
+
+		return { token };
+	}
+
+	private async generate_payment_token(
+		params: CreatePaymentIntent.Params,
+		intentEntity: PaymentIntent.Model,
+	) {
+		const token = await this.tokenManager.generateToken(
+			{
+				pi: intentEntity.id,
+				uid: params.userId,
+				ord: params.orderIds,
+				prv: params.provider,
+			},
+			"10m",
+		);
+
+		return { token };
+	}
+
+	private update_orders_with_payment_intent_id(
+		orders: Order.Model[],
+		paymentIntentId: string,
+	) {
+		return orders.map((order) => {
+			const orderEntity = Order.Entity.fromModel(order);
+			orderEntity.add_payment_intent_id(paymentIntentId);
+			return orderEntity.getSnapshot();
+		});
+	}
+
+	private create_payment_intent(
+		params: CreatePaymentIntent.Params,
+		providerResponse: any,
+		providerReference: string,
+		totalAmount: number,
+	) {
+		const intentEntity = PaymentIntent.Entity.create({
+			userId: params.userId,
+			orderIds: params.orderIds,
+			provider: params.provider,
+			status: PaymentIntent.Status.PENDING,
+			providerReference,
+			currency: "AOA",
+			expiresAt:
+				providerResponse.expiresAt ?? new Date(Date.now() + 5 * 60 * 1000),
+			amount: totalAmount,
+			metadata: {
+				paymentProviderResponse: providerResponse,
+			},
+		});
+
+		return { intentEntity: intentEntity.getSnapshot() };
+	}
+
+	private async create_payment_session(
+		params: CreatePaymentIntent.Params,
+		totalAmount: number,
+	) {
+		const paymentService = this.providerRegistry.get(params.provider);
+		const providerReference = generatePaymentReference(15, "DJEZ");
+		const providerResponse = await paymentService.createSession({
+			userId: params.userId,
+			amount: totalAmount,
+			orderIds: params.orderIds,
+			reference: providerReference,
+		});
+
+		return {
+			providerResponse,
+			providerReference,
+		};
+	}
+
+	private async validate_orders(params: CreatePaymentIntent.Params) {
 		if (params.orderIds.length === 0) {
 			throw new AppError(
 				"Missing order reference",
@@ -77,45 +171,9 @@ export class CreatePaymentIntentUseCase {
 			);
 		}
 
-		const paymentService = this.providerRegistry.get(params.provider);
-		const providerReference = generatePaymentReference(15, "DJEZ");
-		const providerResponse = await paymentService.createSession({
-			userId: params.userId,
-			amount: totalAmount,
-			orderIds: params.orderIds,
-			reference: providerReference,
-		});
-
-		const intentEntity = PaymentIntent.Entity.create({
-			userId: params.userId,
-			orderIds: params.orderIds,
-			provider: params.provider,
-			status: PaymentIntent.Status.PENDING,
-			providerReference,
-			currency: "AOA",
-			transactionIds: providerResponse.transactionId
-				? [providerResponse.transactionId]
-				: undefined,
-			expiresAt:
-				providerResponse.expiresAt ?? new Date(Date.now() + 5 * 60 * 1000),
-			amount: totalAmount,
-			metadata: {
-				paymentProviderResponse: providerResponse,
-			},
-		});
-
-		await this.paymentIntentRepository.create(intentEntity.getSnapshot());
-
-		const token = await this.tokenManager.generateToken(
-			{
-				pi: intentEntity.getSnapshot().id,
-				uid: params.userId,
-				ord: params.orderIds,
-				prv: params.provider,
-			},
-			"10m",
-		);
-
-		return { token };
+		return {
+			orders,
+			totalAmount,
+		};
 	}
 }

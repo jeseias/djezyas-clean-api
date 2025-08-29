@@ -2,9 +2,9 @@ import { Order } from "@/src/modules/order/domain/entities/order";
 import type { OrderRepository } from "@/src/modules/order/domain/repositories/order-repository";
 import { AppError, ErrorCode } from "@/src/modules/shared/errors";
 
-export namespace MarkOrdersAsPaidByTransactionId {
+export namespace MarkOrdersAsPaidByPaymentIntentId {
 	export type Params = {
-		transactionId: string;
+		paymentIntentId: string;
 	};
 
 	export type Result = {
@@ -12,27 +12,27 @@ export namespace MarkOrdersAsPaidByTransactionId {
 	};
 }
 
-export class MarkOrdersAsPaidByTransactionIdUseCase {
+export class MarkOrdersAsPaidByPaymentIntentIdUseCase {
 	constructor(private readonly orderRepository: OrderRepository) {}
 
 	async execute(
-		params: MarkOrdersAsPaidByTransactionId.Params,
-	): Promise<MarkOrdersAsPaidByTransactionId.Result> {
-		if (!params.transactionId) {
+		params: MarkOrdersAsPaidByPaymentIntentId.Params,
+	): Promise<MarkOrdersAsPaidByPaymentIntentId.Result> {
+		if (!params.paymentIntentId) {
 			throw new AppError(
-				"Transaction ID is required",
+				"Payment Intent ID is required",
 				400,
 				ErrorCode.INVALID_OPERATION,
 			);
 		}
 
-		const orders = await this.orderRepository.findAllByTransactionId(
-			params.transactionId,
+		const orders = await this.orderRepository.findAllByPaymentIntentId(
+			params.paymentIntentId,
 		);
 
 		if (!orders || orders.length === 0) {
 			throw new AppError(
-				`No orders found for transaction ID: ${params.transactionId}`,
+				`No orders found for transaction ID: ${params.paymentIntentId}`,
 				404,
 				ErrorCode.ENTITY_NOT_FOUND,
 			);
@@ -44,7 +44,7 @@ export class MarkOrdersAsPaidByTransactionIdUseCase {
 			const orderEntity = Order.Entity.fromModel(orderModel);
 
 			if (orderEntity.isPaymentPending()) {
-				orderEntity.markAsPaid(params.transactionId);
+				orderEntity.markAsPaid();
 
 				const updatedOrder = await this.orderRepository.update(
 					orderEntity.getSnapshot(),

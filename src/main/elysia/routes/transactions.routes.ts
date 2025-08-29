@@ -8,7 +8,7 @@ export const transactionsRoutes = new Elysia().use(
 	createMcxExpressRoutes(
 		createProcessMcxExpressPaymentUseCase(
 			paymentIntentMongooseRepository,
-			orderUseCasesFactory.markOrdersAsPaidByTransactionId(),
+			orderUseCasesFactory.markOrdersAsPaidByPaymentIntentId(),
 		),
 	),
 );
