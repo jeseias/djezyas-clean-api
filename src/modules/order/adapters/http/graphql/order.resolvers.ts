@@ -37,6 +37,10 @@ export const orderResolvers = {
 			const useCase = orderUseCasesFactory.expireOrder();
 			return useCase.execute({ ...input, userId });
 		}),
+		moveOrder: makeResolver(async ({ input }, { userId }) => {
+			const useCase = orderUseCasesFactory.moveOrder();
+			return useCase.execute({ ...input, userId });
+		}),
 		splitCartIntoOrders: makeResolver(async ({ input }) => {
 			const useCase = orderUseCasesFactory.splitCartIntoOrders();
 			return useCase.execute(input);

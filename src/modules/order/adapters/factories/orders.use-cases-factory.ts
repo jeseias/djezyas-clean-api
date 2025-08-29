@@ -29,6 +29,7 @@ import {
 	cartMongooseRepository,
 	orderMongooseRepository,
 } from "./repository.factory";
+import { MoveOrderUseCase } from "../../app/use-cases/orders/move-order/move-order.use-case";
 
 export class OrderUseCasesFactory {
 	constructor(
@@ -115,6 +116,13 @@ export class OrderUseCasesFactory {
 		return new GetOrdersByUserUseCase(
 			this.orderRepository,
 			this.isUserValidService,
+		);
+	}
+
+	moveOrder(): MoveOrderUseCase {
+		return new MoveOrderUseCase(
+			this.orderRepository,
+			this.isOrganizationMemberService,
 		);
 	}
 }
