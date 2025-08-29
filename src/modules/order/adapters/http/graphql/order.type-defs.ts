@@ -5,6 +5,7 @@ export const orderTypeDefs = `#graphql
     paid
     refunded
     failed
+    awaiting_payment
   }
 
   enum OrderFulfillmentStatus {

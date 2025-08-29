@@ -75,7 +75,7 @@ export class CreatePaymentIntentUseCase {
 	) {
 		return orders.map((order) => {
 			const orderEntity = Order.Entity.fromModel(order);
-			orderEntity.add_payment_intent_id(paymentIntentId);
+			orderEntity.markAsAwaitingPayment(paymentIntentId);
 			return orderEntity.getSnapshot();
 		});
 	}

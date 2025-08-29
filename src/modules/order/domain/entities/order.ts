@@ -8,6 +8,7 @@ import { type Id, id } from "@/src/modules/shared/value-objects";
 export namespace Order {
 	export enum PaymentStatus {
 		PENDING = "pending",
+		AWAITING_PAYMENT = "awaiting_payment",
 		PAID = "paid",
 		REFUNDED = "refunded",
 		FAILED = "failed",
@@ -160,10 +161,6 @@ export namespace Order {
 			this.props.paidAt = new Date();
 		}
 
-		add_payment_intent_id(payemntIntentId: string): void {
-			this.props.paymentIntentId = payemntIntentId;
-		}
-
 		cancel(reason?: string): void {
 			this.props.fulfillmentStatus = FulfillmentStatus.CANCELLED;
 			this.props.cancelledAt = new Date();
@@ -188,6 +185,11 @@ export namespace Order {
 		markAsClientConfirmedDelivery(): void {
 			this.props.clientConfirmedIsDelivered = true;
 			this.props.clientConfirmedDeliveryAt = new Date();
+		}
+
+		markAsAwaitingPayment(paymentIntentId: string): void {
+			this.props.paymentStatus = PaymentStatus.AWAITING_PAYMENT;
+			this.props.paymentIntentId = paymentIntentId;
 		}
 
 		isNew(): boolean {
