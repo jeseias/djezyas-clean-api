@@ -20,6 +20,7 @@ import { GetOrderByIdUseCase } from "../../app/use-cases/orders/get-order-by-id/
 import { GetOrdersByOrganizationUseCase } from "../../app/use-cases/orders/get-orders-by-organization/get-orders-by-organization.use-case";
 import { GetOrdersByUserUseCase } from "../../app/use-cases/orders/get-orders-by-user/get-orders-by-user.use-case";
 import { MarkOrderAsPaidUseCase } from "../../app/use-cases/orders/mark-order-as-paid/mark-order-as-paid.use-case";
+import { MoveOrderUseCase } from "../../app/use-cases/orders/move-order/move-order.use-case";
 import { SplitCartIntoOrdersUseCase } from "../../app/use-cases/orders/split-cart-into-orders/split-cart-into-orders.use-case";
 import type {
 	CartRepository,
@@ -29,7 +30,6 @@ import {
 	cartMongooseRepository,
 	orderMongooseRepository,
 } from "./repository.factory";
-import { MoveOrderUseCase } from "../../app/use-cases/orders/move-order/move-order.use-case";
 
 export class OrderUseCasesFactory {
 	constructor(
