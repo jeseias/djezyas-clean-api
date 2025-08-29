@@ -72,7 +72,6 @@ export const orderTypeDefs = `#graphql
     fulfillmentStatus: OrderFulfillmentStatus!
     clientConfirmedIsDelivered: Boolean!
     paymentIntentId: String
-    transactionId: String
     paidAt: DateTime
     inDeliveryAt: DateTime
     clientConfirmedDeliveryAt: DateTime
@@ -82,8 +81,6 @@ export const orderTypeDefs = `#graphql
     createdAt: DateTime!
     updatedAt: DateTime!
   }
-
-
 
   # Calculate Order Totals Input
   input CalculateOrderTotalsItemInput {
@@ -225,27 +222,6 @@ export const orderTypeDefs = `#graphql
     groupedOrders: [GroupedOrders!]
   }
 
-  # Mark Order As Paid Input
-  input MarkOrderAsPaidInput {
-    userId: String!
-    orderIds: [String!]!
-    transactionId: String
-  }
-
-  # Mark Order As Paid Result
-  type MarkOrderAsPaidResult {
-    orders: [Order!]!
-  }
-
-  # Mark Orders As Paid By Transaction ID Input
-  input MarkOrdersAsPaidByTransactionIdInput {
-    transactionId: String!
-  }
-
-  # Mark Orders As Paid By Transaction ID Result
-  type MarkOrdersAsPaidByTransactionIdResult {
-    orders: [Order!]!
-  }
 
   # Split Cart Into Orders Input
   input SplitCartIntoOrdersInput {
@@ -285,8 +261,6 @@ export const orderTypeDefs = `#graphql
     cancelOrder(input: CancelOrderInput!): CancelOrderResult!
     createOrdersFromCart(input: CreateOrdersFromCartInput!): CreateOrdersFromCartResult!
     expireOrder(input: ExpireOrderInput!): ExpireOrderResult!
-    markOrderAsPaid(input: MarkOrderAsPaidInput!): MarkOrderAsPaidResult!
-    markOrdersAsPaidByTransactionId(input: MarkOrdersAsPaidByTransactionIdInput!): MarkOrdersAsPaidByTransactionIdResult!
     splitCartIntoOrders(input: SplitCartIntoOrdersInput!): SplitCartIntoOrdersResult!
   }
 `;

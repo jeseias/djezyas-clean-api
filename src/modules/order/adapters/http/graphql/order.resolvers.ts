@@ -37,14 +37,6 @@ export const orderResolvers = {
 			const useCase = orderUseCasesFactory.expireOrder();
 			return useCase.execute({ ...input, userId });
 		}),
-		markOrderAsPaid: makeResolver(async ({ input }, { userId }) => {
-			const useCase = orderUseCasesFactory.markOrderAsPaid();
-			return useCase.execute({ ...input, userId });
-		}),
-		markOrdersAsPaidByPaymentIntentId: makeResolver(async ({ input }) => {
-			const useCase = orderUseCasesFactory.markOrdersAsPaidByPaymentIntentId();
-			return useCase.execute(input);
-		}),
 		splitCartIntoOrders: makeResolver(async ({ input }) => {
 			const useCase = orderUseCasesFactory.splitCartIntoOrders();
 			return useCase.execute(input);
